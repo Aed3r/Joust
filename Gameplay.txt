@@ -1,0 +1,14 @@
+Mécaniques de base:
+    Jusqu'à 2 joueurs peuvent contrôler des oies volantes en 3e personne dans un niveau 2D à plateforme. Le sol est en lave
+    Les joueurs peuvent se diriger horizontalement avec des boutons gauche/droite et verticalement suivant la fréquence d'appuis d'un bouton
+    Deux joueurs peuvent s'affronter ou jouer en coop contre des vagues IA de plus en plus puissante.
+    Pour vaincre un ennemis il faut lui rentrer dedans. Différents cas s'impose :
+        La lance du joueur est plus haute que celle de l'ennemi: l'ennemi se transforme en oeuf et tombe sur une plateforme ou de la lave
+        La lance de l'ennemi est plus haute que celle du joueur : le joueur meurt
+        Les lances sont à hauteur égale : le joueur et l'ennemi sont repoussés l'un de l'autre
+
+Détails techniques:
+    En franchissant un bord du niveau, un joueur réapparaît à l'autre
+    Un œuf qui tombe et n'est pas ramassé par un joueur peu éclore et créer un nouvel ennemi
+    Il y a trois types d'IA ennemis normaux: Bounder, Hunter, et Shadow Lord, ainsi qu'un ennemi presque indestructible : ptérodactyle
+    Si un joueur s'approche trop de la lave in troll des laves l'attrape et l'attire vers sa mort. Le joueur peut se libérer en battant des ailes rapidement
