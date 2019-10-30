@@ -10,7 +10,7 @@
 #define MAXINSTANCES 50
 
 typedef struct {
-    int typeID;
+    int typeID; /* Positive */
     char spritePath[50];
     char name[20];
     int width;
@@ -27,7 +27,7 @@ typedef struct {
 
 typedef struct {
     birdType b;
-    int instanceID;
+    int instanceID; /* Positive */
     int x;
     int y;
     int dir; /* Facing left: -1; right: 1 */
@@ -38,6 +38,7 @@ typedef struct {
 
 typedef struct {
     objectType o;
+    int instanceID;
     int x;
     int y;
 } platform; /* Platform instance */
@@ -64,15 +65,5 @@ int importBirdTypes (birdType bType[OBJS], char *filePath);
  * Returns 1 on successful import, 0 otherwise
  */
 int importPlatforms (platform plat[PLATFORMS], char *filePath);
-
-/*
- * Creates and initializes a new birdType instance using its object ID
- */ 
-void spawnBird(int oID, bird birds[MAXINSTANCES], int x, int y);
-
-/*
- * Updates the positions of all bird instances 
- */ 
-void updatePos(bird b[MAXINSTANCES]);
 
 #endif
