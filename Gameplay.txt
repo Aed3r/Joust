@@ -16,6 +16,7 @@ Détails techniques:
         Shadow Lord: Très aggressif. Vol plus haut en présence du joueur
         ----Ptérodactyle: N'apparait que dans certaine vague au bout d'un certain temps. Vol de l'écran gauche vers la droite en s'approchant du joueur peu à peu. Ne peux être tué qu'en dirigeant sa lance dans son bec ouvert----
     ----Si un joueur s'approche trop de la lave in troll des laves l'attrape et l'attire vers sa mort. Le joueur peut se libérer en battant des ailes rapidement----
+    Des plateformes disparaissent toutes les deux vagues
 
 
 Références:
