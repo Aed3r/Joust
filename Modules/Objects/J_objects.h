@@ -32,7 +32,7 @@ typedef struct {
     float glideSpeed;
     float flapStrength; /* Height reached with one flap press */
     int respawnTime; /* Seconds before the bird respawns (mob: egg, character: platform) */
-    int isMob;
+    int isMob; /*0 = Player, 1 = Mob*/
     int aggressiveness; /* AI: percentage indicating likeliness to attack player and avoid platforms. 100 for the pterodactyl */
 } birdType; /* Mobs or characters */
 
