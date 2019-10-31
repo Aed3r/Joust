@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <MLV/MLV_all.h>
 
-#include "objects.h"
+#include "J_objects.h"
 
 /*
  * Creates and initializes a new birdType instance using its object ID
