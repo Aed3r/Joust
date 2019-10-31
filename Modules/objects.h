@@ -10,11 +10,20 @@
 #define MAXINSTANCES 50
 
 typedef struct {
+    int x;
+    int y;
+} point;
+
+typedef struct {
+    int width;
+    int height;
+} size;
+
+typedef struct {
     int typeID; /* Positive */
     char spritePath[50];
     char name[20];
-    int width;
-    int height;
+    size s;
 } objectType; /* Platfoms or birds */
 
 typedef struct {
@@ -23,13 +32,13 @@ typedef struct {
     float glideSpeed;
     float flapStrength; /* Height reached with one flap press */
     int respawnTime; /* Seconds before the bird respawns (mob: egg, character: platform) */
+    int aggressiveness; /* AI: percentage indicating likeliness to attack player and avoid platforms. 100 for the pterodactyl */
 } birdType; /* Mobs or characters */
 
 typedef struct {
     birdType b;
     int instanceID; /* Positive */
-    int x;
-    int y;
+    point p;
     int dir; /* Facing left: -1; right: 1 */
     int flaps; /* Amount of flap presses */
     int isMob;
@@ -39,8 +48,7 @@ typedef struct {
 typedef struct {
     objectType o;
     int instanceID;
-    int x;
-    int y;
+    point p;
 } platform; /* Platform instance */
 
 extern objectType objT[OBJS];

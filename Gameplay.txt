@@ -8,7 +8,17 @@ Mécaniques de base:
         Les lances sont à hauteur égale : le joueur et l'ennemi sont repoussés l'un de l'autre
 
 Détails techniques:
-    En franchissant un bord du niveau, un joueur réapparaît à l'autre
-    Un œuf qui tombe et n'est pas ramassé par un joueur peu éclore et créer un nouvel ennemi
-    Il y a trois types d'IA ennemis normaux: Bounder, Hunter, et Shadow Lord, ainsi qu'un ennemi presque indestructible : ptérodactyle
+    En franchissant un bord du niveau, un oiseau réapparaît à l'autre
+    Un œuf qui tombe et n'est pas ramassé par un joueur peut éclore et créer un nouvel ennemi
+    Il y a trois types d'IA ennemis normaux: Bounder, Hunter, et Shadow Lord, ainsi qu'un ennemi presque indestructible : le ptérodactyle
+        Bounder: vol aléatoire et s'approche du joueur occasionellement, se retourne rarement. Un peu plus lent que le joueur
+        Hunter: Bounder plus agressif se retournant plus souvent pour attaquer le joueur
+        Shadow Lord: Très aggressif. Vol plus haut en présence du joueur
+        ----Ptérodactyle: N'apparait que dans certaine vague au bout d'un certain temps. Vol de l'écran gauche vers la droite en s'approchant du joueur peu à peu. Ne peux être tué qu'en dirigeant sa lance dans son bec ouvert----
     ----Si un joueur s'approche trop de la lave in troll des laves l'attrape et l'attire vers sa mort. Le joueur peut se libérer en battant des ailes rapidement----
+
+
+Références:
+
+https://strategywiki.org/wiki/Joust/How_to_play
+https://en.wikipedia.org/wiki/Joust_(video_game)
