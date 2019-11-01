@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <MLV/MLV_all.h>
 
-#include "J_objects.h"
+#include "../Objects/J_objects.h"
 
 #define MAXMSGCHARS 200
 #define MAXMENUCHARS 50

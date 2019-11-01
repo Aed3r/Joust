@@ -2,7 +2,6 @@
 #define OBJECTS
 
 #include <stdlib.h>
-#include <MLV/MLV_all.h>
 
 #define OBJS 20
 #define BIRDTYPES 20
@@ -20,7 +19,7 @@ typedef struct {
 } size;
 
 typedef struct {
-    int typeID; /* Positive */
+    int objectID; /* Positive */
     char spritePath[50];
     char name[20];
     size s;
