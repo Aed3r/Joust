@@ -2,14 +2,20 @@
 #define CONTROLS
 
 #include <stdlib.h>
-#include <MLV/MLV_all.h>
 
-#include "J_objects.h"
+#include "../Objects/J_objects.h"
 
 /*
- * Creates and initializes a new birdType instance using its object ID
+ * Creates a new birdType instance using object ID
+ * Returns the length of the birds array
  */ 
-void spawnBird(int oID, birdType brdT[BIRDTYPES], bird birds[MAXINSTANCES], int x, int y);
+int spawnBird (int oID, birdType brdT[BIRDTYPES], int n, bird birds[MAXINSTANCES], int m, int x, int y, int dir, int player);
+
+/*
+ * Creates a new platform instance using the passed ID
+ * Returns the length of the platforms array
+ */ 
+int createPlatform (int oID, objectType objT[OBJS], int n, int x, int y);
 
 /*
  * Returns 1 if two rectangles defined by (p1, s1) and (p2, s2) collide
@@ -20,13 +26,13 @@ int areColliding (point p1, size s1, point p2, size s2);
  * Returns the instance ID of any platform colliding with the bird passed as param
  * Returns -1 otherwise
  */
-int platCollision(bird *b, platform plt[PLATFORMS]);
+int platCollision (bird *b, platform plt[PLATFORMS], int n);
 
 /*
  * Returns the instance ID of any bird colliding with the bird passed as param
  * Returns -1 otherwise
  */
-int birdCollision(bird *b, bird brd[MAXINSTANCES]);
+int birdCollision (bird *b, bird brd[MAXINSTANCES], int n);
 
 /*
  * Returns the result of a joust:
