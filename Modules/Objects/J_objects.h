@@ -20,7 +20,7 @@ typedef struct {
 
 typedef struct {
     int objectID; /* Positive */
-    char spritePath[50];
+    char spriteName[50];
     char name[20];
     size s;
 } objectType; /* Platfoms or birds */
