@@ -55,11 +55,6 @@ typedef struct {
     point p;
 } platform; /* Platform instance */
 
-extern objectType objT[OBJS];
-extern birdType brdT[BIRDTYPES];
-extern bird brd[MAXINSTANCES];
-extern platform plt[PLATFORMS];
-
 /*
  * Initializes array objT with predefined object types 
  * Returns 1 on successful import, 0 otherwise
