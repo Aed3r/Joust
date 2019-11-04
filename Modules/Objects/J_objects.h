@@ -55,22 +55,41 @@ typedef struct {
     point p;
 } platform; /* Platform instance */
 
+typedef struct {
+    birdType brdT[BIRDTYPES];
+    int l;
+}birdTypes;
+
+typedef struct {
+    bird brd[BIRDTYPES];
+    int l;
+}birds;
+
+typedef struct {
+    platform plt[BIRDTYPES];
+    int l;
+}platforms;
+
+typedef struct {
+    objectType objT[BIRDTYPES];
+    int l;
+}objectTypes;
 /*
  * Initializes array objT with predefined object types 
  * Returns 1 on successful import, 0 otherwise
  */ 
-int importOBJs (objectType oType[OBJS], char *filePath);
+int importOBJs (objectTypes o, char *filePath);
 
 /*
  * Initializes array brdT with predefined bird types
  * Returns 1 on successful import, 0 otherwise
  */ 
-int importBirdTypes (birdType bType[OBJS], char *filePath);
+int importBirdTypes (birdTypes b, char *filePath);
 
 /*
  * Initializes array plt with predefined platforms
  * Returns 1 on successful import, 0 otherwise
  */
-int importPlatforms (platform plat[PLATFORMS], char *filePath);
+int importPlatforms (platforms p, char *filePath);
 
 #endif
