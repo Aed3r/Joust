@@ -7,8 +7,8 @@
 void dispPlats(platforms p, int n){
 	int i = 0;
 	MLV_Image *image;
-	for(i=0;i<bird.l;i++){
-		image = MLV_load_image(p.plt[i].o.spritename);
+	for(i=0;i<platforms.l;i++){
+		image = MLV_load_image(p.plt[i].o.spriteName);
 		MLV_draw_image(image, p.plt[i].p.x, p.plt[i].p.y);
 	}
 }
@@ -20,7 +20,7 @@ void dispBirds(birds bird, int n){
 	int i = 0;
 	MLV_Image *image;
 	for(i=0;i<bird.l;i++){
-		image = MLV_load_image(bird.brd[i].b.o.spritename);
+		image = MLV_load_image(bird.brd[i].b.o.spriteName);
 		MLV_draw_image(image, bird.brd[i].p.x, bird.brd[i].p.y);
 	}
 }
