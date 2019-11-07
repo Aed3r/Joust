@@ -71,10 +71,10 @@ typedef struct {
 }objectTypes;
 
 typedef struct{
-    objectType o;
-    int instanceID;
-    point p;
+    platform plt[PLATFORMS];
+    int l;
 }platforms;
+
 /*
  * Initializes array objT with predefined object types 
  * Returns 1 on successful import, 0 otherwise

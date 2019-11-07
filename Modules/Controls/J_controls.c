@@ -6,18 +6,18 @@
  * Creates a new birdType instance using its object ID
  * Returns the length of the birds array
  */ 
-int spawnBird (int oID, birdType brdT[BIRDTYPES], int n, bird birds[MAXINSTANCES], int m, int x, int y, int dir, int player) {
-    int i;
+int spawnBird (int oID, birdTypes bt, birds b, int x, int y, int dir, int player) {
+    int i, n = bt.l, m = b.l;
 
     for (i = 0; i < n; i++) {
-        if (brdT[i].o.objectID == oID) {
-            birds[m].b = brdT[i];
-            birds[m].dir = dir;
-            birds[m].velY = 0;
-            birds[m].instanceID = m;
-            birds[m].p.x = x;
-            birds[m].p.y = y;
-            birds[m].player = player;
+        if (bt.brdT[i].o.objectID == oID) {
+            b.brd[m].b = bt.brdT[i];
+            b.brd[m].dir = dir;
+            b.brd[m].velY = 0;
+            b.brd[m].instanceID = m;
+            b.brd[m].p.x = x;
+            b.brd[m].p.y = y;
+            b.brd[m].player = player;
         }
     }
 
@@ -28,15 +28,15 @@ int spawnBird (int oID, birdType brdT[BIRDTYPES], int n, bird birds[MAXINSTANCES
  * Creates a new platform instance using the passed ID
  * Returns the length of the platforms array
  */ 
-int createPlatform (int oID, objectType objT[OBJS], int n, platform plt[PLATFORMS], int m, int x, int y) {
-    int i;
+int createPlatform (int oID, objectTypes ot, platforms p, int x, int y) {
+    int i, n = ot.l, m = p.l;
 
     for (i = 0; i < n; i++) {
-        if (objT[i].objectID == oID) {
-            plt[m].instanceID = m;
-            plt[m].o = objT[i];
-            plt[m].p.x = x;
-            plt[m].p.y = y;
+        if (ot.objT[i].objectID == oID) {
+            p.plt[m].instanceID = m;
+            p.plt[m].o = ot.objT[i];
+            p.plt[m].p.x = x;
+            p.plt[m].p.y = y;
         }
     }
 
@@ -62,14 +62,14 @@ int areColliding (point p1, size s1, point p2, size s2) {
  * Returns -1 otherwise
  * yOffset lets you offset the vertical position of the bird
  */
-int platCollision (bird *b, platform plt[PLATFORMS], int n, int yOffset) {
-    int i;
+int platCollision (bird b, platforms p, int yOffset) {
+    int i, n = p.l;
 
-    b->p.y += yOffset;
+    b.p.y += yOffset;
     for (i = 0; i < n; i++) {
-        if (areColliding(b->p, b->b.o.s, plt[i].p, plt[i].o.s)) return plt[i].instanceID;
+        if (areColliding(b.p, b.b.o.s, p.plt[i].p, p.plt[i].o.s)) return p.plt[i].instanceID;
     }
-    b->p.y -= yOffset;
+    b.p.y -= yOffset;
 
     return -1;
 }
@@ -78,11 +78,11 @@ int platCollision (bird *b, platform plt[PLATFORMS], int n, int yOffset) {
  * Returns the instance ID of any bird colliding with the bird passed as param
  * Returns -1 otherwise
  */
-int birdCollision (bird *b, bird brd[MAXINSTANCES], int n) {
-    int i;
+int birdCollision (bird b, birds brds) {
+    int i, n = brds.l;
 
     for (i = 0; i < n; i++) {
-        if (areColliding(b->p, b->b.o.s, brd[n].p, brd[n].b.o.s)) return brd[n].instanceID;
+        if (areColliding(b.p, b.b.o.s, brds.brd[n].p, brds.brd[n].b.o.s)) return brds.brd[n].instanceID;
     }
 
     return -1;
@@ -94,9 +94,9 @@ int birdCollision (bird *b, bird brd[MAXINSTANCES], int n) {
  * 0 for for a tie
  * -1 if brd2 is the winner
  */
-int joust (bird *brd1, bird *brd2) {
-    if (brd1->p.y > brd2->p.y) return 1;
-    else if (brd2->p.y > brd1->p.y) return -1;
+int joust (bird brd1, bird brd2) {
+    if (brd1.p.y > brd2.p.y) return 1;
+    else if (brd2.p.y > brd1.p.y) return -1;
     else return 0;
 }
 
@@ -105,15 +105,15 @@ int joust (bird *brd1, bird *brd2) {
  * Detects collisions (initiates joust for chars colliding with mobs)
  * Detects screen edge and moves bird accordingly (TODO: add header ref for screen size)
  */
-void moveBird (bird *b, bird brd[MAXINSTANCES], int n, platform plt[PLATFORMS], int m) {
+void moveBird (bird b, birds brds, platforms p) {
     int nx, ny;
 
-    if (b->velY == 0) { /* Was on platform */
-        nx += b->b.runSpeed * b->dir; /* Run one step */
+    if (b.velY == 0) { /* Was on platform */
+        nx += b.b.runSpeed * b.dir; /* Run one step */
     }
 
-    if (platCollision(b, plt, m, -1) == 0) { /* Test if not on any platform */
-        b->velY -= b->b.glideSpeed;
+    if (platCollision(b, p, -1) == 0) { /* Test if not on any platform */
+        b.velY -= b.b.glideSpeed;
     }
 
     
