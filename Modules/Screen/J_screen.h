@@ -12,12 +12,12 @@
 /*
  * Displays all platforms
  */
-void dispPlats(platform plt[PLATFORMS], int n);
+void dispPlats(platforms p, int n);
 
 /*
  * Displays all birds
  */
-void dispBirds(b, int n);
+void dispBirds(birds bird, int n);
 
 /*
  * Displays both players lives and score
