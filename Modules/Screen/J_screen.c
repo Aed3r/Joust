@@ -4,12 +4,26 @@
 /*
  * Displays all platforms
  */
-//void dispPlats(platform plt[PLATFORMS], int n);
+void dispPlats(platforms p, int n){
+	int i = 0;
+	MLV_Image *image;
+	for(i=0;i<bird.l;i++){
+		image = MLV_load_image(p.plt[i].o.spritename);
+		MLV_draw_image(image, p.plt[i].p.x, p.plt[i].p.y);
+	}
+}
 
 /*
  * Displays all birds
  */
-//void dispBirds(birds b, int n);
+void dispBirds(birds bird, int n){
+	int i = 0;
+	MLV_Image *image;
+	for(i=0;i<bird.l;i++){
+		image = MLV_load_image(bird.brd[i].b.o.spritename);
+		MLV_draw_image(image, bird.brd[i].p.x, bird.brd[i].p.y);
+	}
+}
 
 /*
  * Displays both players lives and score
