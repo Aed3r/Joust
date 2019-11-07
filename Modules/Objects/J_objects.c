@@ -5,7 +5,14 @@
  * Returns 1 on successful import, 0 otherwise
  */ 
 int importOBJs (objectTypes o, char *filePath){
-
+	FILE *f;
+	int i = 0;
+	if((f = fopen(filePath, "r")) == NULL){
+		printf("Erreur dans l'ouverture du fichier !\n");
+		return(0);
+	}else{
+		while(fscanf(f,"%d %s %s %d %d", o.objT[i].objectID, o.objT[i].spriteName, o.objT[i].name, o.objT[i].s.width, o.objT[i].s.height) == 5) i++;
+	}
 }
 
 /*
@@ -14,20 +21,12 @@ int importOBJs (objectTypes o, char *filePath){
  */ 
 int importBirdTypes (BirdTypes b, char *filePath){
 	FILE *f;
-	int i =0;
+
 	if((f = fopen(filePath, "r")) == NULL){
 		printf("Erreur dans l'ouverture du fichier !\n");
-		exit(0);
+		return 0;
 	}else{
-		while(fscanf(f,"%d %d %d %d %d %d %d\n",b.brdT[i].b, b.brdT[i].instanceID, b.brdT[i].))
+		while(fscanf(f,"%d %f %f %f %d %d %d",b.brdT[i].o.objectID, b.brdT[i].runSpeed, b.brdT[i].gileSpeed, b.brdT[i].flapStrength, b.brdT[i].respawntime, b.brdT[i].isMob, b.brdT[i].aggressiveness) == 7) i++;
 	}
-	
-}
-
-/*
- * Initializes array plt with predefined platforms
- * Returns 1 on successful import, 0 otherwise
- */
-int importPlatforms (platforms p, char *filePath){
-
+	return 1;
 }

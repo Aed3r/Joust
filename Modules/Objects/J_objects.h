@@ -66,11 +66,6 @@ typedef struct {
 }birds;
 
 typedef struct {
-    platform plt[BIRDTYPES];
-    int l;
-}platforms;
-
-typedef struct {
     objectType objT[BIRDTYPES];
     int l;
 }objectTypes;
