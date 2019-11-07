@@ -17,7 +17,7 @@ void dispPlats(platform plt[PLATFORMS], int n);
 /*
  * Displays all birds
  */
-void dispBirds(bird brd[MAXINSTANCES], int n);
+void dispBirds(b, int n);
 
 /*
  * Displays both players lives and score
