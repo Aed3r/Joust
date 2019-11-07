@@ -13,7 +13,7 @@ int spawnBird (int oID, birdType brdT[BIRDTYPES], int n, bird birds[MAXINSTANCES
         if (brdT[i].o.objectID == oID) {
             birds[m].b = brdT[i];
             birds[m].dir = dir;
-            birds[m].flaps = 0;
+            birds[m].velY = 0;
             birds[m].instanceID = m;
             birds[m].p.x = x;
             birds[m].p.y = y;
@@ -60,13 +60,16 @@ int areColliding (point p1, size s1, point p2, size s2) {
 /*
  * Returns the instance ID of any platform colliding with the bird passed as param
  * Returns -1 otherwise
+ * yOffset lets you offset the vertical position of the bird
  */
-int platCollision (bird *b, platform plt[PLATFORMS], int n) {
+int platCollision (bird *b, platform plt[PLATFORMS], int n, int yOffset) {
     int i;
 
+    b->p.y += yOffset;
     for (i = 0; i < n; i++) {
         if (areColliding(b->p, b->b.o.s, plt[i].p, plt[i].o.s)) return plt[i].instanceID;
     }
+    b->p.y -= yOffset;
 
     return -1;
 }
@@ -102,7 +105,19 @@ int joust (bird *brd1, bird *brd2) {
  * Detects collisions (initiates joust for chars colliding with mobs)
  * Detects screen edge and moves bird accordingly (TODO: add header ref for screen size)
  */
-void moveBird (bird *b, bird brd[MAXINSTANCES], platform plt[PLATFORMS]);
+void moveBird (bird *b, bird brd[MAXINSTANCES], int n, platform plt[PLATFORMS], int m) {
+    int nx, ny;
+
+    if (b->velY == 0) { /* Was on platform */
+        nx += b->b.runSpeed * b->dir; /* Run one step */
+    }
+
+    if (platCollision(b, plt, m, -1) == 0) { /* Test if not on any platform */
+        b->velY -= b->b.glideSpeed;
+    }
+
+    
+}
 
 /*
  * Updates the position of a player controlled bird

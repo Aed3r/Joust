@@ -40,7 +40,7 @@ typedef struct {
     int instanceID; /* Positive */
     point p;
     int dir; /* Facing left: -1; right: 1 */
-    int flaps; /* Amount of flap presses */
+    int velY; /* Vertical velocity */
     int player; /* Player 1's or 2's bird. -1 if it's a mob */
 } bird; /* Instance of a bird type */
 
