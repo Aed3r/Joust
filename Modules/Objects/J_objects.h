@@ -69,6 +69,12 @@ typedef struct {
     objectType objT[BIRDTYPES];
     int l;
 }objectTypes;
+
+typedef struct{
+    objectType o;
+    int instanceID;
+    point p;
+}platforms;
 /*
  * Initializes array objT with predefined object types 
  * Returns 1 on successful import, 0 otherwise
