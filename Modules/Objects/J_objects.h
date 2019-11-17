@@ -63,12 +63,12 @@ typedef struct {
 }birdTypes;
 
 typedef struct {
-    bird brd[BIRDTYPES];
+    bird brd[MAXINSTANCES];
     int l;
 }birds;
 
 typedef struct {
-    objectType objT[BIRDTYPES];
+    objectType objT[OBJS];
     int l;
 }objectTypes;
 
@@ -87,6 +87,6 @@ int importOBJs (objectTypes *o, char *filePath);
  * Initializes array brdT with predefined bird types
  * Returns 1 on successful import, 0 otherwise
  */ 
-int importBirdTypes (birdTypes *b, char *filePath);
+int importBirdTypes (birdTypes *b, objectTypes *o, char *filePath);
 
 #endif
