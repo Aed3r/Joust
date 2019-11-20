@@ -7,19 +7,22 @@
  * Returns the length of the birds array
  */ 
 int spawnBird (int oID, birdTypes bt, birds b, int x, int y, int dir, int player) {
-    int i, n = bt.l, m = b.l;
+    int i = 0, n = bt.l, m = b.l;
 
-    for (i = 0; i < n; i++) {
-        if (bt.brdT[i].o.objectID == oID) {
-            b.brd[m].b = bt.brdT[i];
-            b.brd[m].dir = dir;
-            b.brd[m].velY = 0;
-            b.brd[m].instanceID = m;
-            b.brd[m].p.x = x;
-            b.brd[m].p.y = y;
-            b.brd[m].player = player;
-        }
-    }
+    /* Search the object corresponding to the passed id */
+    while (i < n && bt.brdT[i].o.objectID != oID) i++;
+
+    /* Test if the passed id couldn't be found */
+    if (bt.brdT[i].o.objectID != oID) return -1;
+
+    /* Set bird instance parameters */
+    b.brd[m].b = bt.brdT[i];
+    b.brd[m].dir = dir;
+    b.brd[m].velY = 0;
+    b.brd[m].instanceID = m;
+    b.brd[m].p.x = x;
+    b.brd[m].p.y = y;
+    b.brd[m].player = player;
 
     return m + 1;
 }
@@ -28,17 +31,20 @@ int spawnBird (int oID, birdTypes bt, birds b, int x, int y, int dir, int player
  * Creates a new platform instance using the passed ID
  * Returns the length of the platforms array
  */ 
-int createPlatform (int oID, objectTypes ot, platforms p, int x, int y) {
-    int i, n = ot.l, m = p.l;
+int createPlatform (int oID, objectTypes ot, platforms *p, int x, int y) {
+    int i = 0, n = ot.l, m = p->l;
 
-    for (i = 0; i < n; i++) {
-        if (ot.objT[i].objectID == oID) {
-            p.plt[m].instanceID = m;
-            p.plt[m].o = ot.objT[i];
-            p.plt[m].p.x = x;
-            p.plt[m].p.y = y;
-        }
-    }
+    /* Search the object corresponding to the passed id */
+    while (i < n && ot.objT[i].objectID != oID) i++;
+
+    /* Test if the passed id couldn't be found */
+    if (ot.objT[i].objectID != oID) return -1;
+
+    /* Set platform instance parameters */
+    p->plt[m].instanceID = m;
+    p->plt[m].o = ot.objT[i];
+    p->plt[m].p.x = x;
+    p->plt[m].p.y = y;
 
     return m + 1;
 }
@@ -48,9 +54,11 @@ int createPlatform (int oID, objectTypes ot, platforms p, int x, int y) {
  */
 int areColliding (point p1, size s1, point p2, size s2) {
     int xCollides = 0, yCollides = 0;
+    /* Tests for a potential collision on the x axis */
     if ((p1.x > p2.x && p1.x < p2.x + s2.width) ||
         (p1.x + s1.width > p2.x && p1.x + s1.width < p2.x + s2.width)) xCollides = 1;
 
+    /* Tests for a potential collision on the y axis */
     if ((p1.y > p2.y && p1.y < p2.y + s2.height) ||
         (p1.y + s1.height > p2.y && p1.y + s1.height < p2.y + s2.height)) yCollides = 1;   
 
@@ -60,7 +68,7 @@ int areColliding (point p1, size s1, point p2, size s2) {
 /*
  * Returns the instance ID of any platform colliding with the bird passed as param
  * Returns -1 otherwise
- * yOffset lets you offset the vertical position of the bird
+ * yOffset lets you offset the vertical position of the bird (for testing relative positions)
  */
 int platCollision (bird b, platforms p, int yOffset) {
     int i, n = p.l;
@@ -118,7 +126,7 @@ void moveBird (bird b, birds brds, platforms p) {
 
     if (platCollision(b, p, -1)) { /* Test if is on platform */
         b.velY = 0;
-        b.p.x = /* Snap to platform */
+        /* Snap to platform */
     } else {
         b.velY -= b.b.glideSpeed;
     }

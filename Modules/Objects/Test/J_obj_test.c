@@ -1,4 +1,4 @@
-#include "obj_test.h"
+#include "J_obj_test.h"
 #include "../J_objects.h"
 
 /* Affiche tous les attributs de tous les types d'objets */
