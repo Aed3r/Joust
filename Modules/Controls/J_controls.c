@@ -7,7 +7,7 @@
  * Returns the length of the birds array
  */ 
 int spawnBird (int oID, birdTypes bt, birds *b, int x, int y, int dir, int player) {
-    int i = 0, n = bt.l, m = b.l;
+    int i = 0, n = bt.l, m = b->l;
 
     /* Search the object corresponding to the passed id */
     while (i < n && bt.brdT[i].o.objectID != oID) i++;
@@ -117,21 +117,21 @@ void moveBird (bird *b, birds brds, platforms p) {
     int ox = b->p.x, oy = b->p.y;
 
     if (b->velY == 0) { /* On platform */
-        b->p.x += b->b->runSpeed * b->dir;
+        b->p.x += b->b.runSpeed * b->dir;
         b->p.y = b->p.y;
     } else { /* In air */
         b->p.x = b->p.x + b->b.glideSpeed * b->dir;
         b->p.y = b->p.y + b->velY;
     }
 
-    if (platCollision(b, p, -1)) { /* Test if is on platform */
+    if (platCollision(*b, p, -1)) { /* Test if is on platform */
         b->velY = 0;
         /* Snap to platform */
     } else {
         b->velY -= b->b.glideSpeed;
     }
 
-    if(platCollision(b, p, 0)) {
+    if(platCollision(*b, p, 0)) {
 
     }
 
