@@ -9,7 +9,7 @@
  * Creates a new birdType instance using object ID
  * Returns the length of the birds array
  */ 
-int spawnBird (int oID, birdTypes bt, birds b, int x, int y, int dir, int player);
+int spawnBird (int oID, birdTypes bt, birds *b, int x, int y, int dir, int player);
 
 /*
  * Creates a new platform instance using the passed ID
@@ -48,7 +48,7 @@ int joust(bird brd1, bird brd2);
  * Detects collisions (initiates joust for chars colliding with mobs)
  * Detects screen edge and moves bird accordingly (TODO: add header ref for screen size)
  */
-void moveBird (bird b, birds brds, platforms p) {
+void moveBird (bird *b, birds brds, platforms p) {
 
 /*
  * Updates the position of a player controlled bird

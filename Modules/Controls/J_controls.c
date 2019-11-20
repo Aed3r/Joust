@@ -6,7 +6,7 @@
  * Creates a new birdType instance using its object ID
  * Returns the length of the birds array
  */ 
-int spawnBird (int oID, birdTypes bt, birds b, int x, int y, int dir, int player) {
+int spawnBird (int oID, birdTypes bt, birds *b, int x, int y, int dir, int player) {
     int i = 0, n = bt.l, m = b.l;
 
     /* Search the object corresponding to the passed id */
@@ -16,13 +16,13 @@ int spawnBird (int oID, birdTypes bt, birds b, int x, int y, int dir, int player
     if (bt.brdT[i].o.objectID != oID) return -1;
 
     /* Set bird instance parameters */
-    b.brd[m].b = bt.brdT[i];
-    b.brd[m].dir = dir;
-    b.brd[m].velY = 0;
-    b.brd[m].instanceID = m;
-    b.brd[m].p.x = x;
-    b.brd[m].p.y = y;
-    b.brd[m].player = player;
+    b->brd[m].b = bt.brdT[i];
+    b->brd[m].dir = dir;
+    b->brd[m].velY = 0;
+    b->brd[m].instanceID = m;
+    b->brd[m].p.x = x;
+    b->brd[m].p.y = y;
+    b->brd[m].player = player;
 
     return m + 1;
 }
@@ -113,22 +113,22 @@ int joust (bird brd1, bird brd2) {
  * Detects collisions (initiates joust for chars colliding with mobs)
  * Detects screen edge and moves bird accordingly (TODO: add header ref for screen size)
  */
-void moveBird (bird b, birds brds, platforms p) {
-    int ox = b.p.x, oy = b.p.y;
+void moveBird (bird *b, birds brds, platforms p) {
+    int ox = b->p.x, oy = b->p.y;
 
-    if (b.velY == 0) { /* On platform */
-        b.p.x = b.p.x + b.b.runSpeed * b.dir;
-        b.p.y = b.p.y;
+    if (b->velY == 0) { /* On platform */
+        b->p.x += b->b->runSpeed * b->dir;
+        b->p.y = b->p.y;
     } else { /* In air */
-        b.p.x = b.p.x + b.b.glideSpeed * b.dir;
-        b.p.y = b.p.y + b.velY;
+        b->p.x = b->p.x + b->b.glideSpeed * b->dir;
+        b->p.y = b->p.y + b->velY;
     }
 
     if (platCollision(b, p, -1)) { /* Test if is on platform */
-        b.velY = 0;
+        b->velY = 0;
         /* Snap to platform */
     } else {
-        b.velY -= b.b.glideSpeed;
+        b->velY -= b->b.glideSpeed;
     }
 
     if(platCollision(b, p, 0)) {
