@@ -106,17 +106,28 @@ int joust (bird brd1, bird brd2) {
  * Detects screen edge and moves bird accordingly (TODO: add header ref for screen size)
  */
 void moveBird (bird b, birds brds, platforms p) {
-    int nx, ny;
+    int ox = b.p.x, oy = b.p.y;
 
-    if (b.velY == 0) { /* Was on platform */
-        nx += b.b.runSpeed * b.dir; /* Run one step */
+    if (b.velY == 0) { /* On platform */
+        b.p.x = b.p.x + b.b.runSpeed * b.dir;
+        b.p.y = b.p.y;
+    } else { /* In air */
+        b.p.x = b.p.x + b.b.glideSpeed * b.dir;
+        b.p.y = b.p.y + b.velY;
     }
 
-    if (platCollision(b, p, -1) == 0) { /* Test if not on any platform */
+    if (platCollision(b, p, -1)) { /* Test if is on platform */
+        b.velY = 0;
+        b.p.x = /* Snap to platform */
+    } else {
         b.velY -= b.b.glideSpeed;
     }
 
-    
+    if(platCollision(b, p, 0)) {
+
+    }
+
+
 }
 
 /*
