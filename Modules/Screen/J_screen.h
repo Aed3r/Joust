@@ -8,6 +8,7 @@
 
 #define MAXMSGCHARS 200
 #define MAXMENUCHARS 50
+#define SCREENSIZE 900
 
 /*
  * Displays all platforms
@@ -22,7 +23,7 @@ void dispBirds(birds bird, int n);
 /*
  * Displays both players lives and score
  */
-void dispStatus(bird brd[MAXINSTANCES], int n);
+void dispStatus(int nbjr, int score1, int score2, int vie1, int vie2);
 
 /*
  * Displays the message passed as parameter
