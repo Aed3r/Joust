@@ -1,34 +1,54 @@
-#include <MLV/MLV_all.h>
-#include <string.h>
 #include "J_screen.h"
+
+/*
+ * Loads the image with the given fileName
+ */
+MLV_Image* loadImage(char *fileName) {
+	MLV_Image *tmpImg;
+	FILE *file;
+	char path[100];
+
+	strcpy(path, "Data/Sprites/");
+	strcat(path, fileName);
+
+    if ((file = fopen(path, "r"))) {
+        fclose(file);
+        tmpImg = MLV_load_image(path);
+		return tmpImg;
+    }
+    return 0;
+}
 
 /*
  * Displays all platforms
  */
-void dispPlats(platforms p, int n){
+void dispPlats(platforms p){
 	int i = 0;
 	MLV_Image *image;
-	for(i=0;i<platforms.l;i++){
-		image = MLV_load_image(p.plt[i].o.spriteName); /*Charge l'image qui correspond a celle de notre Plateforme*/
+	for(i=0;i<p.l;i++){
+		image = loadImage(p.plt[i].o.spriteName); /*Charge l'image qui correspond a celle de notre Plateforme*/
 		MLV_draw_image(image, p.plt[i].p.x, p.plt[i].p.y);
+		MLV_free_image(image);
 	}
 }
 
 /*
  * Displays all birds
  */
-void dispBirds(birds bird, int n){
+void dispBirds(birds bird){
 	int i = 0;
 	MLV_Image *image;
 	for(i=0;i<bird.l;i++){
-		image = MLV_load_image(bird.brd[i].b.o.spriteName);/*On charge l'image qui correspond a notre oiseau*/
+		image = loadImage(bird.brd[i].b.o.spriteName); /*On charge l'image qui correspond a notre oiseau*/
 		MLV_draw_image(image, bird.brd[i].p.x, bird.brd[i].p.y);
+		MLV_free_image(image);
 	}
 }
 
 /*
  * Displays both players lives and score
  */
+/*
 void dispStatus(int nbjr, int score1, int score2, int vie1, int vie2){
 	int taille_interligne = 9;
 	char *player1, *player2;
@@ -42,19 +62,20 @@ void dispStatus(int nbjr, int score1, int score2, int vie1, int vie2){
 		);
 
 }
+*/
 /*
  * Displays the message passed as parameter
  */
-//void dispText(char msg[MAXMSGCHARS], int length);
+void dispText(char msg[MAXMSGCHARS], int length);
 
 /*
  * Displays the current frame according to the games state
  */
-//void dispFrame(platform plt[PLATFORMS], int n, bird brd[MAXINSTANCES], int m);
+void dispFrame(platforms p, birds b);
 
 /*
  * Displays a menu with buttons passed as parameters
  * Returns the index of the clicked button
  * Can display an image if given a valid path
  */
-//int dispMenu(char *button[MAXMENUCHARS], char *imgPath);
+int dispMenu(char *button[MAXMENUCHARS], char *imgPath);

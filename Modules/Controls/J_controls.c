@@ -1,6 +1,7 @@
 #include <stdlib.h>
 
 #include "../Objects/J_objects.h"
+#include "../values.h"
 
 /*
  * Creates a new birdType instance using its object ID
@@ -24,6 +25,8 @@ int spawnBird (int oID, birdTypes bt, birds *b, int x, int y, int dir, int playe
     b->brd[m].p.y = y;
     b->brd[m].player = player;
 
+    b->l++;
+
     return m + 1;
 }
 
@@ -45,6 +48,8 @@ int createPlatform (int oID, objectTypes ot, platforms *p, int x, int y) {
     p->plt[m].o = ot.objT[i];
     p->plt[m].p.x = x;
     p->plt[m].p.y = y;
+
+    p->l++;
 
     return m + 1;
 }
@@ -90,6 +95,7 @@ int birdCollision (bird b, birds brds) {
     int i, n = brds.l;
 
     for (i = 0; i < n; i++) {
+        printf("b\n");
         if (areColliding(b.p, b.b.o.s, brds.brd[n].p, brds.brd[n].b.o.s)) return brds.brd[n].instanceID;
     }
 

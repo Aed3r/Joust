@@ -2,11 +2,9 @@
 #define OBJECTS
 
 #include <stdlib.h>
+#include <stdio.h>
 
-#define OBJS 20
-#define BIRDTYPES 20
-#define PLATFORMS 6
-#define MAXINSTANCES 50
+#include "../values.h"
 
 typedef struct {
     int x;

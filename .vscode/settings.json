@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "mlv_all.h": "c",
+        "j_objects.h": "c",
+        "j_controls.h": "c"
+    }
+}

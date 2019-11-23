@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #include "../Objects/J_objects.h"
+#include "../values.h"
 
 /*
  * Creates a new birdType instance using object ID
@@ -15,7 +16,7 @@ int spawnBird (int oID, birdTypes bt, birds *b, int x, int y, int dir, int playe
  * Creates a new platform instance using the passed ID
  * Returns the length of the platforms array
  */ 
-int createPlatform (int oID, objectTypes ot, platforms *p, int x, int y) {
+int createPlatform (int oID, objectTypes ot, platforms *p, int x, int y);
 
 /*
  * Returns 1 if two rectangles defined by (p1, s1) and (p2, s2) collide
@@ -48,7 +49,7 @@ int joust(bird brd1, bird brd2);
  * Detects collisions (initiates joust for chars colliding with mobs)
  * Detects screen edge and moves bird accordingly (TODO: add header ref for screen size)
  */
-void moveBird (bird *b, birds brds, platforms p) {
+void moveBird (bird *b, birds brds, platforms p);
 
 /*
  * Updates the position of a player controlled bird

@@ -1,5 +1,8 @@
 CC = gcc
-OPTIONS = -W -Wall -std=c89 -pedantic -O3 -I
+CFLAGS = -DDEBUG -g -W -Wall -std=c89 -pedantic -O3 -I `pkg-config --cflags MLV`
+LDFLAGS = `pkg-config --libs-only-other --libs-only-L MLV`
+LDLIBS=`pkg-config --libs-only-l MLV`
+
 all:
 	+$(MAKE) -C Modules/Objects
 	+$(MAKE) -C Modules/Controls
