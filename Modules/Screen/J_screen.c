@@ -1,6 +1,21 @@
 #include "J_screen.h"
 
 /*
+ * Create a formated string and put it in a char * varable printf style
+ */
+static int vspfunc(char *str, char *format, ...){
+	va_list aptr;
+	int ret;
+
+	va_start(aptr, format);
+	ret = vsprintf(str, format, aptr);
+	va_end(aptr);
+
+	return ret;
+}
+
+
+/*
  * Loads the image with the given fileName
  */
 MLV_Image* loadImage(char *fileName) {
@@ -48,21 +63,21 @@ void dispBirds(birds bird){
 /*
  * Displays both players lives and score
  */
-/*
+
 void dispStatus(int nbjr, int score1, int score2, int vie1, int vie2){
 	int taille_interligne = 9;
-	char *player1, *player2;
-	asprintf(%player1, "PLayer 1 : %d life \nScore : %d",vie1,score1);
-	asprintf(%player2, "PLayer 2 : %d life \nScore : %d",vie2,score2);
+	char player1[50], player2[50];
+	vspfunc(player1, "PLayer 1 : %d life \nScore : %d", vie1, score1);
+	printf(player1);
+	vspfunc(player2, "PLayer 2 : %d life \nScore : %d", vie1, score1);
 	MLV_draw_adapted_text_box(
-		10, 10,
+		10, 50,
 		player1, taille_interligne,
 		MLV_COLOR_RED, MLV_COLOR_WHITE, MLV_COLOR_BLACK,
 		MLV_TEXT_LEFT
 		);
-
 }
-*/
+
 /*
  * Displays the message passed as parameter
  */
