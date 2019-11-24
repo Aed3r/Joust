@@ -60,6 +60,8 @@ int main() {
     birdTypes bT;
     birds b;
     platforms p;
+    int done = 0, i;
+
     b.l = 0;
     p.l = 0;
     MLV_create_window("Joust", NULL, SCREENWIDTH, SCREENHEIGHT);
@@ -73,9 +75,9 @@ int main() {
 
     /* CONTROLS CREATION TEST */
     createPlatform(1, oT, &p, 500, 500);
-    spawnBird(2, bT, &b, 500, 450, 1, -1);
-    spawnBird(3, bT, &b, 550, 460, 1, 1);
-    spawnBird(3, bT, &b, 490, 440, 1, 1);
+    spawnBird(2, bT, &b, 500, 350, 1, -1);
+    spawnBird(3, bT, &b, 550, 360, 1, 1);
+    spawnBird(3, bT, &b, 490, 340, 1, 1);
 
     printP(&p);
     printB(&b);
@@ -92,6 +94,12 @@ int main() {
 
     MLV_wait_keyboard_or_mouse(NULL, NULL, NULL, NULL, NULL);
 
+    /* CONTROLS PHYSICS TEST */
+
+    while(done != 1) {
+        for (i = 0; i < b.l; i++) moveBird(&b.brd[i], b, p);
+        MLV_actualise_window();
+    }
 
     MLV_free_window();
     exit(0);

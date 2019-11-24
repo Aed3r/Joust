@@ -95,8 +95,9 @@ int birdCollision (bird b, birds brds) {
     int i, n = brds.l;
 
     for (i = 0; i < n; i++) {
-        printf("b\n");
-        if (areColliding(b.p, b.b.o.s, brds.brd[n].p, brds.brd[n].b.o.s)) return brds.brd[n].instanceID;
+        if(brds.brd[i].instanceID != b.instanceID) {
+            if (areColliding(b.p, b.b.o.s, brds.brd[i].p, brds.brd[i].b.o.s)) return brds.brd[i].instanceID;
+        }
     }
 
     return -1;
