@@ -1,2 +1,2 @@
-Modules/Objects/obj_test
-Modules/Objects/*.o
+Modules/*/*.o
+test
