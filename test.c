@@ -84,6 +84,7 @@ int main() {
     dispPlats(p);
     dispBirds(b);
     MLV_actualise_window();
+    dispStatus(2, 100, 150, 3, 2);
 
     /* CONTROLS COLLISION TEST */
     printf("Platform collision Blue: %d\n", platCollision(b.brd[0], p, 0));

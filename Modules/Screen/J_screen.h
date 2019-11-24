@@ -1,8 +1,8 @@
 #ifndef SCREEN
 #define SCREEN
 
-#include <stdlib.h>
-#include <string.h>
+#include <stdio.h>
+#include <stdarg.h>
 #include <MLV/MLV_all.h>
 
 #include "../Objects/J_objects.h"
