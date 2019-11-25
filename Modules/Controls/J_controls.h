@@ -2,6 +2,7 @@
 #define CONTROLS
 
 #include <stdlib.h>
+#include <math.h>
 
 #include "../Objects/J_objects.h"
 #include "../values.h"
