@@ -25,7 +25,7 @@ int areColliding (point p1, size s1, point p2, size s2);
 /*
  * Returns the instance ID of any platform colliding with the bird passed as param
  * Returns -1 otherwise
- * yOffset lets you offset the vertical position of the bird
+* yOffset lets you test for relative positions
  */
 int platCollision (bird b, platforms p, int yOffset);
 
@@ -48,7 +48,7 @@ int joust(bird brd1, bird brd2);
  * Detects collisions (initiates joust for chars colliding with mobs)
  * Detects screen edge and moves bird accordingly (TODO: add header ref for screen size)
  */
-void moveBird (bird *b, birds brds, platforms p) {
+void moveBird (bird *b, birds brds, platforms p);
 
 /*
  * Updates the position of a player controlled bird

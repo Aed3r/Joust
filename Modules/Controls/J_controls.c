@@ -18,7 +18,8 @@ int spawnBird (int oID, birdTypes bt, birds *b, int x, int y, int dir, int playe
     /* Set bird instance parameters */
     b->brd[m].b = bt.brdT[i];
     b->brd[m].dir = dir;
-    b->brd[m].velY = 0;
+    b->brd[m].hVel = 0;
+    b->brd[m].vVel = 0;
     b->brd[m].instanceID = m;
     b->brd[m].p.x = x;
     b->brd[m].p.y = y;
@@ -68,7 +69,7 @@ int areColliding (point p1, size s1, point p2, size s2) {
 /*
  * Returns the instance ID of any platform colliding with the bird passed as param
  * Returns -1 otherwise
- * yOffset lets you offset the vertical position of the bird (for testing relative positions)
+ * yOffset lets you test for relative positions
  */
 int platCollision (bird b, platforms p, int yOffset) {
     int i, n = p.l;
@@ -77,7 +78,7 @@ int platCollision (bird b, platforms p, int yOffset) {
     for (i = 0; i < n; i++) {
         if (areColliding(b.p, b.b.o.s, p.plt[i].p, p.plt[i].o.s)) return p.plt[i].instanceID;
     }
-    b.p.y -= yOffset;
+    b.p.y -= yOffset; /* TODO: test if important here */
 
     return -1;
 }
@@ -109,39 +110,34 @@ int joust (bird brd1, bird brd2) {
 }
 
 /*
- * Calculates the next x and y coordinates for any bird only using bird properties
+ * Calculates the next x and y coordinates for any bird using its properties only
  * Detects collisions (initiates joust for chars colliding with mobs)
  * Detects screen edge and moves bird accordingly (TODO: add header ref for screen size)
+ * TODO: currently assumes only one collision at a time
  */
 void moveBird (bird *b, birds brds, platforms p) {
-    int ox = b->p.x, oy = b->p.y;
+    /* We save the birds original position so as to roll it back when needed */
+    int oX = b->p.x, oY = b->p.y;
+    int tmpID, i;
 
-    if (b->velY == 0) { /* On platform */
-        b->p.x += b->b.runSpeed * b->dir;
-        b->p.y = b->p.y;
-    } else { /* In air */
-        b->p.x = b->p.x + b->b.glideSpeed * b->dir;
-        b->p.y = b->p.y + b->velY;
-    }
+    /* Set new positions now. Check problems later */
+    b->p.x += b->hVel;
+    b->p.y += b->vVel;
 
-    if (platCollision(*b, p, -1)) { /* Test if is on platform */
-        b->velY = 0;
-        /* Snap to platform */
+    if ((tmpID = platCollision(*b, p, 0)) == -1) {
+        /* Falling */
+        b->vVel -= b->b.vSpeed;
     } else {
-        b->velY -= b->b.glideSpeed;
+        /* Colliding */
     }
-
-    if(platCollision(*b, p, 0)) {
-
-    }
-
-
 }
 
 /*
  * Updates the position of a player controlled bird
  */
-void updateCharPos (bird *b, bird brd[MAXINSTANCES], platform plt[PLATFORMS]);
+void updateCharPos (bird *b, bird brd[MAXINSTANCES], platform plt[PLATFORMS]) {
+    /* TODO: update hVel if on ground only, unless there's a change of direction. Test what hVel becomes in that case */
+}
 
 /*
  * Updates a mobs position using "AI"

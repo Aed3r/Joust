@@ -27,8 +27,8 @@ typedef struct {
 
 typedef struct {
     objectType o;
-    float runSpeed;
-    float glideSpeed;
+    float hSpeed; /* Horizontal Speed */
+    float vSpeed; /* Vertical Speed */
     float flapStrength; /* Height reached with one flap press */
     int respawnTime; /* Seconds before the bird respawns (mob: egg, character: platform) */
     int isMob; /*0 = Player, 1 = Mob*/
@@ -40,7 +40,8 @@ typedef struct {
     int instanceID; /* Positive */
     point p;
     int dir; /* Facing left: -1; right: 1 */
-    int velY; /* Vertical velocity */
+    int hVel; /* Horizontal velocity */
+    int vVel; /* Vertical velocity */
     int player; /* Player 1's or 2's bird. -1 if it's a mob */
 } bird; /* Instance of a bird type */
 

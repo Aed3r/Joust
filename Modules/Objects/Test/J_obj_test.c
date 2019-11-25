@@ -19,10 +19,10 @@ void printBRDs(birdTypes *b) {
 
     printf("Loaded Birds :\n");
     for (i = 0; i < b->l; i++) {
-        printf(" - ID: %d ; Sprite: %s; Name: %s; Width: %d; Height: %d; runSpeed: %f; glideSpeed: %f; flapStrength: %f; respawnTime: %d; isMob: %d; aggressiveness: %d\n",
+        printf(" - ID: %d ; Sprite: %s; Name: %s; Width: %d; Height: %d; hSpeed: %f; vSpeed: %f; flapStrength: %f; respawnTime: %d; isMob: %d; aggressiveness: %d\n",
             b->brdT[i].o.objectID, b->brdT[i].o.spriteName, b->brdT[i].o.name, 
             b->brdT[i].o.s.width, b->brdT[i].o.s.height,
-            b->brdT[i].runSpeed, b->brdT[i].glideSpeed, b->brdT[i].flapStrength, 
+            b->brdT[i].hSpeed, b->brdT[i].vSpeed, b->brdT[i].flapStrength, 
             b->brdT[i].respawnTime, b->brdT[i].isMob, b->brdT[i].aggressiveness);
     }
 }
