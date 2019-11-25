@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #include "J_objects.h"
 
 /*

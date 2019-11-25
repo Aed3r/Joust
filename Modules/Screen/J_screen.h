@@ -1,24 +1,22 @@
 #ifndef SCREEN
 #define SCREEN
 
-#include <stdlib.h>
+#include <stdio.h>
+#include <stdarg.h>
 #include <MLV/MLV_all.h>
 
 #include "../Objects/J_objects.h"
-
-#define MAXMSGCHARS 200
-#define MAXMENUCHARS 50
-#define SCREENSIZE 900
+#include "../values.h"
 
 /*
  * Displays all platforms
  */
-void dispPlats(platforms p, int n);
+void dispPlats(platforms p);
 
 /*
  * Displays all birds
  */
-void dispBirds(birds bird, int n);
+void dispBirds(birds bird);
 
 /*
  * Displays both players lives and score
@@ -28,12 +26,12 @@ void dispStatus(int nbjr, int score1, int score2, int vie1, int vie2);
 /*
  * Displays the message passed as parameter
  */
-void dispText(char msg[MAXMSGCHARS], int length);
+void dispText(char msg[MAXMSGCHARS]);
 
 /*
  * Displays the current frame according to the games state
  */
-void dispFrame(platform plt[PLATFORMS], int n, bird brd[MAXINSTANCES], int m);
+void dispFrame(platforms p, birds b, char statlist[5]);
 
 /*
  * Displays a menu with buttons passed as parameters
