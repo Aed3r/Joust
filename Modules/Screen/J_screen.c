@@ -8,7 +8,7 @@ static int vspfunc(char *str, char *format, ...){
 	int ret;
 
 	va_start(aptr, format);
-	ret = vsprintf(str, format, aptr);
+	ret = vsprintf(str, format, aptr); 
 	va_end(aptr);
 
 	return ret;
@@ -65,32 +65,58 @@ void dispBirds(birds bird){
  */
 
 void dispStatus(int nbjr, int score1, int score2, int vie1, int vie2){
-	int taille_interligne = 9;
+	int taille_interligne = 9, widthtxt, heightxt;
 	char player1[50], player2[50];
-	vspfunc(player1, "PLayer 1 : %d life \nScore : %d", vie1, score1);
-	printf(player1);
-	vspfunc(player2, "PLayer 2 : %d life \nScore : %d", vie1, score1);
-	MLV_draw_adapted_text_box(
-		10, 50,
-		player1, taille_interligne,
+	MLV_Font* font = MLV_load_font( "Data/Files/BebasNeue-Regular.ttf" , 20 );
+	vspfunc(player1, "Player 1 : %d life \nScore : %d", vie1, score1);
+	MLV_draw_adapted_text_box_with_font(
+		10, 10,
+		player1, font,taille_interligne,
 		MLV_COLOR_RED, MLV_COLOR_WHITE, MLV_COLOR_BLACK,
 		MLV_TEXT_LEFT
 		);
+	if(nbjr > 1){
+		vspfunc(player2, "Player 2 : %d life \nScore : %d", vie1, score1);
+		MLV_get_size_of_text("Player 2 : 3 life        ", &widthtxt, &heightxt);
+		MLV_draw_adapted_text_box_with_font(
+			(SCREENWIDTH - widthtxt), 10,
+			player2, font, taille_interligne,
+			MLV_COLOR_RED, MLV_COLOR_WHITE, MLV_COLOR_BLACK,
+			MLV_TEXT_LEFT
+		);
+	}
 }
 
 /*
  * Displays the message passed as parameter
+ * Pour ce faire on crée une boite de texte qui recouvre tout l'écran avec
+ * un message centré dans la boite (passé en paramètre)
  */
-void dispText(char msg[MAXMSGCHARS], int length);
+void dispText(char msg[MAXMSGCHARS]){
+	MLV_Font* font = MLV_load_font( "Data/Files/BebasNeue-Regular.ttf" , 30);
+	MLV_draw_text_box_with_font( 
+		0,0,
+		SCREENWIDTH,SCREENHEIGHT,
+		msg, font, 9,
+		MLV_COLOR_RED, MLV_COLOR_WHITE, MLV_COLOR_BLACK,
+		MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER
+		);
+}
 
 /*
  * Displays the current frame according to the games state
  */
-void dispFrame(platforms p, birds b);
+void dispFrame(platforms p, birds b, char statList[5]){
+	dispPlats(p);
+	dispBirds(b);
+	dispStatus(statList[0],statList[1],statList[2],statList[3],statList[4]);
+}
 
 /*
  * Displays a menu with buttons passed as parameters
  * Returns the index of the clicked button
  * Can display an image if given a valid path
  */
-int dispMenu(char *button[MAXMENUCHARS], char *imgPath);
+int dispMenu(char *button[MAXMENUCHARS], char *imgPath){
+	
+}

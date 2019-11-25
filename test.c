@@ -85,8 +85,11 @@ int main() {
     /* SCREEN TEST */
     dispPlats(p);
     dispBirds(b);
-    MLV_actualise_window();
     dispStatus(2, 100, 150, 3, 2);
+    MLV_actualise_window();
+    MLV_wait_seconds(5);
+    dispText("Test sur un très long text qui est très très long\nWow c'est long oh mon dieu");
+    MLV_actualise_window();    
 
     /* CONTROLS COLLISION TEST */
     printf("Platform collision Blue: %d\n", platCollision(b.brd[0], p, 0));

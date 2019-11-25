@@ -26,12 +26,12 @@ void dispStatus(int nbjr, int score1, int score2, int vie1, int vie2);
 /*
  * Displays the message passed as parameter
  */
-void dispText(char msg[MAXMSGCHARS], int length);
+void dispText(char msg[MAXMSGCHARS]);
 
 /*
  * Displays the current frame according to the games state
  */
-void dispFrame(platforms p, birds b);
+void dispFrame(platforms p, birds b, char statlist[5]);
 
 /*
  * Displays a menu with buttons passed as parameters
