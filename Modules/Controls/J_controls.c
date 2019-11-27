@@ -79,9 +79,21 @@ int areColliding (point p1, size s1, point p2, size s2) {
 }
 
 /*
- * Handle a birds parameters at their death */
+ * Handle a birds parameters at their death 
+ */
 int handleDeath (bird *b) {
-    
+    /* Get time of death */
+    b->deathTime = MLV_get_time(); 
+
+    if (b->b.isMob == 0) {
+        /* Hide player bird at screen edge */
+        b->p.x = SCREENWIDTH; 
+        b->p.y = SCREENWIDTH;
+    } /* Mobs "transform" into eggs and stay at the same place
+
+    /* Reset velocities */
+    b->hVel = 0;
+    b->vVel = 0;
 }
 
 /*
@@ -144,8 +156,6 @@ int birdCollision (bird b, birds brds) {
     return -1;
 }
 
-
-
 /*
  * Returns the result of a joust:
  * 1 if brd1 is the winner
@@ -164,8 +174,6 @@ int joust (bird brd1, bird brd2) {
  * Detects screen edge and moves bird accordingly (TODO: add header ref for screen size)
  */
 void moveBird (bird *b, birds *brds, platforms p) {
-    /* We save the birds original position so as to roll it back when needed */
-    int oX = b->p.x, oY = b->p.y;
     int tmpID, i, tmpVal;
 
     /* Set new positions now. Check for problems later */
@@ -181,27 +189,19 @@ void moveBird (bird *b, birds *brds, platforms p) {
             tmpVal = joust(*b, brds->brd[i]); /* Get Joust result */
             if (tmpVal == 0) { /* Tie. Simply bounce off both birds */
                 b->hVel *= -1;
+                b->dir *= -1;
                 brds->brd[i].hVel *= -1;
-            } else { /* One bird won over the other */
-                if (b->b.isMob) { /* Current bird is mob */
-                    if (tmpVal == 1) { /* Won over a player */
-                        brds->brd[i].deathTime = MLV_get_time(); /* Get time of death */
-                        /* Hide the bird at screen edge */
-                        brds->brd[i].p.x = SCREENWIDTH; 
-                        brds->brd[i].p.y = SCREENWIDTH;
-                    } else { /* Lost to a player */
-
-                    }
-                } else { /* Current bird is player */
-                    if (tmpVal == 1) { /* Won over mob */
-
-                    } else { /* Lost to a mob */
-
-                    }
-                }
-            }
+                brds->brd[i].dir *= -1;
+            } else if (tmpVal == 1) handleDeath(&brds->brd[i]); /* First bird won */
+            else handleDeath(&b); /* Second bird won */
+        } else { /* Two birds of the same kind bounce off each other */
+            b->hVel *= -1;
+            b->dir *= -1;
+            brds->brd[i].hVel *= -1;
+            brds->brd[i].dir *= -1;
         }
     }
+
     if ((tmpID = platCollision(*b, p, 0)) != -1) { /* Colliding with platform */
         /* Find the guilty platform */
         i = 0;
