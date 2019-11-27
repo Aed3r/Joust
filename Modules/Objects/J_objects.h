@@ -41,6 +41,7 @@ typedef struct {
     int hVel; /* Horizontal velocity */
     int vVel; /* Vertical velocity */
     int player; /* Player 1's or 2's bird. -1 if it's a mob */
+    int deathTime /* Time of last death. Initializes to -1 */
 } bird; /* Instance of a bird type */
 
 typedef struct {

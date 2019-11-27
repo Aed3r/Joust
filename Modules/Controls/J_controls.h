@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include <MLV/MLV_time.h>
 
 #include "../Objects/J_objects.h"
 #include "../values.h"
@@ -23,6 +24,13 @@ int createPlatform (int oID, objectTypes ot, platforms *p, int x, int y);
  * Returns 1 if two rectangles defined by (p1, s1) and (p2, s2) collide
  */
 int areColliding (point p1, size s1, point p2, size s2);
+
+/*
+ * Returns which side the rectangle defined by (c2, s2) collides with the rectangle defined by (c1, s1)
+ * 1: Right, 2: Top, 3: Left, 4: Bottom
+ * Note on atan2: values  in ranges [0;PI] and [-PI;0]
+ */
+int collisionSide (point p1, size s1, point p2, size s2);
 
 /*
  * Returns the instance ID of any platform colliding with the bird passed as param

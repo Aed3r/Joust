@@ -14,4 +14,9 @@
 #define PLATFORMS 6
 #define MAXINSTANCES 50
 
+/* Controls */
+
+#define PLYRTIMEOUT 5 /* seconds */
+#define MOBTIMEOUT 10 /* seconds */
+
 #endif

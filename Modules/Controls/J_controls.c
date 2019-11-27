@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <math.h>
+#include <MLV/MLV_time.h>
 
 #include "../Objects/J_objects.h"
 #include "../values.h"
@@ -30,6 +31,7 @@ int spawnBird (int oID, birdTypes bt, birds *b, int x, int y, int dir, int playe
     b->brd[m].p.x = x;
     b->brd[m].p.y = y;
     b->brd[m].player = player;
+    b->brd[m].deathTime = -1;
 
     b->l++;
 
@@ -75,6 +77,13 @@ int areColliding (point p1, size s1, point p2, size s2) {
 
     return (xCollides && yCollides); 
 }
+
+/*
+ * Handle a birds parameters at their death */
+int handleDeath (bird *b) {
+    
+}
+
 /*
  * Returns which side the rectangle defined by (c2, s2) collides with the rectangle defined by (c1, s1)
  * 1: Right, 2: Top, 3: Left, 4: Bottom
@@ -135,6 +144,8 @@ int birdCollision (bird b, birds brds) {
     return -1;
 }
 
+
+
 /*
  * Returns the result of a joust:
  * 1 if brd1 is the winner
@@ -168,9 +179,26 @@ void moveBird (bird *b, birds *brds, platforms p) {
 
         if (b->b.isMob != brds->brd[i].b.isMob) { /* Both birds are of different kind */
             tmpVal = joust(*b, brds->brd[i]); /* Get Joust result */
-            if (tmpVal == 0) {
+            if (tmpVal == 0) { /* Tie. Simply bounce off both birds */
                 b->hVel *= -1;
                 brds->brd[i].hVel *= -1;
+            } else { /* One bird won over the other */
+                if (b->b.isMob) { /* Current bird is mob */
+                    if (tmpVal == 1) { /* Won over a player */
+                        brds->brd[i].deathTime = MLV_get_time(); /* Get time of death */
+                        /* Hide the bird at screen edge */
+                        brds->brd[i].p.x = SCREENWIDTH; 
+                        brds->brd[i].p.y = SCREENWIDTH;
+                    } else { /* Lost to a player */
+
+                    }
+                } else { /* Current bird is player */
+                    if (tmpVal == 1) { /* Won over mob */
+
+                    } else { /* Lost to a mob */
+
+                    }
+                }
             }
         }
     }
@@ -184,9 +212,7 @@ void moveBird (bird *b, birds *brds, platforms p) {
         {
         case 1: /* Bird collides with right side of platform */
         case 3: /* Bird collides with left side of platform */
-            b->hVel = -b->hVel; /* Bounce off.. */
-            b->dir *= -1; /* .. and face the other way */
-            /* TODO: check if the velocity should also slow down after collisions */
+            b->hVel = -b->hVel; /* Bounce off */
             break;
         case 2: /* Bird collides with top of platform (aka stands on it) */
             b->p.y = p.plt[i].p.y - b->b.o.s.height; /* Snap to platform vertically */
