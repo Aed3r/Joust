@@ -40,4 +40,9 @@ void dispFrame(platforms p, birds b, char statlist[5]);
  */
 int dispMenu(char *button[MAXMENUCHARS], char *imgPath);
 
+/*
+ * Clear the display by putting a black box on top of it
+ */
+int dispClear();
+
 #endif
