@@ -65,7 +65,7 @@ int main() {
     b.l = 0;
     p.l = 0;
     MLV_create_window("Joust", NULL, SCREENWIDTH, SCREENHEIGHT);
-
+    MLV_change_frame_rate(30);
     /* OBJECTS TEST */
     importOBJs(&oT, "Data/Files/objects");
     importBirdTypes(&bT, &oT, "Data/Files/birds");
@@ -86,10 +86,7 @@ int main() {
     dispPlats(p);
     dispBirds(b);
     dispStatus(2, 100, 150, 3, 2);
-    MLV_actualise_window();
-    MLV_wait_seconds(5);
-    dispText("Test sur un très long text qui est très très long\nWow c'est long oh mon dieu");
-    MLV_actualise_window();    
+    MLV_actualise_window(); 
 
     /* CONTROLS COLLISION TEST */
     printf("Platform collision Blue: %d\n", platCollision(b.brd[0], p, 0));
@@ -101,8 +98,11 @@ int main() {
     /* CONTROLS PHYSICS TEST */
 
     while(done != 1) {
+        dispClear();
         for (i = 0; i < b.l; i++) moveBird(&b.brd[i], b, p);
+        dispBirds(b);
         MLV_actualise_window();
+        MLV_delay_according_to_frame_rate();
     }
 
     MLV_free_window();

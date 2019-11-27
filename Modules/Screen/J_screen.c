@@ -117,6 +117,11 @@ void dispFrame(platforms p, birds b, char statList[5]){
  * Returns the index of the clicked button
  * Can display an image if given a valid path
  */
-int dispMenu(char *button[MAXMENUCHARS], char *imgPath){
-	
+int dispMenu(char *button[MAXMENUCHARS], char *imgPath);
+
+/*
+ * Clear the display by putting a black box on top of it
+ */
+int dispClear(){
+	MLV_draw_filled_rectangle(0,0,SCREENWIDTH,SCREENHEIGHT,MLV_COLOR_BLACK);
 }
