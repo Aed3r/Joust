@@ -27,7 +27,7 @@ void printBRDTs(birdTypes *b) {
         printf(" - objectID: %d ; Sprite: %s; Name: %s; Width: %d; Height: %d; runSpeed: %f; glideSpeed: %f; flapStrength: %f; respawnTime: %d; isMob: %d; aggressiveness: %d\n",
             b->brdT[i].o.objectID, b->brdT[i].o.spriteName, b->brdT[i].o.name, 
             b->brdT[i].o.s.width, b->brdT[i].o.s.height,
-            b->brdT[i].runSpeed, b->brdT[i].glideSpeed, b->brdT[i].flapStrength, 
+            b->brdT[i].hSpeed, b->brdT[i].vSpeed, b->brdT[i].flapStrength, 
             b->brdT[i].respawnTime, b->brdT[i].isMob, b->brdT[i].aggressiveness);
     }
 }
@@ -49,9 +49,9 @@ void printB(birds *b) {
 
     printf("------- Bird instances (%d) : -------\n", b->l);
     for (i = 0; i < b->l; i++) {
-        printf("  - instanceID: %d; objectID: %d; X: %d; Y: %d; dir: %d; velY: %d; player: %d\n", 
+        printf("  - instanceID: %d; objectID: %d; X: %d; Y: %d; dir: %d; vVel: %d; hVel: %d; player: %d\n", 
         b->brd[i].instanceID, b->brd[i].b.o.objectID, b->brd[i].p.x, 
-        b->brd[i].p.y, b->brd[i].dir, b->brd[i].velY, b->brd[i].player);
+        b->brd[i].p.y, b->brd[i].dir, b->brd[i].vVel, b->brd[i].hVel, b->brd[i].player);
     }
 }
 

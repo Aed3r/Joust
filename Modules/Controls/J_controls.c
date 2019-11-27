@@ -84,18 +84,21 @@ int collisionSide (point p1, size s1, point p2, size s2) {
     point c1;
     point c2;
     double angle;
-
+    
+    /* Get first rectangle center coords */
     c1.x = p1.x + s1.width / 2;
     c1.y = p1.y + s1.height / 2;
+    /* Get second rectangle center coords */
     c2.x = p2.x + s2.width / 2;
     c2.y = p2.y + s2.height / 2;
 
+    /* Get the angle (rad) of the second center relative to the first */
     angle = atan2(-(c2.y - c1.y), (c2.x - c1.x));
-    /* not use x = 0 */
-    if (angle > - M_PI / 4 && angle <= M_PI / 4) return 1;
-    else if (angle > M_PI / 4 && angle <= 3 * M_PI / 4) return 2;
-    else if (angle > 3 * M_PI / 4 && angle <= - 3 * M_PI / 4) return 3;
-    else if (angle > - 3 * M_PI / 4 && angle <= - M_PI / 4) return 4;
+    
+    if (angle > - M_PI / 4 && angle <= M_PI / 4) return 1; /* Right side */
+    else if (angle > M_PI / 4 && angle <= 3 * M_PI / 4) return 2; /* Top side */
+    else if (angle > 3 * M_PI / 4 && angle <= - 3 * M_PI / 4) return 3; /* Left side */
+    else if (angle > - 3 * M_PI / 4 && angle <= - M_PI / 4) return 4; /* Bottom side */
     else return -1; /* should be impossible (i hope) */
 }
 
@@ -149,17 +152,27 @@ int joust (bird brd1, bird brd2) {
  * Handles collisions (initiates joust for chars colliding with mobs)
  * Detects screen edge and moves bird accordingly (TODO: add header ref for screen size)
  */
-void moveBird (bird *b, birds brds, platforms p) {
+void moveBird (bird *b, birds *brds, platforms p) {
     /* We save the birds original position so as to roll it back when needed */
     int oX = b->p.x, oY = b->p.y;
-    int tmpID, i;
+    int tmpID, i, tmpVal;
 
     /* Set new positions now. Check for problems later */
     b->p.x += b->hVel;
     b->p.y += b->vVel;
 
-    if ((tmpID = birdCollision(*b, brds)) != -1) { /* Collifing with other bird */
-        /* TODO: */
+    if ((tmpID = birdCollision(*b, *brds)) != -1) { /* Colliding with other bird */
+        /* Find the bird the collision happened with */
+        i = 0;
+        while (brds->brd[i].instanceID != tmpID) i++;
+
+        if (b->b.isMob != brds->brd[i].b.isMob) { /* Both birds are of different kind */
+            tmpVal = joust(*b, brds->brd[i]); /* Get Joust result */
+            if (tmpVal == 0) {
+                b->hVel *= -1;
+                brds->brd[i].hVel *= -1;
+            }
+        }
     }
     if ((tmpID = platCollision(*b, p, 0)) != -1) { /* Colliding with platform */
         /* Find the guilty platform */
