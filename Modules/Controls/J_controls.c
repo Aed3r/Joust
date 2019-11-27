@@ -1,7 +1,12 @@
 #include <stdlib.h>
+#include <math.h>
 
 #include "../Objects/J_objects.h"
 #include "../values.h"
+
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846
+#endif
 
 /*
  * Creates a new birdType instance using its object ID
@@ -19,7 +24,8 @@ int spawnBird (int oID, birdTypes bt, birds *b, int x, int y, int dir, int playe
     /* Set bird instance parameters */
     b->brd[m].b = bt.brdT[i];
     b->brd[m].dir = dir;
-    b->brd[m].velY = 0;
+    b->brd[m].hVel = 0;
+    b->brd[m].vVel = 0;
     b->brd[m].instanceID = m;
     b->brd[m].p.x = x;
     b->brd[m].p.y = y;
@@ -69,11 +75,34 @@ int areColliding (point p1, size s1, point p2, size s2) {
 
     return (xCollides && yCollides); 
 }
+/*
+ * Returns which side the rectangle defined by (c2, s2) collides with the rectangle defined by (c1, s1)
+ * 1: Right, 2: Top, 3: Left, 4: Bottom
+ * Note on atan2: values  in ranges [0;PI] and [-PI;0]
+ */
+int collisionSide (point p1, size s1, point p2, size s2) {
+    point c1;
+    point c2;
+    double angle;
+
+    c1.x = p1.x + s1.width / 2;
+    c1.y = p1.y + s1.height / 2;
+    c2.x = p2.x + s2.width / 2;
+    c2.y = p2.y + s2.height / 2;
+
+    angle = atan2(-(c2.y - c1.y), (c2.x - c1.x));
+    /* not use x = 0 */
+    if (angle > - M_PI / 4 && angle <= M_PI / 4) return 1;
+    else if (angle > M_PI / 4 && angle <= 3 * M_PI / 4) return 2;
+    else if (angle > 3 * M_PI / 4 && angle <= - 3 * M_PI / 4) return 3;
+    else if (angle > - 3 * M_PI / 4 && angle <= - M_PI / 4) return 4;
+    else return -1; /* should be impossible (i hope) */
+}
 
 /*
  * Returns the instance ID of any platform colliding with the bird passed as param
  * Returns -1 otherwise
- * yOffset lets you offset the vertical position of the bird (for testing relative positions)
+ * yOffset lets you test for relative positions
  */
 int platCollision (bird b, platforms p, int yOffset) {
     int i, n = p.l;
@@ -82,7 +111,7 @@ int platCollision (bird b, platforms p, int yOffset) {
     for (i = 0; i < n; i++) {
         if (areColliding(b.p, b.b.o.s, p.plt[i].p, p.plt[i].o.s)) return p.plt[i].instanceID;
     }
-    b.p.y -= yOffset;
+    b.p.y -= yOffset; /* TODO: test if important here */
 
     return -1;
 }
@@ -116,39 +145,56 @@ int joust (bird brd1, bird brd2) {
 }
 
 /*
- * Calculates the next x and y coordinates for any bird only using bird properties
- * Detects collisions (initiates joust for chars colliding with mobs)
+ * Calculates the next x and y coordinates for any bird using its properties only
+ * Handles collisions (initiates joust for chars colliding with mobs)
  * Detects screen edge and moves bird accordingly (TODO: add header ref for screen size)
  */
 void moveBird (bird *b, birds brds, platforms p) {
-    int ox = b->p.x, oy = b->p.y;
+    /* We save the birds original position so as to roll it back when needed */
+    int oX = b->p.x, oY = b->p.y;
+    int tmpID, i;
 
-    if (b->velY == 0) { /* On platform */
-        b->p.x += b->b.runSpeed * b->dir;
-        b->p.y = b->p.y;
-    } else { /* In air */
-        b->p.x = b->p.x + b->b.glideSpeed * b->dir;
-        b->p.y = b->p.y + b->velY;
+    /* Set new positions now. Check for problems later */
+    b->p.x += b->hVel;
+    b->p.y += b->vVel;
+
+    if ((tmpID = birdCollision(*b, brds)) != -1) { /* Collifing with other bird */
+        /* TODO: */
     }
-
-    if (platCollision(*b, p, -1)) { /* Test if is on platform */
-        b->velY = 0;
-        /* Snap to platform */
-    } else {
-        b->velY -= b->b.glideSpeed;
+    if ((tmpID = platCollision(*b, p, 0)) != -1) { /* Colliding with platform */
+        /* Find the guilty platform */
+        i = 0;
+        while (p.plt[i].instanceID != tmpID) i++;
+        
+        /* Act according to collision location */
+        switch (collisionSide(p.plt[i].p, p.plt[i].o.s, b->p, b->b.o.s))
+        {
+        case 1: /* Bird collides with right side of platform */
+        case 3: /* Bird collides with left side of platform */
+            b->hVel = -b->hVel; /* Bounce off.. */
+            b->dir *= -1; /* .. and face the other way */
+            /* TODO: check if the velocity should also slow down after collisions */
+            break;
+        case 2: /* Bird collides with top of platform (aka stands on it) */
+            b->p.y = p.plt[i].p.y - b->b.o.s.height; /* Snap to platform vertically */
+        case 4: /* Bird bumps its head on platform */
+            b->vVel = 0; /* Stop all vertical movement */
+            break;
+        default:
+            /* Do nothing I guess */
+            break;
+        }
+    } else { /* Falling */
+        b->vVel -= b->b.vSpeed;
     }
-
-    if(platCollision(*b, p, 0)) {
-
-    }
-
-
 }
 
 /*
  * Updates the position of a player controlled bird
  */
-void updateCharPos (bird *b, bird brd[MAXINSTANCES], platform plt[PLATFORMS]);
+void updateCharPos (bird *b, bird brd[MAXINSTANCES], platform plt[PLATFORMS]) {
+    /* TODO: update hVel if on ground only, unless there's a change of direction. Test what hVel becomes in that case */
+}
 
 /*
  * Updates a mobs position using "AI"

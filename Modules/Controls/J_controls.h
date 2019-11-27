@@ -2,6 +2,7 @@
 #define CONTROLS
 
 #include <stdlib.h>
+#include <math.h>
 
 #include "../Objects/J_objects.h"
 #include "../values.h"
@@ -26,7 +27,7 @@ int areColliding (point p1, size s1, point p2, size s2);
 /*
  * Returns the instance ID of any platform colliding with the bird passed as param
  * Returns -1 otherwise
- * yOffset lets you offset the vertical position of the bird
+* yOffset lets you test for relative positions
  */
 int platCollision (bird b, platforms p, int yOffset);
 

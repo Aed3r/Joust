@@ -67,7 +67,7 @@ void dispBirds(birds bird){
 void dispStatus(int nbjr, int score1, int score2, int vie1, int vie2){
 	int taille_interligne = 9, widthtxt, heightxt;
 	char player1[50], player2[50];
-	MLV_Font* font = MLV_load_font( "Data/Files/BebasNeue-Regular.ttf" , 20 );
+	MLV_Font* font = MLV_load_font( "Data/Fonts/BebasNeue-Regular.ttf" , 20 );
 	vspfunc(player1, "Player 1 : %d life \nScore : %d", vie1, score1);
 	MLV_draw_adapted_text_box_with_font(
 		10, 10,
@@ -93,7 +93,7 @@ void dispStatus(int nbjr, int score1, int score2, int vie1, int vie2){
  * un message centré dans la boite (passé en paramètre)
  */
 void dispText(char msg[MAXMSGCHARS]){
-	MLV_Font* font = MLV_load_font( "Data/Files/BebasNeue-Regular.ttf" , 30);
+	MLV_Font* font = MLV_load_font( "Data/Fonts/BebasNeue-Regular.ttf" , 30);
 	MLV_draw_text_box_with_font( 
 		0,0,
 		SCREENWIDTH,SCREENHEIGHT,
