@@ -25,6 +25,12 @@ int createPlatform (int oID, objectTypes ot, platforms *p, int x, int y);
  */
 int areColliding (point p1, size s1, point p2, size s2);
 
+
+/*
+ * Handle a birds parameters at their death 
+ */
+void handleDeath (bird *b);
+
 /*
  * Returns which side the rectangle defined by (c2, s2) collides with the rectangle defined by (c1, s1)
  * 1: Right, 2: Top, 3: Left, 4: Bottom
@@ -51,19 +57,19 @@ int birdCollision (bird b, birds brds);
  * 0 for for a tie
  * -1 if brd2 is the winner
  */
-int joust(bird brd1, bird brd2);
+int joust(bird *brd1, bird *brd2);
 
 /*
  * Calculates the next x and y coordinates for any bird only using bird properties
  * Detects collisions (initiates joust for chars colliding with mobs)
- * Detects screen edge and moves bird accordingly (TODO: add header ref for screen size)
+ * Detects screen edge and moves bird accordingly
  */
-void moveBird (bird *b, birds brds, platforms p);
+void moveBird (bird *b, birds *brds, platforms p);
 
 /*
  * Updates the position of a player controlled bird
  */
-void updateCharPos(bird *b, bird brd[MAXINSTANCES], platform plt[PLATFORMS]);
+void updateCharPos(bird *b);
 
 /*
  * Updates a mobs position using "AI"
