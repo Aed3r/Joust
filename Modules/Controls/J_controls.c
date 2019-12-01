@@ -146,18 +146,38 @@ int birdCollision (bird b, birds brds) {
 }
 
 /*
- * Returns the result of a joust:
+ * Handles the collision of two birds. Returns :
  * 1 if brd1 is the winner
- * 0 for for a tie
+ * 0 if there's no winner
  * -1 if brd2 is the winner
- * TODO: handle more death related stuff here
+ * DOES NOT HANDLE physics
  */
-int joust (bird brd1, bird brd2) {
-    if (brd1.p.y > brd2.p.y) return 1;
-    else if (brd2.p.y > brd1.p.y) return -1;
-    else return 0;
+int joust (bird *brd1, bird *brd2) {
+    /* Make sure both birds are of different kind */
+    if (brd1->b.isMob != brd2->b.isMob) {
+        if (brd1->p.y > brd2->p.y) { /* brd1 won */
+            handleDeath(brd2);
+            return 1;
+        } else if (brd2->p.y > brd1->p.y) { /* brd2 won */
+            handleDeath(brd1);
+            return -1;
+        }
+    }
+    /* Both birds are players, mobs or there was a tie */
+    return 0;
 }
 
+/*
+def moveTowards(self, coords): # Bouge les coordonnées de l'ennemis vers les coordonnées indiqué
+        angle = self.atan2Normalized((self.rect.centery - coords[1]), (coords[0] - self.rect.centerx)) # Angle de la destination par rapport au personnage dans la plan du repère
+        coords = (self.speed * round(math.cos(angle), 5), -self.speed * round(math.sin(angle), 5)) # Trouve les coefficients avec lesquels incrémenté les coordonnées de l'ennemi pour atteindre la destination à l'aide de trigonométrie
+        oldCoords = self.rect.topleft
+        self.rect.move_ip(coords[0], coords[1]) # Incrémente les coordonnées de l'ennemis par le coefficient calculé auparavant
+        for hitbox in self.map.hitboxes:
+                if hitbox.rect.collidepoint(self.rect.center):
+                        self.rect.topleft = oldCoords
+                        break
+*/
 /*
  * Calculates the next x and y coordinates for any bird using its properties only
  * Handles collisions (initiates joust for chars colliding with mobs)
@@ -165,76 +185,129 @@ int joust (bird brd1, bird brd2) {
  * TODO: put movement in loop to detect collisions
  */
 void moveBird (bird *b, birds *brds, platforms p) {
-    int tmpID, i, tmpVal;
+    int tmpID, i, tmpVal, steps, done = 0;
+    float angle;
+    point increment;
+    
+    /* Apply gravity */
+    b->vVel -= b->b.vSpeed;
 
-    /* Set new positions now. Check for problems later */
-    b->p.x += b->hVel;
-    b->p.y -= b->vVel;
+    /* Get angle to destination */
+    angle = atan2(-b->vVel, b->hVel); 
+    /* Get smallest increment */
+    increment.x = cos(angle);
+    increment.y = -sin(angle);
+    /* The biggest absolute velocity determines the amount of steps to take */
+    if (abs(b->hVel) > abs(b->vVel)) steps = abs(b->hVel);
+    else steps = abs(b->vVel);
+    /* Go to the destination step by step to check for collisions. If there are, stop */
+    for (i = 0; i < steps && !done; i++) {
+        /* Increment the X axis first */
+        b->p.x += increment.x;
 
-    if ((tmpID = birdCollision(*b, *brds)) != -1) { /* Colliding with other bird */
-        /* Find the bird the collision happened with */
-        i = 0;
-        while (brds->brd[i].instanceID != tmpID) i++;
+        /* Test for collision with another bird */
+        if ((tmpID = birdCollision(*b, *brds)) != -1) { 
+            /* Find the bird the collision happened with */
+            i = 0;
+            while (brds->brd[i].instanceID != tmpID) i++;
+            /* Handle collision and get potential joust result */
+            tmpVal = joust(b, &brds->brd[i]);
+            /* Bounce surviving bird(s) off the other */
+            switch (tmpVal) {
+            case 1:
+                b->hVel *= -1;
+                b->dir *= -1;
+                break;
+            case 0:
+                b->hVel *= -1;
+                b->dir *= -1;
+                __attribute__((fallthrough)); /* Suppress fallthrough warning */
+            case -1:
+                brds->brd[i].hVel *= -1;
+                brds->brd[i].dir *= -1;
+                b->p.x += increment.x; /* compensate for the next move */
+                break;
+            }
+            /* Go back one step and end progression */
+            b->p.x -= increment.x;
+            done = 1;
+        }
 
-        tmpVal = joust(*b, brds->brd[i]); /* Get Joust result */
-
-        if (b->b.isMob != brds->brd[i].b.isMob && tmpVal != 0) { /* Both birds are of different kind and not in a tie */
-            if (tmpVal == 1) handleDeath(&brds->brd[i]); /* First bird won */
-            else handleDeath(b); /* Second bird won */
-            /* TODO: Handle scores */
-        } else { /* Two birds of the same kind bounce off each other */
+        /* Test for collision with a platform */
+        if (platCollision(*b, p, 0) != -1) {
+            /* Bounce off the other way */
             b->hVel *= -1;
             b->dir *= -1;
-            brds->brd[i].hVel *= -1;
-            brds->brd[i].dir *= -1;
+            b->p.x -= increment.x;
+            done = 1;
         }
-    }
-
-    if ((tmpID = platCollision(*b, p, 0)) != -1) { /* Colliding with platform */
-        /* Find the guilty platform */
-        i = 0;
-        while (p.plt[i].instanceID != tmpID) i++;
         
-        /* Act according to collision location */
-        switch (collisionSide(p.plt[i].p, p.plt[i].o.s, b->p, b->b.o.s))
-        {
-        case 1: /* Bird collides with right side of platform */
-        case 3: /* Bird collides with left side of platform */
-            b->hVel = -b->hVel; /* Bounce off */
-            break;
-        case 2: /* Bird collides with top of platform (aka stands on it) */
-            b->p.y = p.plt[i].p.y - b->b.o.s.height; /* Snap to platform vertically */
-            b->vVel = 0; /* Stop all vertical movement */
-            break;
-        case 4: /* Bird bumps its head on platform */
-            b->p.y = p.plt[i].p.y + p.plt[i].o.s.height; /* Snap to platform end */
-            b->vVel = -b->vVel; /* Bounce off */
-            break;
-        default:
-            /* Do nothing I guess */
-            break;
-        }
-    } else { /* Falling */
-        b->vVel -= b->b.vSpeed;
-    }
+        if (!done) {
+            /* Increment the Y axis second */
+            b->p.y -= increment.y;
 
+            /* Test for collision with another bird */
+            if ((tmpID = birdCollision(*b, *brds)) != -1) { 
+                /* Find the bird the collision happened with */
+                i = 0;
+                while (brds->brd[i].instanceID != tmpID) i++;
+                /* Handle collision and get potential joust result */
+                tmpVal = joust(b, &brds->brd[i]);
+                /* Bounce surviving bird(s) off the other */
+                switch (tmpVal) {
+                case 1:
+                    b->vVel *= -1;
+                    break;
+                case 0:
+                    b->vVel *= -1;
+                    __attribute__((fallthrough)); /* Suppress fallthrough warning */
+                case -1:
+                    brds->brd[i].vVel *= -1;
+                    break;
+                }
+                /* Go back one step (if no dead) and end progression */
+                if (tmpVal != -1) b->p.y += increment.y;
+                done = 1;
+            }
+
+            /* Test for collision with a platform */
+            if (platCollision(*b, p, 0) != -1) {
+                /* Act according to side (top or bottom) */
+                /* Bird bumps its head on platform */
+                if (increment.y >= 0) b->vVel *= -1;
+                /* Bird lands on platform */
+                else b->vVel = b->b.vSpeed; /* compensate for next fall */
+                b->p.y += increment.y;
+                done = 1;
+            }
+        }
+    }
+    
+
+    /* Bumping top of screen */
     if (b->p.y < 0) {
         b->p.y = 0;
         b->vVel = -b->vVel;
     }
+    /* Bumping bottom of screen */
     if (b->p.y + b->b.o.s.height > SCREENHEIGHT) {
         b->p.y = SCREENHEIGHT - b->b.o.s.height;
         b->vVel = 0; /* -b->vVel is a LOT more fun */
     }
+    /* Bumping left side of screen */
     if (b->p.x < -b->b.o.s.width / 2) {
         b->p.x = SCREENHEIGHT + b->b.o.s.width / 2;
     }
+    /* Bumping right side of screen */
     if (b->p.x > SCREENWIDTH + b->b.o.s.width / 2) {
         b->p.x = -b->b.o.s.width / 2;
     }
 
+    /* Cap maximal velocities */
     if (b->hVel > MAXVEL) b->hVel = MAXVEL;
     if (b->vVel > MAXVEL) b->vVel = MAXVEL;
+    if (b->hVel < -MAXVEL) b->hVel = -MAXVEL;
+    if (b->vVel < -MAXVEL) b->vVel = -MAXVEL;
 }
 
 /*
@@ -242,35 +315,35 @@ void moveBird (bird *b, birds *brds, platforms p) {
  */
 void updateCharPos (bird *b) {
     if (b->player == 1) {
-        if(MLV_get_keyboard_state(MLV_KEYBOARD_a) == MLV_PRESSED){ /* Left */
-            b->hVel -= b->b.hSpeed;
-            b->dir = -1;
-        }
-        if(MLV_get_keyboard_state(MLV_KEYBOARD_d) == MLV_PRESSED){ /* Right */
-            b->hVel += b->b.hSpeed;
-            b->dir = 1;
-        }
         if(MLV_get_keyboard_state(MLV_KEYBOARD_s) == MLV_PRESSED || MLV_get_keyboard_state(MLV_KEYBOARD_w) == MLV_PRESSED || MLV_get_keyboard_state(MLV_KEYBOARD_SPACE) == MLV_PRESSED){ /* Flap */
             if (!b->flapped) {
                 b->vVel += b->b.flapStrength;
                 b->flapped = 1;
             }
         } else b->flapped = 0;
-    } else if (b->player == 2) {
-        if(MLV_get_keyboard_state(MLV_KEYBOARD_LEFT) == MLV_PRESSED){ /* Left */
-            b->hVel -= b->b.hSpeed;
+        if(MLV_get_keyboard_state(MLV_KEYBOARD_a) == MLV_PRESSED || MLV_get_keyboard_state(MLV_KEYBOARD_q) == MLV_PRESSED){ /* Left */
+            if (b->flapped || b->vVel == 0 || b->vVel == 1) b->hVel -= b->b.hSpeed; /* Prevent direction changes midair without flapping */
             b->dir = -1;
         }
-        if(MLV_get_keyboard_state(MLV_KEYBOARD_RIGHT) == MLV_PRESSED){ /* Right */
-            b->hVel += b->b.hSpeed;
+        if(MLV_get_keyboard_state(MLV_KEYBOARD_d) == MLV_PRESSED){ /* Right */
+            if (b->flapped || b->vVel == 0 || b->vVel == 1) b->hVel += b->b.hSpeed; /* Prevent direction changes midair without flapping */
             b->dir = 1;
         }
+    } else if (b->player == 2) {
         if(MLV_get_keyboard_state(MLV_KEYBOARD_DOWN) == MLV_PRESSED || MLV_get_keyboard_state(MLV_KEYBOARD_UP) == MLV_PRESSED){ /* Flap */
             if (!b->flapped) {
                 b->vVel += b->b.flapStrength;
                 b->flapped = 1;
             }
         } else b->flapped = 0;
+        if(MLV_get_keyboard_state(MLV_KEYBOARD_LEFT) == MLV_PRESSED){ /* Left */
+            if (b->flapped || b->vVel == 0 || b->vVel == 1) b->hVel -= b->b.hSpeed; /* Prevent direction changes midair without flapping */
+            b->dir = -1;
+        }
+        if(MLV_get_keyboard_state(MLV_KEYBOARD_RIGHT) == MLV_PRESSED){ /* Right */
+            if (b->flapped || b->vVel == 0 || b->vVel == 1) b->hVel += b->b.hSpeed; /* Prevent direction changes midair without flapping */
+            b->dir = 1;
+        }
     }
 
     if (b->hVel > MAXVEL) b->hVel = MAXVEL;

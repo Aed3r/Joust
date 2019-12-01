@@ -18,6 +18,6 @@
 
 #define PLYRTIMEOUT 5 /* seconds */
 #define MOBTIMEOUT 10 /* seconds */
-#define MAXVEL 10 
+#define MAXVEL 20
 
 #endif

@@ -52,9 +52,9 @@ int platCollision (bird b, platforms p, int yOffset);
 int birdCollision (bird b, birds brds);
 
 /*
- * Returns the result of a joust:
+ * Handles the collision of two birds. Returns :
  * 1 if brd1 is the winner
- * 0 for for a tie
+ * 0 if there's no winner
  * -1 if brd2 is the winner
  */
 int joust(bird *brd1, bird *brd2);

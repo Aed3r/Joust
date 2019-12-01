@@ -38,7 +38,7 @@ void printP(platforms *p) {
 
     printf("------- Platform instances (%d) : -------\n", p->l);
     for (i = 0; i < p->l; i++) {
-        printf("  - instanceID: %d; objectID: %d; Name : %s; X: %d; Y: %d\n", 
+        printf("  - instanceID: %d; objectID: %d; Name : %s; X: %f; Y: %f\n", 
         p->plt[i].instanceID, p->plt[i].o.objectID, p->plt[i].o.name, p->plt[i].p.x, p->plt[i].p.y);
     }
 }
@@ -49,7 +49,7 @@ void printB(birds *b) {
 
     printf("------- Bird instances (%d) : -------\n", b->l);
     for (i = 0; i < b->l; i++) {
-        printf("  - instanceID: %d; objectID: %d; X: %d; Y: %d; dir: %d; vVel: %d; hVel: %d; player: %d\n", 
+        printf("  - instanceID: %d; objectID: %d; X: %f; Y: %f; dir: %d; vVel: %d; hVel: %d; player: %d\n", 
         b->brd[i].instanceID, b->brd[i].b.o.objectID, b->brd[i].p.x, 
         b->brd[i].p.y, b->brd[i].dir, b->brd[i].vVel, b->brd[i].hVel, b->brd[i].player);
     }
@@ -76,7 +76,7 @@ int main() {
     /* CONTROLS CREATION TEST */
     createPlatform(1, oT, &p, 500, 500);
     spawnBird(2, bT, &b, 500, 350, 1, 1);
-    spawnBird(3, bT, &b, 550, 360, 1, -1);
+    spawnBird(3, bT, &b, 700, 360, 1, 2);
     spawnBird(3, bT, &b, 490, 340, 1, -1);
 
     printP(&p);
@@ -87,6 +87,7 @@ int main() {
     dispBirds(b);
     dispStatus(2, 100, 150, 3, 2);
     MLV_actualise_window(); 
+    MLV_wait_keyboard_or_mouse(NULL, NULL, NULL, NULL, NULL);
 
     /* CONTROLS COLLISION TEST */
     printf("Platform collision Blue: %d\n", platCollision(b.brd[0], p, 0));
@@ -96,7 +97,6 @@ int main() {
     /* CONTROLS PHYSICS TEST */
 
     b.l -= 1; /* "kill" the last bird */
-    b.l -= 1; /* "kill" the last bird */
 
     while(done != 1) {
         dispClear();
@@ -104,6 +104,7 @@ int main() {
         for (i = 0; i < b.l; i++) moveBird(&b.brd[i], &b, p);
         dispBirds(b);
         dispPlats(p);
+        printf("hVel : %d ; vVel : %d\n", b.brd[0].hVel, b.brd[0].vVel);
 
         MLV_actualise_window();
         MLV_delay_according_to_frame_rate();
