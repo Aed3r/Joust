@@ -83,6 +83,9 @@ int main() {
     printB(&b);
 
     /* SCREEN TEST */
+    dispMenu("Data/Sprites/menu.png");
+    MLV_actualise_window();
+    dispClear();
     dispPlats(p);
     dispBirds(b);
     dispStatus(2, 100, 150, 3, 2);

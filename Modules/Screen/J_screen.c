@@ -126,7 +126,63 @@ void dispFrame(platforms p, birds b, char statList[5]){
  * Displays a menu with the image given as parameter
  * returns the number of player or 3 if the HIGHSCORE has been clicked
  */
-int dispMenu(char *imgPath);
+int dispMenu(char *filepath){
+	MLV_Font* font = MLV_load_font( "Data/Fonts/BebasNeue-Regular.ttf" , 30);
+	MLV_Image *imageMenu;
+	MLV_Event event;
+	int x = 0, y = 0, ok = 0, nbrj = 1; 
+	char text[25];
+	/* Fond du menu */
+	imageMenu = MLV_load_image(filepath);
+	/* Bouttons */
+	while(ok == 0){
+		vspfunc(text, "Nombre de joueurs : %d", nbrj);
+		dispClear();
+		MLV_draw_image(imageMenu, 0,0);
+		MLV_draw_text_box_with_font(
+			(SCREENWIDTH * 0.2), (SCREENHEIGHT * 0.55),
+			(SCREENWIDTH * 0.6), (SCREENHEIGHT * 0.1),
+			"Démarrer la partie", font, 9,
+			MLV_COLOR_RED, MLV_COLOR_WHITE, MLV_COLOR_BLACK,
+			MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER
+		);
+		MLV_draw_text_box_with_font(
+			(SCREENWIDTH * 0.2), (SCREENHEIGHT * 0.7),
+			(SCREENWIDTH * 0.6), (SCREENHEIGHT * 0.1),
+			text, font, 9,
+			MLV_COLOR_RED, MLV_COLOR_WHITE, MLV_COLOR_BLACK,
+			MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER
+		);
+		MLV_draw_text_box_with_font(
+			(SCREENWIDTH * 0.2), (SCREENHEIGHT * 0.85),
+			(SCREENWIDTH * 0.6), (SCREENHEIGHT * 0.1),
+			"Afficher les meilleurs scores", font, 9,
+			MLV_COLOR_RED, MLV_COLOR_WHITE, MLV_COLOR_BLACK,
+			MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER
+		);
+		MLV_actualise_window();
+		do{
+			event = MLV_get_event( /*Récupère un événement*/
+				NULL, NULL, NULL,
+				NULL, NULL,
+				&x, &y, NULL,
+				NULL
+				);
+		} while(event != MLV_MOUSE_BUTTON);
+		if (x > (SCREENWIDTH * 0.2) && x < (SCREENWIDTH * 0.8) && y > (SCREENHEIGHT * 0.55)
+			&& y < (SCREENHEIGHT * 0.65)){
+			return nbrj;
+		}else if (x > (SCREENWIDTH * 0.2) && x < (SCREENWIDTH * 0.8) && y > (SCREENHEIGHT * 0.7)
+			&& y < (SCREENHEIGHT * 0.80)){
+			if(nbrj == 1){
+				nbrj = 2;
+			}else nbrj = 1;
+		}else if (x > (SCREENWIDTH * 0.2) && x < (SCREENWIDTH * 0.8) && y > (SCREENHEIGHT * 0.85)
+			&& y < (SCREENHEIGHT * 0.95)){
+			return 3;
+		}
+	}	
+}
 
 /*
  * Clear the display by putting a black box on top of it

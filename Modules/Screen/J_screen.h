@@ -37,7 +37,7 @@ void dispFrame(platforms p, birds b, char statlist[5]);
  * Displays the menu with the image given as parameter
  * returns the number of player or 3 if the HIGHSCORE has been clicked
  */
-int dispMenu(char *imgPath);
+int dispMenu();
 
 /*
  * Clear the display by putting a black box on top of it
