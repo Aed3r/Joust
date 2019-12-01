@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <math.h>
-#include <MLV/MLV_time.h>
+#include <MLV/MLV_all.h>
 
 #include "../Objects/J_objects.h"
 #include "../values.h"
@@ -32,6 +32,7 @@ int spawnBird (int oID, birdTypes bt, birds *b, int x, int y, int dir, int playe
     b->brd[m].p.y = y;
     b->brd[m].player = player;
     b->brd[m].deathTime = -1;
+    b->brd[m].flapped = 0;
 
     b->l++;
 
@@ -79,36 +80,35 @@ int areColliding (point p1, size s1, point p2, size s2) {
 }
 
 /*
- * Handle a birds parameters at their death */
-int handleDeath (bird *b) {
-    
+ * Handle a birds parameters at their death 
+ */
+void handleDeath (bird *b) {
+    /* Get time of death */
+    b->deathTime = MLV_get_time(); 
+
+    if (b->b.isMob == 0) {
+        /* Hide player bird at screen edge */
+        b->p.x = SCREENWIDTH; 
+        b->p.y = SCREENWIDTH;
+    } /* Mobs "transform" into eggs and stay at the same place */
+
+    /* Reset velocities */
+    b->hVel = 0;
+    b->vVel = 0;
 }
 
 /*
- * Returns which side the rectangle defined by (c2, s2) collides with the rectangle defined by (c1, s1)
+ * Returns which side of the rectangle defined by (p1, s1), the second rectangle (p2, s2) collides with
+ * i.e : first rect is a platform and second a bird
  * 1: Right, 2: Top, 3: Left, 4: Bottom
- * Note on atan2: values  in ranges [0;PI] and [-PI;0]
  */
 int collisionSide (point p1, size s1, point p2, size s2) {
-    point c1;
-    point c2;
-    double angle;
-    
-    /* Get first rectangle center coords */
-    c1.x = p1.x + s1.width / 2;
-    c1.y = p1.y + s1.height / 2;
-    /* Get second rectangle center coords */
-    c2.x = p2.x + s2.width / 2;
-    c2.y = p2.y + s2.height / 2;
-
-    /* Get the angle (rad) of the second center relative to the first */
-    angle = atan2(-(c2.y - c1.y), (c2.x - c1.x));
-    
-    if (angle > - M_PI / 4 && angle <= M_PI / 4) return 1; /* Right side */
-    else if (angle > M_PI / 4 && angle <= 3 * M_PI / 4) return 2; /* Top side */
-    else if (angle > 3 * M_PI / 4 && angle <= - 3 * M_PI / 4) return 3; /* Left side */
-    else if (angle > - 3 * M_PI / 4 && angle <= - M_PI / 4) return 4; /* Bottom side */
-    else return -1; /* should be impossible (i hope) */
+    if (p2.y + s2.height >= p1.y) return 2; /* Top */
+    else if (p2.y <= p1.y + s1.height) return 4; /* Bottom */
+    else { /* One side */
+        if (p2.x - s2.width <= p1.x) return 1; /* Right */
+        else return 3; /* Left */
+    }
 }
 
 /*
@@ -136,6 +136,7 @@ int birdCollision (bird b, birds brds) {
     int i, n = brds.l;
 
     for (i = 0; i < n; i++) {
+        
         if(brds.brd[i].instanceID != b.instanceID) {
             if (areColliding(b.p, b.b.o.s, brds.brd[i].p, brds.brd[i].b.o.s)) return brds.brd[i].instanceID;
         }
@@ -144,13 +145,12 @@ int birdCollision (bird b, birds brds) {
     return -1;
 }
 
-
-
 /*
  * Returns the result of a joust:
  * 1 if brd1 is the winner
  * 0 for for a tie
  * -1 if brd2 is the winner
+ * TODO: handle more death related stuff here
  */
 int joust (bird brd1, bird brd2) {
     if (brd1.p.y > brd2.p.y) return 1;
@@ -161,47 +161,35 @@ int joust (bird brd1, bird brd2) {
 /*
  * Calculates the next x and y coordinates for any bird using its properties only
  * Handles collisions (initiates joust for chars colliding with mobs)
- * Detects screen edge and moves bird accordingly (TODO: add header ref for screen size)
+ * Detects screen edge and moves bird accordingly
+ * TODO: put movement in loop to detect collisions
  */
 void moveBird (bird *b, birds *brds, platforms p) {
-    /* We save the birds original position so as to roll it back when needed */
-    int oX = b->p.x, oY = b->p.y;
     int tmpID, i, tmpVal;
 
     /* Set new positions now. Check for problems later */
     b->p.x += b->hVel;
-    b->p.y += b->vVel;
+    b->p.y -= b->vVel;
 
     if ((tmpID = birdCollision(*b, *brds)) != -1) { /* Colliding with other bird */
         /* Find the bird the collision happened with */
         i = 0;
         while (brds->brd[i].instanceID != tmpID) i++;
 
-        if (b->b.isMob != brds->brd[i].b.isMob) { /* Both birds are of different kind */
-            tmpVal = joust(*b, brds->brd[i]); /* Get Joust result */
-            if (tmpVal == 0) { /* Tie. Simply bounce off both birds */
-                b->hVel *= -1;
-                brds->brd[i].hVel *= -1;
-            } else { /* One bird won over the other */
-                if (b->b.isMob) { /* Current bird is mob */
-                    if (tmpVal == 1) { /* Won over a player */
-                        brds->brd[i].deathTime = MLV_get_time(); /* Get time of death */
-                        /* Hide the bird at screen edge */
-                        brds->brd[i].p.x = SCREENWIDTH; 
-                        brds->brd[i].p.y = SCREENWIDTH;
-                    } else { /* Lost to a player */
+        tmpVal = joust(*b, brds->brd[i]); /* Get Joust result */
 
-                    }
-                } else { /* Current bird is player */
-                    if (tmpVal == 1) { /* Won over mob */
-
-                    } else { /* Lost to a mob */
-
-                    }
-                }
-            }
+        if (b->b.isMob != brds->brd[i].b.isMob && tmpVal != 0) { /* Both birds are of different kind and not in a tie */
+            if (tmpVal == 1) handleDeath(&brds->brd[i]); /* First bird won */
+            else handleDeath(b); /* Second bird won */
+            /* TODO: Handle scores */
+        } else { /* Two birds of the same kind bounce off each other */
+            b->hVel *= -1;
+            b->dir *= -1;
+            brds->brd[i].hVel *= -1;
+            brds->brd[i].dir *= -1;
         }
     }
+
     if ((tmpID = platCollision(*b, p, 0)) != -1) { /* Colliding with platform */
         /* Find the guilty platform */
         i = 0;
@@ -216,8 +204,11 @@ void moveBird (bird *b, birds *brds, platforms p) {
             break;
         case 2: /* Bird collides with top of platform (aka stands on it) */
             b->p.y = p.plt[i].p.y - b->b.o.s.height; /* Snap to platform vertically */
-        case 4: /* Bird bumps its head on platform */
             b->vVel = 0; /* Stop all vertical movement */
+            break;
+        case 4: /* Bird bumps its head on platform */
+            b->p.y = p.plt[i].p.y + p.plt[i].o.s.height; /* Snap to platform end */
+            b->vVel = -b->vVel; /* Bounce off */
             break;
         default:
             /* Do nothing I guess */
@@ -226,13 +217,64 @@ void moveBird (bird *b, birds *brds, platforms p) {
     } else { /* Falling */
         b->vVel -= b->b.vSpeed;
     }
+
+    if (b->p.y < 0) {
+        b->p.y = 0;
+        b->vVel = -b->vVel;
+    }
+    if (b->p.y + b->b.o.s.height > SCREENHEIGHT) {
+        b->p.y = SCREENHEIGHT - b->b.o.s.height;
+        b->vVel = 0; /* -b->vVel is a LOT more fun */
+    }
+    if (b->p.x < -b->b.o.s.width / 2) {
+        b->p.x = SCREENHEIGHT + b->b.o.s.width / 2;
+    }
+    if (b->p.x > SCREENWIDTH + b->b.o.s.width / 2) {
+        b->p.x = -b->b.o.s.width / 2;
+    }
+
+    if (b->hVel > MAXVEL) b->hVel = MAXVEL;
+    if (b->vVel > MAXVEL) b->vVel = MAXVEL;
 }
 
 /*
  * Updates the position of a player controlled bird
  */
-void updateCharPos (bird *b, bird brd[MAXINSTANCES], platform plt[PLATFORMS]) {
-    /* TODO: update hVel if on ground only, unless there's a change of direction. Test what hVel becomes in that case */
+void updateCharPos (bird *b) {
+    if (b->player == 1) {
+        if(MLV_get_keyboard_state(MLV_KEYBOARD_a) == MLV_PRESSED){ /* Left */
+            b->hVel -= b->b.hSpeed;
+            b->dir = -1;
+        }
+        if(MLV_get_keyboard_state(MLV_KEYBOARD_d) == MLV_PRESSED){ /* Right */
+            b->hVel += b->b.hSpeed;
+            b->dir = 1;
+        }
+        if(MLV_get_keyboard_state(MLV_KEYBOARD_s) == MLV_PRESSED || MLV_get_keyboard_state(MLV_KEYBOARD_w) == MLV_PRESSED || MLV_get_keyboard_state(MLV_KEYBOARD_SPACE) == MLV_PRESSED){ /* Flap */
+            if (!b->flapped) {
+                b->vVel += b->b.flapStrength;
+                b->flapped = 1;
+            }
+        } else b->flapped = 0;
+    } else if (b->player == 2) {
+        if(MLV_get_keyboard_state(MLV_KEYBOARD_LEFT) == MLV_PRESSED){ /* Left */
+            b->hVel -= b->b.hSpeed;
+            b->dir = -1;
+        }
+        if(MLV_get_keyboard_state(MLV_KEYBOARD_RIGHT) == MLV_PRESSED){ /* Right */
+            b->hVel += b->b.hSpeed;
+            b->dir = 1;
+        }
+        if(MLV_get_keyboard_state(MLV_KEYBOARD_DOWN) == MLV_PRESSED || MLV_get_keyboard_state(MLV_KEYBOARD_UP) == MLV_PRESSED){ /* Flap */
+            if (!b->flapped) {
+                b->vVel += b->b.flapStrength;
+                b->flapped = 1;
+            }
+        } else b->flapped = 0;
+    }
+
+    if (b->hVel > MAXVEL) b->hVel = MAXVEL;
+    if (b->vVel > MAXVEL) b->vVel = MAXVEL;
 }
 
 /*

@@ -10,3 +10,6 @@ all:
 test : Modules/Objects/J_objects.o Modules/Controls/J_controls.o Modules/Screen/J_screen.o test.c
 clean :
 	rm -f *.o test 
+	+$(MAKE) clean -C Modules/Objects
+	+$(MAKE) clean -C Modules/Controls
+	+$(MAKE) clean -C Modules/Screen

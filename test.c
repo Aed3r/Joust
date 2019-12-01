@@ -75,9 +75,9 @@ int main() {
 
     /* CONTROLS CREATION TEST */
     createPlatform(1, oT, &p, 500, 500);
-    spawnBird(2, bT, &b, 500, 350, 1, -1);
-    spawnBird(3, bT, &b, 550, 360, 1, 1);
-    spawnBird(3, bT, &b, 490, 340, 1, 1);
+    spawnBird(2, bT, &b, 500, 350, 1, 1);
+    spawnBird(3, bT, &b, 550, 360, 1, -1);
+    spawnBird(3, bT, &b, 490, 340, 1, -1);
 
     printP(&p);
     printB(&b);
@@ -95,12 +95,20 @@ int main() {
 
     /* CONTROLS PHYSICS TEST */
 
+    b.l -= 1; /* "kill" the last bird */
+    b.l -= 1; /* "kill" the last bird */
+
     while(done != 1) {
         dispClear();
-        for (i = 0; i < b.l; i++) moveBird(&b.brd[i], b, p);
+        for (i=0; i < b.l; i++) if (b.brd[i].b.isMob != 1) updateCharPos(&b.brd[i]);
+        for (i = 0; i < b.l; i++) moveBird(&b.brd[i], &b, p);
         dispBirds(b);
+        dispPlats(p);
+
         MLV_actualise_window();
         MLV_delay_according_to_frame_rate();
+
+        if(MLV_get_keyboard_state(MLV_KEYBOARD_ESCAPE) == MLV_PRESSED) done = 1;
     }
 
     MLV_free_window();

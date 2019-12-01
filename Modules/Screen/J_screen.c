@@ -34,6 +34,10 @@ MLV_Image* loadImage(char *fileName) {
     return 0;
 }
 
+void drawUglyRect (point p, size s, MLV_Color c) {
+	MLV_draw_filled_rectangle(p.x, p.y, s.width, s.height, c);
+}
+
 /*
  * Displays all platforms
  */
@@ -41,9 +45,12 @@ void dispPlats(platforms p){
 	int i = 0;
 	MLV_Image *image;
 	for(i=0;i<p.l;i++){
-		image = loadImage(p.plt[i].o.spriteName); /*Charge l'image qui correspond a celle de notre Plateforme*/
+		/*Charge l'image qui correspond a celle de notre Plateforme */
+		/*image = loadImage(p.plt[i].o.spriteName); 
 		MLV_draw_image(image, p.plt[i].p.x, p.plt[i].p.y);
-		MLV_free_image(image);
+		MLV_free_image(image); 
+		*/
+		drawUglyRect(p.plt[i].p, p.plt[i].o.s, MLV_COLOR_PINK);
 	}
 }
 
@@ -54,9 +61,12 @@ void dispBirds(birds bird){
 	int i = 0;
 	MLV_Image *image;
 	for(i=0;i<bird.l;i++){
-		image = loadImage(bird.brd[i].b.o.spriteName); /*On charge l'image qui correspond a notre oiseau*/
+		/*On charge l'image qui correspond a notre oiseau*/
+		/*image = loadImage(bird.brd[i].b.o.spriteName);
 		MLV_draw_image(image, bird.brd[i].p.x, bird.brd[i].p.y);
 		MLV_free_image(image);
+		*/
+		drawUglyRect(bird.brd[i].p, bird.brd[i].b.o.s, MLV_COLOR_BLUE);
 	}
 }
 
