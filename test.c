@@ -93,8 +93,6 @@ int main() {
     printf("Platform collision Red: %d\n", platCollision(b.brd[1], p, 0));
     printf("Bird collision: %d\n", birdCollision(b.brd[0], b));
 
-    MLV_wait_keyboard_or_mouse(NULL, NULL, NULL, NULL, NULL);
-
     /* CONTROLS PHYSICS TEST */
 
     while(done != 1) {

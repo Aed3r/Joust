@@ -113,11 +113,10 @@ void dispFrame(platforms p, birds b, char statList[5]){
 }
 
 /*
- * Displays a menu with buttons passed as parameters
- * Returns the index of the clicked button
- * Can display an image if given a valid path
+ * Displays a menu with the image given as parameter
+ * returns the number of player or 3 if the HIGHSCORE has been clicked
  */
-int dispMenu(char *button[MAXMENUCHARS], char *imgPath);
+int dispMenu(char *imgPath);
 
 /*
  * Clear the display by putting a black box on top of it
