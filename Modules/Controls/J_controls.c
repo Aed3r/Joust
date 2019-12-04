@@ -33,6 +33,7 @@ int spawnBird (int oID, birdTypes bt, birds *b, int x, int y, int dir, int playe
     b->brd[m].player = player;
     b->brd[m].deathTime = -1;
     b->brd[m].flapped = 0;
+    b->brd[m].gotStuck = 0;
 
     b->l++;
 
@@ -226,11 +227,21 @@ void moveBird (bird *b, birds *brds, platforms p) {
         }
 
         /* Test for collision with a platform */
-        if (platCollision(*b, p, 0) != -1) {
+        if ((tmpID = platCollision(*b, p, 0)) != -1) {
+            /* Test if the bird wasn't able to free itself last round */
+            if (b->gotStuck) {
+                /* Find platform */
+                i = 0;
+                while (p.plt[i].instanceID != tmpID) i++;
+                /* Move bird to top of platform */
+                b->p.y = p.plt[i].p.y - b->b.o.s.height - 1;
+                b->gotStuck = 0;
+            }
             /* Bounce off the other way */
             b->hVel *= -1;
             b->dir *= -1;
             b->p.x -= increment.x;
+            b->gotStuck = 1;
             done = 1;
         }
         
@@ -311,32 +322,40 @@ void moveBird (bird *b, birds *brds, platforms p) {
  * Updates the position of a player controlled bird
  */
 void updateCharPos (bird *b) {
+    /* Player 1's input */
     if (b->player == 1) {
+        /* Test for flap */
         if(MLV_get_keyboard_state(MLV_KEYBOARD_s) == MLV_PRESSED || MLV_get_keyboard_state(MLV_KEYBOARD_w) == MLV_PRESSED || MLV_get_keyboard_state(MLV_KEYBOARD_SPACE) == MLV_PRESSED){ /* Flap */
             if (!b->flapped) {
                 b->vVel += b->b.flapStrength;
                 b->flapped = 1;
             }
         } else b->flapped = 0;
+        /* Test for left */
         if(MLV_get_keyboard_state(MLV_KEYBOARD_a) == MLV_PRESSED || MLV_get_keyboard_state(MLV_KEYBOARD_q) == MLV_PRESSED){ /* Left */
             if (b->flapped || b->vVel == 0 || b->vVel == 1) b->hVel -= b->b.hSpeed; /* Prevent direction changes midair without flapping */
             b->dir = -1;
         }
+        /* Test for right */
         if(MLV_get_keyboard_state(MLV_KEYBOARD_d) == MLV_PRESSED){ /* Right */
             if (b->flapped || b->vVel == 0 || b->vVel == 1) b->hVel += b->b.hSpeed; /* Prevent direction changes midair without flapping */
             b->dir = 1;
         }
+    /* Player 2's input */
     } else if (b->player == 2) {
+        /* Test for flap */
         if(MLV_get_keyboard_state(MLV_KEYBOARD_DOWN) == MLV_PRESSED || MLV_get_keyboard_state(MLV_KEYBOARD_UP) == MLV_PRESSED){ /* Flap */
             if (!b->flapped) {
                 b->vVel += b->b.flapStrength;
                 b->flapped = 1;
             }
         } else b->flapped = 0;
+        /* Test for left */
         if(MLV_get_keyboard_state(MLV_KEYBOARD_LEFT) == MLV_PRESSED){ /* Left */
             if (b->flapped || b->vVel == 0 || b->vVel == 1) b->hVel -= b->b.hSpeed; /* Prevent direction changes midair without flapping */
             b->dir = -1;
         }
+        /* Test for right */
         if(MLV_get_keyboard_state(MLV_KEYBOARD_RIGHT) == MLV_PRESSED){ /* Right */
             if (b->flapped || b->vVel == 0 || b->vVel == 1) b->hVel += b->b.hSpeed; /* Prevent direction changes midair without flapping */
             b->dir = 1;
