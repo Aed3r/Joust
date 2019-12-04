@@ -7,9 +7,11 @@ all: clean
 	+$(MAKE) -C Modules/Objects
 	+$(MAKE) -C Modules/Controls
 	+$(MAKE) -C Modules/Screen
-test : Modules/Objects/J_objects.o Modules/Controls/J_controls.o Modules/Screen/J_screen.o test.c
+	+$(MAKE) -C Modules/IA
+test : Modules/Objects/J_objects.o Modules/Controls/J_controls.o Modules/Screen/J_screen.o Modules/IA/J_ia.o test.c
 clean :
 	rm -f *.o test 
 	+$(MAKE) clean -C Modules/Objects
 	+$(MAKE) clean -C Modules/Controls
 	+$(MAKE) clean -C Modules/Screen
+	+$(MAKE) clean -C Modules/IA
