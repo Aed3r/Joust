@@ -91,6 +91,7 @@ void dispStatus(int nbjr, int score1, int score2, int vie1, int vie2){
 			MLV_TEXT_LEFT
 		);
 	}
+	MLV_free_font(font);
 }
 
 /*
@@ -107,12 +108,13 @@ void dispText(char msg[MAXMSGCHARS]){
 		MLV_COLOR_RED, MLV_COLOR_WHITE, MLV_COLOR_BLACK,
 		MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER
 		);
+	MLV_free_font(font);
 }
 
 /*
  * Displays the current frame according to the games state
  */
-void dispFrame(platforms p, birds b, char statList[5]){
+void dispFrame(platforms p, birds b, int statList[5]){
 	dispPlats(p);
 	dispBirds(b);
 	dispStatus(statList[0],statList[1],statList[2],statList[3],statList[4]);
@@ -126,7 +128,7 @@ int dispMenu(char *filepath){
 	MLV_Font* font = MLV_load_font( "Data/Fonts/BebasNeue-Regular.ttf" , 30);
 	MLV_Image *imageMenu;
 	MLV_Event event;
-	int x = 0, y = 0, ok = 0, nbrj = 1; 
+	int x = 0, y = 0, ok = 0, nbrj = 1, compteur = 1; 
 	char text[25];
 	/* Fond du menu */
 	imageMenu = MLV_load_image(filepath);
@@ -170,14 +172,18 @@ int dispMenu(char *filepath){
 			return nbrj;
 		}else if (x > (SCREENWIDTH * 0.2) && x < (SCREENWIDTH * 0.8) && y > (SCREENHEIGHT * 0.7)
 			&& y < (SCREENHEIGHT * 0.80)){
-			if(nbrj == 1){
-				nbrj = 2;	
-			}else nbrj = 1;
+			if(nbrj == 1 && compteur == 1){
+				nbrj = 2;
+			}else if(compteur == 1) nbrj = 1;
+			if(compteur == 1){
+				compteur = 2;
+			}else compteur = 1;
 		}else if (x > (SCREENWIDTH * 0.2) && x < (SCREENWIDTH * 0.8) && y > (SCREENHEIGHT * 0.85)
 			&& y < (SCREENHEIGHT * 0.95)){
 			return 3;
 		}
 	}	
+	MLV_free_font(font);
 }
 
 /*
