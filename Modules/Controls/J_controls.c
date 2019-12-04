@@ -98,20 +98,6 @@ void handleDeath (bird *b) {
 }
 
 /*
- * Returns which side of the rectangle defined by (p1, s1), the second rectangle (p2, s2) collides with
- * i.e : first rect is a platform and second a bird
- * 1: Right, 2: Top, 3: Left, 4: Bottom
- */
-int collisionSide (point p1, size s1, point p2, size s2) {
-    if (p2.y + s2.height >= p1.y) return 2; /* Top */
-    else if (p2.y <= p1.y + s1.height) return 4; /* Bottom */
-    else { /* One side */
-        if (p2.x - s2.width <= p1.x) return 1; /* Right */
-        else return 3; /* Left */
-    }
-}
-
-/*
  * Returns the instance ID of any platform colliding with the bird passed as param
  * Returns -1 otherwise
  * yOffset lets you test for relative positions
@@ -219,9 +205,15 @@ void moveBird (bird *b, birds *brds, platforms p) {
                 b->dir *= -1;
                 break;
             case 0:
+                /* Move second bird according to first ones direction to prevent getting stuck */
+                if (b->hVel > 0) brds->brd[i].p.x = b->p.x + b->b.o.s.width + 5;
+                else brds->brd[i].p.x = b->p.x - brds->brd[i].b.o.s.width - 5;
+                /* Bounce both birds off each other */
                 b->hVel *= -1;
                 b->dir *= -1;
-                __attribute__((fallthrough)); /* Suppress fallthrough warning */
+                brds->brd[i].hVel *= -1;
+                brds->brd[i].dir *= -1;
+                break;
             case -1:
                 brds->brd[i].hVel *= -1;
                 brds->brd[i].dir *= -1;
@@ -259,8 +251,13 @@ void moveBird (bird *b, birds *brds, platforms p) {
                     b->vVel *= -1;
                     break;
                 case 0:
+                    /* Move second bird according to first ones direction to prevent getting stuck */
+                    if (b->vVel > 0) brds->brd[i].p.y = b->p.y - brds->brd[i].b.o.s.height - 5;
+                    else brds->brd[i].p.y = b->p.y + b->b.o.s.height + 5;
+                    /* Bounce both birds off each other */
                     b->vVel *= -1;
-                    __attribute__((fallthrough)); /* Suppress fallthrough warning */
+                    brds->brd[i].vVel *= -1;
+                    break;
                 case -1:
                     brds->brd[i].vVel *= -1;
                     break;

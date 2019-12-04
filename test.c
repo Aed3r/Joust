@@ -74,6 +74,7 @@ int main() {
     p.l = 0;
     MLV_create_window("Joust", NULL, SCREENWIDTH, SCREENHEIGHT);
     MLV_change_frame_rate(30);
+
     /* OBJECTS TEST */
     importOBJs(&oT, "Data/Files/objects");
     importBirdTypes(&bT, &oT, "Data/Files/birds");
