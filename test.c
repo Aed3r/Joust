@@ -61,6 +61,13 @@ int main() {
     birds b;
     platforms p;
     int done = 0, i;
+    int listArg[5];
+    listArg[0] = 2;
+    listArg[1] = 100;
+    listArg[2] = 100;
+    listArg[3] = 3;
+    listArg[4] = 3;
+
 
     b.l = 0;
     p.l = 0;
@@ -105,8 +112,7 @@ int main() {
         dispClear();
         for (i=0; i < b.l; i++) if (b.brd[i].b.isMob != 1) updateCharPos(&b.brd[i]);
         for (i = 0; i < b.l; i++) moveBird(&b.brd[i], &b, p);
-        dispBirds(b);
-        dispPlats(p);
+        dispFrame(p, b, listArg);
         printf("hVel : %d ; vVel : %d\n", b.brd[0].hVel, b.brd[0].vVel);
 
         MLV_actualise_window();
