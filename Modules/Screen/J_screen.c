@@ -95,6 +95,7 @@ void dispStatus(int nbjr, int score1, int score2, int vie1, int vie2){
 			MLV_TEXT_LEFT
 		);
 	}
+	MLV_free_font(font);
 }
 
 /*
@@ -111,6 +112,7 @@ void dispText(char msg[MAXMSGCHARS]){
 		MLV_COLOR_RED, MLV_COLOR_WHITE, MLV_COLOR_BLACK,
 		MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER
 		);
+	MLV_free_font(font);
 }
 
 /*
@@ -185,6 +187,7 @@ int dispMenu(char *filepath){
 			return 3;
 		}
 	}	
+	MLV_free_font(font);
 }
 
 /*
