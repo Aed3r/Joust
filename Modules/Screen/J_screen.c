@@ -131,7 +131,7 @@ int dispMenu(char *filepath){
 	int x = 0, y = 0, ok = 0, nbrj = 1, compteur = 1; 
 	char text[25];
 	/* Fond du menu */
-	imageMenu = MLV_load_image(filepath);
+	imageMenu = loadImage(filepath);
 	/* Bouttons */
 	while(ok == 0){
 		vspfunc(text, "Nombre de joueurs : %d", nbrj);
