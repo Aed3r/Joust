@@ -30,8 +30,7 @@ MLV_Image* loadImage(char *fileName) {
         fclose(file);
         tmpImg = MLV_load_image(path);
 		return tmpImg;
-    }
-    return 0;
+    } return 0;
 }
 
 void drawUglyRect (point p, size s, MLV_Color c) {
@@ -46,7 +45,8 @@ void dispPlats(platforms p){
 	MLV_Image *image;
 	for(i=0;i<p.l;i++){
 		/*Charge l'image qui correspond a celle de notre Plateforme */
-		image = loadImage(p.plt[i].o.spriteName); 
+		image = loadImage(p.plt[i].o.spriteName);
+		MLV_resize_image(image, p.plt[i].o.s.width, p.plt[i].o.s.height);
 		MLV_draw_image(image, p.plt[i].p.x, p.plt[i].p.y);
 		MLV_free_image(image); 
 	}
@@ -61,6 +61,8 @@ void dispBirds(birds bird){
 	for(i=0;i<bird.l;i++){
 		/*On charge l'image qui correspond a notre oiseau*/
 		image = loadImage(bird.brd[i].b.o.spriteName);
+		if (bird.brd[i].dir == 1) MLV_vertical_image_mirror(image);
+		MLV_resize_image(image, bird.brd[i].b.o.s.width, bird.brd[i].b.o.s.height);
 		MLV_draw_image(image, bird.brd[i].p.x, bird.brd[i].p.y);
 		MLV_free_image(image);
 	}
@@ -131,7 +133,7 @@ int dispMenu(char *filepath){
 	int x = 0, y = 0, ok = 0, nbrj = 1, compteur = 1; 
 	char text[25];
 	/* Fond du menu */
-	imageMenu = loadImage(filepath);
+	if ((imageMenu = loadImage(filepath)) == 0) return 0;
 	/* Bouttons */
 	while(ok == 0){
 		vspfunc(text, "Nombre de joueurs : %d", nbrj);

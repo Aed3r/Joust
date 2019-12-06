@@ -76,11 +76,11 @@ void updateCharPos(bird *b);
  * Detects potential obstacles and players
  * Either flies straight with small variations or towards the player, according to the aggressivity percentage
  */
-void updateMobPos(bird *b, bird brd[MAXINSTANCES], platform plt[PLATFORMS]);
+void updateMobPos (bird *b, birds brd, platforms plt);
 
 /*
  * Updates the positions of all bird instances 
  */ 
-void updatePos(bird brd[MAXINSTANCES]);
+void updatePos (birds *brds, platforms plts);
 
 #endif

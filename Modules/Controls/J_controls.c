@@ -155,17 +155,6 @@ int joust (bird *brd1, bird *brd2) {
 }
 
 /*
-def moveTowards(self, coords): # Bouge les coordonnées de l'ennemis vers les coordonnées indiqué
-        angle = self.atan2Normalized((self.rect.centery - coords[1]), (coords[0] - self.rect.centerx)) # Angle de la destination par rapport au personnage dans la plan du repère
-        coords = (self.speed * round(math.cos(angle), 5), -self.speed * round(math.sin(angle), 5)) # Trouve les coefficients avec lesquels incrémenté les coordonnées de l'ennemi pour atteindre la destination à l'aide de trigonométrie
-        oldCoords = self.rect.topleft
-        self.rect.move_ip(coords[0], coords[1]) # Incrémente les coordonnées de l'ennemis par le coefficient calculé auparavant
-        for hitbox in self.map.hitboxes:
-                if hitbox.rect.collidepoint(self.rect.center):
-                        self.rect.topleft = oldCoords
-                        break
-*/
-/*
  * Calculates the next x and y coordinates for any bird using its properties only
  * Handles collisions (initiates joust for chars colliding with mobs)
  * Detects screen edge and moves bird accordingly
@@ -181,12 +170,15 @@ void moveBird (bird *b, birds *brds, platforms p) {
 
     /* Get angle to destination */
     angle = atan2(-b->vVel, b->hVel); 
+
     /* Get smallest increment */
     increment.x = cos(angle);
     increment.y = -sin(angle);
+
     /* The biggest absolute velocity determines the amount of steps to take */
     if (abs(b->hVel) > abs(b->vVel)) steps = abs(b->hVel);
     else steps = abs(b->vVel);
+
     /* Go to the destination step by step to check for collisions. If there are, stop */
     for (i = 0; i < steps && !done; i++) {
         /* Increment the X axis first */
@@ -210,10 +202,10 @@ void moveBird (bird *b, birds *brds, platforms p) {
                 if (b->hVel > 0) brds->brd[i].p.x = b->p.x + b->b.o.s.width + 5;
                 else brds->brd[i].p.x = b->p.x - brds->brd[i].b.o.s.width - 5;
                 /* Bounce both birds off each other */
+                brds->brd[i].hVel *= -1;
+                brds->brd[i].dir *= b->dir;
                 b->hVel *= -1;
                 b->dir *= -1;
-                brds->brd[i].hVel *= -1;
-                brds->brd[i].dir *= -1;
                 break;
             case -1:
                 brds->brd[i].hVel *= -1;
@@ -229,21 +221,22 @@ void moveBird (bird *b, birds *brds, platforms p) {
         /* Test for collision with a platform */
         if ((tmpID = platCollision(*b, p, 0)) != -1) {
             /* Test if the bird wasn't able to free itself last round */
-            if (b->gotStuck) {
+            if (b->gotStuck > 10) {
                 /* Find platform */
                 i = 0;
                 while (p.plt[i].instanceID != tmpID) i++;
                 /* Move bird to top of platform */
                 b->p.y = p.plt[i].p.y - b->b.o.s.height - 1;
                 b->gotStuck = 0;
+                printf("clipped\n");
             }
             /* Bounce off the other way */
             b->hVel *= -1;
             b->dir *= -1;
             b->p.x -= increment.x;
-            b->gotStuck = 1;
+            b->gotStuck += 1;
             done = 1;
-        }
+        } else b->gotStuck = 0;
         
         if (!done) {
             /* Increment the Y axis second */
@@ -284,7 +277,7 @@ void moveBird (bird *b, birds *brds, platforms p) {
                 /* Bird bumps its head on platform */
                 if (increment.y >= 0) b->vVel *= -1;
                 /* Bird lands on platform */
-                else b->vVel = b->b.vSpeed; /* compensate for next fall */
+                else b->vVel = b->b.vSpeed; 
                 b->p.y += increment.y;
                 done = 1;
             }
@@ -371,9 +364,19 @@ void updateCharPos (bird *b) {
  * Detects potential obstacles and players
  * Either flies straight with small variations or towards the player, according to the aggressivity percentage
  */
-void updateMobPos (bird *b, bird brd[MAXINSTANCES], platform plt[PLATFORMS]);
+void updateMobPos (bird *b, birds brd, platforms plt){
+
+}
 
 /*
  * Updates the positions of all bird instances 
  */ 
-void updatePos (bird brd[MAXINSTANCES]);
+void updatePos (birds *brds, platforms plts) {
+    int i;
+    
+    for (i = 0; i < brds->l; i++) {
+        if (brds->brd[i].b.isMob) updateMobPos(&brds->brd[i], *brds, plts);
+        else updateCharPos(&brds->brd[i]);
+        moveBird(&brds->brd[i], brds, plts);
+    }
+}

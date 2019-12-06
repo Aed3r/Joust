@@ -5,7 +5,7 @@
 #include "Modules/Objects/J_objects.h"
 #include "Modules/Screen/J_screen.h"
 #include "Modules/Controls/J_controls.h"
-#include "Modules/IA/J_ia.h"
+/*#include "Modules/IA/J_ia.h"*/
 
 /* Show all object types attributes */
 void printOBJTs(objectTypes *o) {
@@ -92,7 +92,7 @@ int main() {
     printB(&b);
 
     /* SCREEN TEST */
-    dispMenu("Data/Sprites/menu.png");
+    dispMenu("menu.png");
     MLV_actualise_window();
     dispClear();
     dispPlats(p);
@@ -115,7 +115,6 @@ int main() {
         for (i=0; i < b.l; i++) if (b.brd[i].b.isMob != 1) updateCharPos(&b.brd[i]);
         for (i = 0; i < b.l; i++) moveBird(&b.brd[i], &b, p);
         dispFrame(p, b, listArg);
-        printf("hVel : %d ; vVel : %d\n", b.brd[0].hVel, b.brd[0].vVel);
 
         MLV_actualise_window();
         MLV_delay_according_to_frame_rate();
