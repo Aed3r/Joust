@@ -31,9 +31,12 @@ int spawnBird (int oID, birdTypes bt, birds *b, int x, int y, int dir, int playe
     b->brd[m].p.x = x;
     b->brd[m].p.y = y;
     b->brd[m].player = player;
+    b->brd[m].lives = 3;
+    b->brd[m].score = 0;
     b->brd[m].deathTime = -1;
     b->brd[m].flapped = 0;
     b->brd[m].gotStuck = 0;
+    b->brd[m].onPlatform = 0;
 
     b->l++;
 
@@ -91,6 +94,7 @@ void handleDeath (bird *b) {
         /* Hide player bird at screen edge */
         b->p.x = SCREENWIDTH; 
         b->p.y = SCREENWIDTH;
+        b->lives -= 1;
     } /* Mobs "transform" into eggs and stay at the same place */
 
     /* Reset velocities */
@@ -142,10 +146,10 @@ int birdCollision (bird b, birds brds) {
 int joust (bird *brd1, bird *brd2) {
     /* Make sure both birds are of different kind */
     if (brd1->b.isMob != brd2->b.isMob) {
-        if (brd1->p.y > brd2->p.y) { /* brd1 won */
+        if (roundf(brd1->p.y) < roundf(brd2->p.y)) { /* brd1 won */
             handleDeath(brd2);
             return 1;
-        } else if (brd2->p.y > brd1->p.y) { /* brd2 won */
+        } else if (roundf(brd2->p.y) < roundf(brd1->p.y)) { /* brd2 won */
             handleDeath(brd1);
             return -1;
         }
@@ -166,7 +170,7 @@ void moveBird (bird *b, birds *brds, platforms p) {
     point increment;
     
     /* Apply gravity */
-    b->vVel -= b->b.vSpeed;
+    if (!b->onPlatform) b->vVel -= b->b.vSpeed;
 
     /* Get angle to destination */
     angle = atan2(-b->vVel, b->hVel); 
@@ -228,7 +232,6 @@ void moveBird (bird *b, birds *brds, platforms p) {
                 /* Move bird to top of platform */
                 b->p.y = p.plt[i].p.y - b->b.o.s.height - 1;
                 b->gotStuck = 0;
-                printf("clipped\n");
             }
             /* Bounce off the other way */
             b->hVel *= -1;
@@ -238,6 +241,7 @@ void moveBird (bird *b, birds *brds, platforms p) {
             done = 1;
         } else b->gotStuck = 0;
         
+        /* If bird hasn't collided horizontally yet */
         if (!done) {
             /* Increment the Y axis second */
             b->p.y -= increment.y;
@@ -272,18 +276,27 @@ void moveBird (bird *b, birds *brds, platforms p) {
             }
 
             /* Test for collision with a platform */
-            if (platCollision(*b, p, 0) != -1) {
+            if ((tmpID = platCollision(*b, p, 0)) != -1) {
+                /* Find platform */
+                i = 0;
+                while (p.plt[i].instanceID != tmpID) i++;
                 /* Act according to side (top or bottom) */
                 /* Bird bumps its head on platform */
                 if (increment.y >= 0) b->vVel *= -1;
                 /* Bird lands on platform */
-                else b->vVel = b->b.vSpeed; 
+                else {
+                    b->p.y = p.plt[i].p.y - b->b.o.s.height;
+                    b->onPlatform = 1;
+                    b->vVel = 0;
+                }
                 b->p.y += increment.y;
                 done = 1;
             }
+            
+            /* Detect when bird not on platform anymore */
+            if(b->onPlatform && platCollision(*b, p, 1) == -1) b->onPlatform = 0;
         }
     }
-    
 
     /* Bumping top of screen */
     if (b->p.y < 0) {
@@ -316,7 +329,7 @@ void moveBird (bird *b, birds *brds, platforms p) {
  */
 void updateCharPos (bird *b) {
     /* Player 1's input */
-    if (b->player == 1) {
+    if (b->player == 1 && b->deathTime == -1) {
         /* Test for flap */
         if(MLV_get_keyboard_state(MLV_KEYBOARD_s) == MLV_PRESSED || MLV_get_keyboard_state(MLV_KEYBOARD_w) == MLV_PRESSED || MLV_get_keyboard_state(MLV_KEYBOARD_SPACE) == MLV_PRESSED){ /* Flap */
             if (!b->flapped) {
@@ -335,7 +348,7 @@ void updateCharPos (bird *b) {
             b->dir = 1;
         }
     /* Player 2's input */
-    } else if (b->player == 2) {
+    } else if (b->player == 2 && b->deathTime == -1) {
         /* Test for flap */
         if(MLV_get_keyboard_state(MLV_KEYBOARD_DOWN) == MLV_PRESSED || MLV_get_keyboard_state(MLV_KEYBOARD_UP) == MLV_PRESSED){ /* Flap */
             if (!b->flapped) {

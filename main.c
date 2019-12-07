@@ -12,13 +12,9 @@ int main() {
     birdTypes bT;
     birds b;
     platforms p;
-    int done = 0, listArg[5];
+    int done = 0;
     b.l = 0;
     p.l = 0;
-    listArg[1] = 100;
-    listArg[3] = 3;
-    listArg[2] = 100;
-    listArg[4] = 3;
 
     MLV_create_window("Joust", NULL, SCREENWIDTH, SCREENHEIGHT);
     MLV_change_frame_rate(30);
@@ -33,25 +29,21 @@ int main() {
     createPlatform(1, oT, &p, 0, 700);
     createPlatform(1, oT, &p, 800, 700);
     createPlatform(1, oT, &p, 990, 700);
-    createPlatform(1, oT, &p, 393, 600);
-    createPlatform(1, oT, &p, 200, 350);
-    createPlatform(1, oT, &p, 586, 350);
+    createPlatform(1, oT, &p, 393, 500);
     createPlatform(1, oT, &p, 0, 150);
     createPlatform(1, oT, &p, 800, 150);
     createPlatform(1, oT, &p, 990, 150);
 
     /* SCREEN TEST */
     switch (dispMenu("menu.png")) {
-    case 1:
-        spawnBird(2, bT, &b, 343, 872, 1, 1);
-        listArg[0] = 1;
-        break;
     case 2:
-        spawnBird(2, bT, &b, 343, 872, -1, 1);
         spawnBird(4, bT, &b, 562, 872, 1, 2);
-        listArg[0] = 2;
+        __attribute__((fallthrough));
+    case 1:
+        spawnBird(2, bT, &b, 343, 872, -1, 1);
         break;
     case 3:
+        /* TODO: show scores */
         break;
     case 0:
     default:
@@ -59,10 +51,12 @@ int main() {
         break;
     }
 
+    spawnBird(3, bT, &b, 400, 200, 1, -1);
+
     while(done != 1) {
         dispClear();
         updatePos(&b, p);
-        dispFrame(p, b, listArg);
+        dispFrame(p, b, oT);
 
         MLV_actualise_window();
         MLV_delay_according_to_frame_rate();

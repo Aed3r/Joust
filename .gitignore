@@ -1,3 +1,4 @@
 Modules/*/*.o
 test
 .vscode
+main

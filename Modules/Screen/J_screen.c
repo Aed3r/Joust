@@ -55,14 +55,34 @@ void dispPlats(platforms p){
 /*
  * Displays all birds
  */
-void dispBirds(birds bird){
-	int i = 0;
+void dispBirds(birds bird, objectTypes oTs){
+	int i = 0, j;
 	MLV_Image *image;
 	for(i=0;i<bird.l;i++){
-		/*On charge l'image qui correspond a notre oiseau*/
-		image = loadImage(bird.brd[i].b.o.spriteName);
-		if (bird.brd[i].dir == 1) MLV_vertical_image_mirror(image);
-		MLV_resize_image(image, bird.brd[i].b.o.s.width, bird.brd[i].b.o.s.height);
+		/*On charge l'image qui correspond a notre oiseau*/	
+
+		if(!bird.brd[i].b.isMob) {
+			/* Display bird */
+			dispStatus(bird.brd[i].player, bird.brd[i].score, bird.brd[i].lives);
+			image = loadImage(bird.brd[i].b.o.spriteName);
+			if (bird.brd[i].dir == 1) MLV_vertical_image_mirror(image);
+			MLV_resize_image(image, bird.brd[i].b.o.s.width, bird.brd[i].b.o.s.height);
+		} else {
+			if (bird.brd[i].deathTime != -1) {
+				/* Display egg instead of bird. Find egg object */
+				j = 0;
+				while (j < oTs.l && oTs.objT[j].objectID != 5) j++;
+
+				image = loadImage(oTs.objT[j].spriteName);
+				MLV_resize_image(image, oTs.objT[j].s.width, oTs.objT[j].s.height);
+			}
+			else {
+				/* Display mob */
+				image = loadImage(bird.brd[i].b.o.spriteName);
+				if (bird.brd[i].dir == 1) MLV_vertical_image_mirror(image);
+				MLV_resize_image(image, bird.brd[i].b.o.s.width, bird.brd[i].b.o.s.height);
+			}
+		}
 		MLV_draw_image(image, bird.brd[i].p.x, bird.brd[i].p.y);
 		MLV_free_image(image);
 	}
@@ -72,19 +92,23 @@ void dispBirds(birds bird){
  * Displays both players lives and score
  */
 
-void dispStatus(int nbjr, int score1, int score2, int vie1, int vie2){
+void dispStatus(int nbjr, int score, int vie){
 	int taille_interligne = 9, widthtxt, heightxt;
 	char player1[50], player2[50];
 	MLV_Font* font = MLV_load_font( "Data/Fonts/BebasNeue-Regular.ttf" , 20 );
-	vspfunc(player1, "Player 1 : %d life \nScore : %d", vie1, score1);
-	MLV_draw_adapted_text_box_with_font(
-		10, 10,
-		player1, font,taille_interligne,
-		MLV_COLOR_RED, MLV_COLOR_WHITE, MLV_COLOR_BLACK,
-		MLV_TEXT_LEFT
+	
+	if(nbjr == 1){
+		if (vie == 0) vspfunc(player1, "Player 1 : DEAD \nScore : %d", score);
+		else vspfunc(player1, "Player 1 : %d life \nScore : %d", vie, score);
+		MLV_draw_adapted_text_box_with_font(
+			10, 10,
+			player1, font,taille_interligne,
+			MLV_COLOR_RED, MLV_COLOR_WHITE, MLV_COLOR_BLACK,
+			MLV_TEXT_LEFT
 		);
-	if(nbjr > 1){
-		vspfunc(player2, "Player 2 : %d life \nScore : %d", vie1, score1);
+	} else if (nbjr == 2){
+		if (vie == 0) vspfunc(player2, "Player 2 : DEAD \nScore : %d", score);
+		else vspfunc(player2, "Player 2 : %d life \nScore : %d", vie, score);
 		MLV_get_size_of_text("Player 2 : 3 life        ", &widthtxt, &heightxt);
 		MLV_draw_adapted_text_box_with_font(
 			(SCREENWIDTH - widthtxt), 10,
@@ -116,10 +140,9 @@ void dispText(char msg[MAXMSGCHARS]){
 /*
  * Displays the current frame according to the games state
  */
-void dispFrame(platforms p, birds b, int statList[5]){
+void dispFrame(platforms p, birds b, objectTypes oTs){
 	dispPlats(p);
-	dispBirds(b);
-	dispStatus(statList[0],statList[1],statList[2],statList[3],statList[4]);
+	dispBirds(b, oTs);
 }
 
 /*

@@ -41,9 +41,12 @@ typedef struct {
     int hVel; /* Horizontal velocity */
     int vVel; /* Vertical velocity */
     int player; /* Player 1's or 2's bird. -1 if it's a mob */
+    int lives; /* Bird lives if they are a player */
+    int score; /* Player score */
     int deathTime; /* Time of last death. Initializes to -1 */
     int flapped; /* 1: player just pressed flap, 0 otherwise */
     int gotStuck; /* 1: player was stuck in platform last frame, 0 otherwise. Failsafe */
+    int onPlatform; /* Indicates when bird, well, is on platform... */
 } bird; /* Instance of a bird type */
 
 typedef struct {

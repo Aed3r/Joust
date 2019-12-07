@@ -62,13 +62,6 @@ int main() {
     birds b;
     platforms p;
     int done = 0, i;
-    int listArg[5];
-    listArg[0] = 2;
-    listArg[1] = 100;
-    listArg[2] = 100;
-    listArg[3] = 3;
-    listArg[4] = 3;
-
 
     b.l = 0;
     p.l = 0;
@@ -96,8 +89,9 @@ int main() {
     MLV_actualise_window();
     dispClear();
     dispPlats(p);
-    dispBirds(b);
-    dispStatus(2, 100, 150, 3, 2);
+    dispBirds(b, oT);
+    dispStatus(1, 100, 3);
+    dispStatus(2, 150, 2);
     MLV_actualise_window(); 
     MLV_wait_keyboard_or_mouse(NULL, NULL, NULL, NULL, NULL);
 
@@ -114,7 +108,7 @@ int main() {
         dispClear();
         for (i=0; i < b.l; i++) if (b.brd[i].b.isMob != 1) updateCharPos(&b.brd[i]);
         for (i = 0; i < b.l; i++) moveBird(&b.brd[i], &b, p);
-        dispFrame(p, b, listArg);
+        dispFrame(p, b, oT);
 
         MLV_actualise_window();
         MLV_delay_according_to_frame_rate();

@@ -16,12 +16,12 @@ void dispPlats(platforms p);
 /*
  * Displays all birds
  */
-void dispBirds(birds bird);
+void dispBirds(birds bird, objectTypes oTs);
 
 /*
  * Displays both players lives and score
  */
-void dispStatus(int nbjr, int score1, int score2, int vie1, int vie2);
+void dispStatus(int nbjr, int score, int vie);
 
 /*
  * Displays the message passed as parameter
@@ -31,7 +31,7 @@ void dispText(char msg[MAXMSGCHARS]);
 /*
  * Displays the current frame according to the games state
  */
-void dispFrame(platforms p, birds b, int statlist[5]);
+void dispFrame(platforms p, birds b, objectTypes oTs);
 
 /*
  * Displays the menu with the image given as parameter
