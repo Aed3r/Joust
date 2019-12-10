@@ -5,7 +5,7 @@
 #include "Modules/Objects/J_objects.h"
 #include "Modules/Screen/J_screen.h"
 #include "Modules/Controls/J_controls.h"
-/*#include "Modules/IA/J_ia.h"*/
+#include "Modules/IA/J_ia.h"
 
 int main() {
     objectTypes oT;
@@ -56,6 +56,7 @@ int main() {
     while(done != 1) {
         dispClear();
         updatePos(&b, p);
+        movePassiveIa(&b);
         dispFrame(p, b, oT);
 
         MLV_actualise_window();
