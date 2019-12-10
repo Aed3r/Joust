@@ -5,7 +5,7 @@
 #include "Modules/Objects/J_objects.h"
 #include "Modules/Screen/J_screen.h"
 #include "Modules/Controls/J_controls.h"
-/*#include "Modules/IA/J_ia.h"*/
+#include "Modules/IA/J_ia.h"
 
 /* Show all object types attributes */
 void printOBJTs(objectTypes *o) {
