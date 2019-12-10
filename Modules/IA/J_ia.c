@@ -1,13 +1,34 @@
 #include "J_ia.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
-int isBelow(birds *b, int n){
-	if(b->brd[0].p.y > b->brd[n].p.y) return 1;
+int isBelow(birds b, int n){
+	if(b.brd[0].p.y < b.brd[n].p.y) return 1;
 	return 0;
 }
 
-void movePassiveIa(birds *b){
-	int i;
-	for(i=2;i<b->l;i++){
-		if(isBelow(b, i)) b->brd[i].flapped = 1;
-	}
+void moveAggIa(bird *b, birds brd){
+    int a;
+    srand(time(0));
+    a = rand() %5;
+	if (b->deathTime == -1) {
+        /* Test for flap */
+        if(isBelow(brd, b->instanceID)){ /*Flap*/
+            if (b->flapped < 1) {
+                b->vVel += b->b.flapStrength;
+                b->flapped ++;
+            }else if(b->flapped < 7){
+                b->flapped ++;
+            }else b->flapped = 0;
+        }else if(a == 1){ /*A out of 10 chance to go there*/
+            if (b->flapped < 1) {
+                b->vVel += b->b.flapStrength;
+                b->flapped ++;
+            }else if(b->flapped < 10){
+                b->flapped ++;
+            }else b->flapped = 0;
+
+        }
+    }
 }
