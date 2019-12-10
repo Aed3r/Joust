@@ -32,13 +32,6 @@ int areColliding (point p1, size s1, point p2, size s2);
 void handleDeath (bird *b);
 
 /*
- * Returns which side the rectangle defined by (c2, s2) collides with the rectangle defined by (c1, s1)
- * 1: Right, 2: Top, 3: Left, 4: Bottom
- * Note on atan2: values  in ranges [0;PI] and [-PI;0]
- */
-int collisionSide (point p1, size s1, point p2, size s2);
-
-/*
  * Returns the instance ID of any platform colliding with the bird passed as param
  * Returns -1 otherwise
 * yOffset lets you test for relative positions

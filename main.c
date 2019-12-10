@@ -51,7 +51,7 @@ int main() {
         break;
     }
 
-    spawnBird(3, bT, &b, 400, 200, 1, -1);
+    spawnBird(3, bT, &b, 350, 200, 1, -1);
 
     while(done != 1) {
         dispClear();

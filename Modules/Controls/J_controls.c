@@ -141,15 +141,15 @@ int birdCollision (bird b, birds brds) {
  * 1 if brd1 is the winner
  * 0 if there's no winner
  * -1 if brd2 is the winner
- * DOES NOT HANDLE physics
+ * DOES NOT HANDLE PHYSICS
  */
 int joust (bird *brd1, bird *brd2) {
-    /* Make sure both birds are of different kind */
-    if (brd1->b.isMob != brd2->b.isMob) {
-        if (roundf(brd1->p.y) < roundf(brd2->p.y)) { /* brd1 won */
+    /* Make sure both birds are of different kind and not both on platforms */
+    if (brd1->b.isMob != brd2->b.isMob && !(brd1->onPlatform && brd2->onPlatform)) {
+        if (brd1->p.y < brd2->p.y) { /* brd1 won */
             handleDeath(brd2);
             return 1;
-        } else if (roundf(brd2->p.y) < roundf(brd1->p.y)) { /* brd2 won */
+        } else if (brd2->p.y < brd1->p.y) { /* brd2 won */
             handleDeath(brd1);
             return -1;
         }
@@ -162,15 +162,17 @@ int joust (bird *brd1, bird *brd2) {
  * Calculates the next x and y coordinates for any bird using its properties only
  * Handles collisions (initiates joust for chars colliding with mobs)
  * Detects screen edge and moves bird accordingly
- * TODO: put movement in loop to detect collisions
  */
 void moveBird (bird *b, birds *brds, platforms p) {
     int tmpID, i, tmpVal, steps, done = 0;
     float angle;
     point increment;
     
-    /* Apply gravity */
-    if (!b->onPlatform) b->vVel -= b->b.vSpeed;
+    /* Apply gravity if bird is not on platform */
+    if(platCollision(*b, p, 2) == -1) {
+        b->vVel -= b->b.vSpeed;
+        b->onPlatform = 0;
+    }
 
     /* Get angle to destination */
     angle = atan2(-b->vVel, b->hVel); 
@@ -282,19 +284,16 @@ void moveBird (bird *b, birds *brds, platforms p) {
                 while (p.plt[i].instanceID != tmpID) i++;
                 /* Act according to side (top or bottom) */
                 /* Bird bumps its head on platform */
-                if (increment.y >= 0) b->vVel *= -1;
-                /* Bird lands on platform */
-                else {
+                if (increment.y >= 0) {
+                    b->vVel *= -1;
+                } else { /* Bird lands on platform */
                     b->p.y = p.plt[i].p.y - b->b.o.s.height;
-                    b->onPlatform = 1;
                     b->vVel = 0;
+                    b->onPlatform = 1;
                 }
                 b->p.y += increment.y;
                 done = 1;
             }
-            
-            /* Detect when bird not on platform anymore */
-            if(b->onPlatform && platCollision(*b, p, 1) == -1) b->onPlatform = 0;
         }
     }
 
@@ -368,8 +367,11 @@ void updateCharPos (bird *b) {
         }
     }
 
+    /* Cap maximal velocities */
     if (b->hVel > MAXVEL) b->hVel = MAXVEL;
     if (b->vVel > MAXVEL) b->vVel = MAXVEL;
+    if (b->hVel < -MAXVEL) b->hVel = -MAXVEL;
+    if (b->vVel < -MAXVEL) b->vVel = -MAXVEL;
 }
 
 /*
