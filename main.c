@@ -56,7 +56,6 @@ int main() {
     while(done != 1) {
         dispClear();
         updatePos(&b, p);
-        movePassiveIa(&b);
         dispFrame(p, b, oT);
 
         MLV_actualise_window();

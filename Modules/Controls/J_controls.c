@@ -144,8 +144,8 @@ int birdCollision (bird b, birds brds) {
  * DOES NOT HANDLE PHYSICS
  */
 int joust (bird *brd1, bird *brd2) {
-    /* Make sure both birds are of different kind and not both on platforms */
-    if (brd1->b.isMob != brd2->b.isMob && !(brd1->onPlatform && brd2->onPlatform)) {
+    /* Make sure both birds are of different kind, not both on platforms and one is not dead */
+    if (brd1->b.isMob != brd2->b.isMob && !(brd1->onPlatform && brd2->onPlatform) && brd1->deathTime == -1 && brd2->deathTime == -1) {
         if (brd1->p.y < brd2->p.y) { /* brd1 won */
             handleDeath(brd2);
             return 1;
@@ -159,6 +159,32 @@ int joust (bird *brd1, bird *brd2) {
 }
 
 /*
+ * Returns the platform instance ID with the least birds nearby
+ */
+int findFreePlat(birds brds, platforms p){
+    int i, j, tmp, maxBdist = 0, maxPdist = 0, tmpPID = -1;
+
+    /* Iterate all platforms */
+    for (i = 0; i < p.l; i++) {
+        /* Iterate all birds */
+        for (j = 0; j < brds.l; j++) {
+            /* Calculate distance between platform and bird */
+            tmp = sqrt(pow(p.plt[i].p.x - brds.brd[j].p.x, 2) + pow(p.plt[i].p.y - brds.brd[j].p.y, 2));
+            /* Keep the biggest distance between one platform and all birds*/
+            if (tmp > maxBdist) maxBdist = tmp;
+        }
+        /* Keep the platform with the highest distance to any bird */
+        if (maxBdist > maxPdist) {
+            maxPdist = maxBdist;
+            tmpPID = p.plt[i].instanceID;
+        }
+    }
+
+    if (tmpPID != -1) return tmpPID;
+    else return -1;
+}
+
+/*
  * Calculates the next x and y coordinates for any bird using its properties only
  * Handles collisions (initiates joust for chars colliding with mobs)
  * Detects screen edge and moves bird accordingly
@@ -168,159 +194,168 @@ void moveBird (bird *b, birds *brds, platforms p) {
     float angle;
     point increment;
     
-    /* Apply gravity if bird is not on platform */
-    if(platCollision(*b, p, 2) == -1) {
-        b->vVel -= b->b.vSpeed;
-        b->onPlatform = 0;
-    }
+    /* Dead players shouldn't move */
+    if (!(b->deathTime != -1 && !b->b.isMob)){
 
-    /* Get angle to destination */
-    angle = atan2(-b->vVel, b->hVel); 
-
-    /* Get smallest increment */
-    increment.x = cos(angle);
-    increment.y = -sin(angle);
-
-    /* The biggest absolute velocity determines the amount of steps to take */
-    if (abs(b->hVel) > abs(b->vVel)) steps = abs(b->hVel);
-    else steps = abs(b->vVel);
-
-    /* Go to the destination step by step to check for collisions. If there are, stop */
-    for (i = 0; i < steps && !done; i++) {
-        /* Increment the X axis first */
-        b->p.x += increment.x;
-
-        /* Test for collision with another bird */
-        if ((tmpID = birdCollision(*b, *brds)) != -1) { 
-            /* Find the bird the collision happened with */
-            i = 0;
-            while (brds->brd[i].instanceID != tmpID) i++;
-            /* Handle collision and get potential joust result */
-            tmpVal = joust(b, &brds->brd[i]);
-            /* Bounce surviving bird(s) off the other */
-            switch (tmpVal) {
-            case 1:
-                b->hVel *= -1;
-                b->dir *= -1;
-                break;
-            case 0:
-                /* Move second bird according to first ones direction to prevent getting stuck */
-                if (b->hVel > 0) brds->brd[i].p.x = b->p.x + b->b.o.s.width + 5;
-                else brds->brd[i].p.x = b->p.x - brds->brd[i].b.o.s.width - 5;
-                /* Bounce both birds off each other */
-                brds->brd[i].hVel *= -1;
-                brds->brd[i].dir *= b->dir;
-                b->hVel *= -1;
-                b->dir *= -1;
-                break;
-            case -1:
-                brds->brd[i].hVel *= -1;
-                brds->brd[i].dir *= -1;
-                b->p.x += increment.x; /* compensate for the next move */
-                break;
-            }
-            /* Go back one step and end progression */
-            b->p.x -= increment.x;
-            done = 1;
+        /* Apply gravity if bird is not on a platform */
+        if(platCollision(*b, p, 2) == -1) {
+            b->vVel -= b->b.vSpeed;
+            b->onPlatform = 0;
         }
 
-        /* Test for collision with a platform */
-        if ((tmpID = platCollision(*b, p, 0)) != -1) {
-            /* Test if the bird wasn't able to free itself last round */
-            if (b->gotStuck > 10) {
-                /* Find platform */
-                i = 0;
-                while (p.plt[i].instanceID != tmpID) i++;
-                /* Move bird to top of platform */
-                b->p.y = p.plt[i].p.y - b->b.o.s.height - 1;
-                b->gotStuck = 0;
-            }
-            /* Bounce off the other way */
-            b->hVel *= -1;
-            b->dir *= -1;
-            b->p.x -= increment.x;
-            b->gotStuck += 1;
-            done = 1;
-        } else b->gotStuck = 0;
-        
-        /* If bird hasn't collided horizontally yet */
-        if (!done) {
-            /* Increment the Y axis second */
-            b->p.y -= increment.y;
+        /* Get angle to destination */
+        angle = atan2(-b->vVel, b->hVel); 
+
+        /* Get smallest increment */
+        increment.x = cos(angle);
+        increment.y = -sin(angle);
+
+        /* The biggest absolute velocity determines the amount of steps to take */
+        if (abs(b->hVel) > abs(b->vVel)) steps = abs(b->hVel);
+        else steps = abs(b->vVel);
+
+        /* Go to the destination step by step to check for collisions. If there are, stop */
+        for (i = 0; i < steps && !done; i++) {
+            /* Increment the X axis first */
+            b->p.x += increment.x;
 
             /* Test for collision with another bird */
             if ((tmpID = birdCollision(*b, *brds)) != -1) { 
-                /* Find the bird the collision happened with */
-                i = 0;
-                while (brds->brd[i].instanceID != tmpID) i++;
-                /* Handle collision and get potential joust result */
-                tmpVal = joust(b, &brds->brd[i]);
-                /* Bounce surviving bird(s) off the other */
+                /* Handle collision and get joust result */
+                tmpVal = joust(b, &brds->brd[tmpID]);
+
+                /* Bounce surviving bird(s) off the/each other */
                 switch (tmpVal) {
                 case 1:
-                    b->vVel *= -1;
+                    b->hVel *= -1;
+                    b->dir *= -1;
                     break;
                 case 0:
                     /* Move second bird according to first ones direction to prevent getting stuck */
-                    if (b->vVel > 0) brds->brd[i].p.y = b->p.y - brds->brd[i].b.o.s.height - 5;
-                    else brds->brd[i].p.y = b->p.y + b->b.o.s.height + 5;
+                    if (b->hVel > 0) brds->brd[tmpID].p.x = b->p.x + b->b.o.s.width + 5;
+                    else brds->brd[tmpID].p.x = b->p.x - brds->brd[tmpID].b.o.s.width - 5;
                     /* Bounce both birds off each other */
-                    b->vVel *= -1;
-                    brds->brd[i].vVel *= -1;
+                    brds->brd[tmpID].hVel *= -1;
+                    brds->brd[tmpID].dir *= b->dir;
+                    b->hVel *= -1;
+                    b->dir *= -1;
                     break;
                 case -1:
-                    brds->brd[i].vVel *= -1;
+                    brds->brd[tmpID].hVel *= -1;
+                    brds->brd[tmpID].dir *= -1;
+                    b->p.x += increment.x; /* compensate for the next move */
                     break;
                 }
-                /* Go back one step (if no dead) and end progression */
-                if (tmpVal != -1) b->p.y += increment.y;
+                /* Go back one step and end progression */
+                b->p.x -= increment.x;
                 done = 1;
             }
 
             /* Test for collision with a platform */
             if ((tmpID = platCollision(*b, p, 0)) != -1) {
-                /* Find platform */
-                i = 0;
-                while (p.plt[i].instanceID != tmpID) i++;
-                /* Act according to side (top or bottom) */
-                /* Bird bumps its head on platform */
-                if (increment.y >= 0) {
-                    b->vVel *= -1;
-                } else { /* Bird lands on platform */
-                    b->p.y = p.plt[i].p.y - b->b.o.s.height;
-                    b->vVel = 0;
-                    b->onPlatform = 1;
+                /* Test if the bird wasn't able to free itself last round */
+                if (b->gotStuck > 10) {
+                    /* Find platform */
+                    i = 0;
+                    while (p.plt[i].instanceID != tmpID) i++;
+                    /* Move bird to top of platform */
+                    b->p.y = p.plt[i].p.y - b->b.o.s.height - 1;
+                    b->gotStuck = 0;
                 }
-                b->p.y += increment.y;
+
+                /* Bounce off the other way */
+                b->hVel *= -1;
+                b->dir *= -1;
+                b->p.x -= increment.x;
+                b->gotStuck += 1;
                 done = 1;
+            } else b->gotStuck = 0;
+            
+            /* If bird hasn't collided horizontally yet */
+            if (!done) {
+                /* Increment the Y axis second */
+                b->p.y -= increment.y;
+
+                /* Test for collision with another bird */
+                if ((tmpID = birdCollision(*b, *brds)) != -1) { 
+                    /* Handle collision and get joust result */
+                    tmpVal = joust(b, &brds->brd[tmpID]);
+
+                    /* Bounce surviving bird(s) off the/each other */
+                    switch (tmpVal) {
+                    case 1:
+                        b->vVel *= -1;
+                        break;
+                    case 0:
+                        /* Move second bird according to first ones direction to prevent getting stuck */
+                        if (b->vVel > 0) brds->brd[tmpID].p.y = b->p.y - brds->brd[tmpID].b.o.s.height - 5;
+                        else brds->brd[tmpID].p.y = b->p.y + b->b.o.s.height + 5;
+                        /* Bounce both birds off each other */
+                        b->vVel *= -1;
+                        brds->brd[tmpID].vVel *= -1;
+                        break;
+                    case -1:
+                        brds->brd[tmpID].vVel *= -1;
+                        break;
+                    }
+                    /* Go back one step (if no dead) and end progression */
+                    if (tmpVal != -1) b->p.y += increment.y;
+                    done = 1;
+                }
+
+                /* Test for collision with a platform */
+                if ((tmpID = platCollision(*b, p, 0)) != -1) {
+                    /* Act according to side (top or bottom) */
+                    /* Bird bumps its head on platform */
+                    if (increment.y >= 0) {
+                        b->vVel *= -1;
+                    } else { /* Bird lands on platform */
+                        b->p.y = p.plt[tmpID].p.y - b->b.o.s.height;
+                        b->vVel = 0;
+                        b->onPlatform = 1;
+                    }
+                    b->p.y += increment.y;
+                    done = 1;
+                }
             }
         }
-    }
 
-    /* Bumping top of screen */
-    if (b->p.y < 0) {
-        b->p.y = 0;
-        b->vVel = -b->vVel;
-    }
-    /* Bumping bottom of screen */
-    if (b->p.y + b->b.o.s.height > SCREENHEIGHT) {
-        b->p.y = SCREENHEIGHT - b->b.o.s.height;
-        b->vVel = 0; /* -b->vVel is a LOT more fun */
-    }
-    /* Bumping left side of screen */
-    if (b->p.x < -b->b.o.s.width / 2) {
-        b->p.x = SCREENHEIGHT + b->b.o.s.width / 2;
-    }
-    /* Bumping right side of screen */
-    if (b->p.x > SCREENWIDTH + b->b.o.s.width / 2) {
-        b->p.x = -b->b.o.s.width / 2;
-    }
+        /* Bumping top of screen */
+        if (b->p.y < 0) {
+            b->p.y = 0;
+            b->vVel = -b->vVel;
+        }
+        /* Bumping bottom of screen */
+        if (b->p.y + b->b.o.s.height > SCREENHEIGHT) {
+            b->p.y = SCREENHEIGHT - b->b.o.s.height;
+            b->vVel = 0; /* -b->vVel is a LOT more fun */
+        }
+        /* Bumping left side of screen */
+        if (b->p.x < -b->b.o.s.width / 2) {
+            b->p.x = SCREENHEIGHT + b->b.o.s.width / 2;
+        }
+        /* Bumping right side of screen */
+        if (b->p.x > SCREENWIDTH + b->b.o.s.width / 2) {
+            b->p.x = -b->b.o.s.width / 2;
+        }
 
-    /* Cap maximal velocities */
-    if (b->hVel > MAXVEL) b->hVel = MAXVEL;
-    if (b->vVel > MAXVEL) b->vVel = MAXVEL;
-    if (b->hVel < -MAXVEL) b->hVel = -MAXVEL;
-    if (b->vVel < -MAXVEL) b->vVel = -MAXVEL;
+        /* Cap maximal velocities */
+        if (b->hVel > MAXVEL) b->hVel = MAXVEL;
+        if (b->vVel > MAXVEL) b->vVel = MAXVEL;
+        if (b->hVel < -MAXVEL) b->hVel = -MAXVEL;
+        if (b->vVel < -MAXVEL) b->vVel = -MAXVEL;
+    
+    /* Respawn player after cooldown */
+    } else {
+        if (MLV_get_time() >= b->deathTime + b->b.respawnTime * 1000) {
+            /* Find a free platform */
+            tmpID = findFreePlat(*brds, p);
+            /* Move bird to that platform */   
+            b->p.x = p.plt[tmpID].p.x + (p.plt[tmpID].o.s.width / 2) - (b->b.o.s.width / 2);
+            b->p.y = p.plt[tmpID].p.y - b->b.o.s.height;
+            b->deathTime = -1;
+        }
+    }
 }
 
 /*

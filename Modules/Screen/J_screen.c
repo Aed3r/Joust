@@ -98,7 +98,7 @@ void dispStatus(int nbjr, int score, int vie){
 	MLV_Font* font = MLV_load_font( "Data/Fonts/BebasNeue-Regular.ttf" , 20 );
 	
 	if(nbjr == 1){
-		if (vie == 0) vspfunc(player1, "Player 1 : DEAD \nScore : %d", score);
+		if (vie <= 0) vspfunc(player1, "Player 1 : DEAD \nScore : %d", score);
 		else vspfunc(player1, "Player 1 : %d life \nScore : %d", vie, score);
 		MLV_draw_adapted_text_box_with_font(
 			10, 10,
@@ -107,7 +107,7 @@ void dispStatus(int nbjr, int score, int vie){
 			MLV_TEXT_LEFT
 		);
 	} else if (nbjr == 2){
-		if (vie == 0) vspfunc(player2, "Player 2 : DEAD \nScore : %d", score);
+		if (vie <= 0) vspfunc(player2, "Player 2 : DEAD \nScore : %d", score);
 		else vspfunc(player2, "Player 2 : %d life \nScore : %d", vie, score);
 		MLV_get_size_of_text("Player 2 : 3 life        ", &widthtxt, &heightxt);
 		MLV_draw_adapted_text_box_with_font(
