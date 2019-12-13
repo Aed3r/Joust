@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include <MLV/MLV_all.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include "../Objects/J_objects.h"
 #include "../values.h"
@@ -14,8 +16,9 @@
  * Returns the length of the birds array
  */ 
 int spawnBird (int oID, birdTypes bt, birds *b, int x, int y, int dir, int player) {
-    int i = 0, n = bt.l, m = b->l;
-
+    int i = 0, n = bt.l, m = b->l, a;
+    srand(time(0));
+    a = rand() % 2;
     /* Search the object corresponding to the passed id */
     while (i < n && bt.brdT[i].o.objectID != oID) i++;
 
@@ -24,8 +27,18 @@ int spawnBird (int oID, birdTypes bt, birds *b, int x, int y, int dir, int playe
 
     /* Set bird instance parameters */
     b->brd[m].b = bt.brdT[i];
-    b->brd[m].dir = dir;
-    b->brd[m].hVel = 0;
+    if(b->brd[m].b.isMob == 1){
+        if (a == 1){
+            b->brd[m].hVel = 10;
+            b->brd[m].dir = 1;
+        }else {
+            b->brd[m].hVel = -10;
+            b->brd[m].dir = -1;
+        }
+    }else{
+        b->brd[m].hVel = 0;
+        b->brd[m].dir = dir;
+    }
     b->brd[m].vVel = 0;
     b->brd[m].instanceID = m;
     b->brd[m].p.x = x;
@@ -415,7 +428,13 @@ void updateCharPos (bird *b) {
  * Either flies straight with small variations or towards the player, according to the aggressivity percentage
  */
 void updateMobPos (bird *b, birds brd, platforms plt){
+    moveAggIa(b, brd);
 
+    /* Cap maximal velocities*/
+    if (b->hVel > MAXVEL) b->hVel = MAXVEL;
+    if (b->vVel > MAXVEL) b->vVel = MAXVEL;
+    if (b->hVel < -MAXVEL) b->hVel = -MAXVEL;
+    if (b->vVel < -MAXVEL) b->vVel = -MAXVEL;
 }
 
 /*

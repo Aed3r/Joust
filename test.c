@@ -106,8 +106,9 @@ int main() {
 
     while(done != 1) {
         dispClear();
-        for (i=0; i < b.l; i++) if (b.brd[i].b.isMob != 1) updateCharPos(&b.brd[i]);
-        for (i = 0; i < b.l; i++) moveBird(&b.brd[i], &b, p);
+        /*for (i=0; i < b.l; i++) if (b.brd[i].b.isMob != 1) updateCharPos(&b.brd[i]);
+        for (i = 0; i < b.l; i++) moveBird(&b.brd[i], &b, p);*/
+        updatePos(&b, p);
         dispFrame(p, b, oT);
 
         MLV_actualise_window();

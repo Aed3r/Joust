@@ -208,12 +208,13 @@ int dispMenu(char *filepath){
 			return 3;
 		}
 	}	
+	return nbrj;
 	MLV_free_font(font);
 }
 
 /*
  * Clear the display by putting a black box on top of it
  */
-int dispClear(){
+void dispClear(){
 	MLV_draw_filled_rectangle(0,0,SCREENWIDTH,SCREENHEIGHT,MLV_COLOR_BLACK);
 }

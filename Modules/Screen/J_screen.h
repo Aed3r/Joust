@@ -42,7 +42,7 @@ int dispMenu();
 /*
  * Clear the display by putting a black box on top of it
  */
-int dispClear();
+void dispClear();
 
 /*
  * Display the top 10 Highest score with name
