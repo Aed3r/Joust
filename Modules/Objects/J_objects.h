@@ -29,9 +29,9 @@ typedef struct {
     float hSpeed; /* Horizontal Speed */
     float vSpeed; /* Vertical Speed */
     float flapStrength; /* Height reached with one flap press. TODO: useless now */
-    int respawnTime; /* Seconds before the bird respawns (mob: egg, character: platform) */
-    int isMob; /*0 = Player, 1 = Mob*/
-    int aggressiveness; /* AI: percentage indicating likeliness to attack player and avoid platforms. 100 for the pterodactyl */
+    int isMob; /* 0 = Player, 1 = Mob*/
+    int aggressiveness; /* AI: percentage indicating likeliness to attack player and avoid platforms */
+    int value; /* What score increment the player gets by killing this bird */
 } birdType; /* Mobs or characters */
 
 typedef struct {
@@ -55,6 +55,7 @@ typedef struct {
     objectType o;
     int instanceID;
     point p;
+    int outOfBounds; /* Wether or not the platform is outside the screen */
 } platform; /* Platform instance */
 
 /* Structs used to keep track of array sizes */

@@ -6,6 +6,7 @@
 
 #include "../Objects/J_objects.h"
 #include "../values.h"
+#include "../IA/J_ia.h"
 
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
@@ -35,16 +36,17 @@ int spawnBird (int oID, birdTypes bt, birds *b, int x, int y, int dir, int playe
             b->brd[m].hVel = -10;
             b->brd[m].dir = -1;
         }
+        b->brd[m].lives = 2;
     }else{
         b->brd[m].hVel = 0;
         b->brd[m].dir = dir;
+        b->brd[m].lives = 3;
     }
     b->brd[m].vVel = 0;
     b->brd[m].instanceID = m;
     b->brd[m].p.x = x;
     b->brd[m].p.y = y;
     b->brd[m].player = player;
-    b->brd[m].lives = 3;
     b->brd[m].score = 0;
     b->brd[m].deathTime = -1;
     b->brd[m].flapped = 0;
@@ -60,7 +62,7 @@ int spawnBird (int oID, birdTypes bt, birds *b, int x, int y, int dir, int playe
  * Creates a new platform instance using the passed ID
  * Returns the length of the platforms array
  */ 
-int createPlatform (int oID, objectTypes ot, platforms *p, int x, int y) {
+int createPlatform (int oID, objectTypes ot, platforms *p, int x, int y, int outOfBounds) {
     int i = 0, n = ot.l, m = p->l;
 
     /* Search the object corresponding to the passed id */
@@ -74,6 +76,7 @@ int createPlatform (int oID, objectTypes ot, platforms *p, int x, int y) {
     p->plt[m].o = ot.objT[i];
     p->plt[m].p.x = x;
     p->plt[m].p.y = y;
+    p->plt[m].outOfBounds = outOfBounds;
 
     p->l++;
 
@@ -100,19 +103,28 @@ int areColliding (point p1, size s1, point p2, size s2) {
  * Handle a birds parameters at their death 
  */
 void handleDeath (bird *b) {
-    /* Get time of death */
-    b->deathTime = MLV_get_time(); 
+    b->lives -= 1;
+    if (b->lives > 0)  {
+        /* Get time of death */
+        b->deathTime = MLV_get_time(); 
 
-    if (b->b.isMob == 0) {
-        /* Hide player bird at screen edge */
-        b->p.x = SCREENWIDTH; 
-        b->p.y = SCREENWIDTH;
-        b->lives -= 1;
-    } /* Mobs "transform" into eggs and stay at the same place */
+        if (b->b.isMob == 0) {
+            /* Hide player bird at screen edge */
+            b->p.x = SCREENWIDTH + 10; 
+            b->p.y = SCREENHEIGHT + 10;
+        } /* Mobs "transform" into eggs and stay at the same place */
 
-    /* Reset velocities */
-    b->hVel = 0;
-    b->vVel = 0;
+        /* Reset velocities */
+        b->hVel = 0;
+        b->vVel = 0;
+    } else {
+        /* Indefinitely move the bird off-screen */
+        b->p.x = SCREENWIDTH + 10; 
+        b->p.y = SCREENHEIGHT + 10;
+        /* Indefinitely reset velocities */
+        b->hVel = 0;
+        b->vVel = 0;
+    }
 }
 
 /*
@@ -152,49 +164,81 @@ int birdCollision (bird b, birds brds) {
 /*
  * Handles the collision of two birds. Returns :
  * 1 if brd1 is the winner
- * 0 if there's no winner
+ * 0 if there's a tie or both birds are of the same type
  * -1 if brd2 is the winner
+ * 2 if a bird collects an egg or a dead player is involved
  * DOES NOT HANDLE PHYSICS
  */
 int joust (bird *brd1, bird *brd2) {
-    /* Make sure both birds are of different kind, not both on platforms and one is not dead */
-    if (brd1->b.isMob != brd2->b.isMob && !(brd1->onPlatform && brd2->onPlatform) && brd1->deathTime == -1 && brd2->deathTime == -1) {
-        if (brd1->p.y < brd2->p.y) { /* brd1 won */
-            handleDeath(brd2);
-            return 1;
-        } else if (brd2->p.y < brd1->p.y) { /* brd2 won */
-            handleDeath(brd1);
-            return -1;
-        }
+    /* One of the birds is a dead player */
+    if ((!brd1->b.isMob && (brd1->lives == 0 || brd1->deathTime != -1)) ||
+        (!brd2->b.isMob && (brd2->lives == 0 || brd2->deathTime != -1))) return 2;
+
+    /* brd2 collects the egg of brd1 */
+    if (brd1->deathTime != -1 && brd2->deathTime == -1 && brd1->b.isMob && !brd2->b.isMob) {
+        brd2->score += brd1->b.value * 2;
+        handleDeath(brd1);
+        return 2;
     }
-    /* Both birds are players, mobs or there was a tie */
+
+    /* brd1 collects the egg of brd2 */
+    if (brd2->deathTime != -1 && brd1->deathTime == -1 && brd2->b.isMob && !brd1->b.isMob) {
+        brd1->score += brd2->b.value * 2;
+        handleDeath(brd2);
+        return 2;
+    }
+
+    /* Check if both birds are players, mobs or there was a tie */
+    if (brd1->b.isMob == brd2->b.isMob || (brd1->onPlatform && brd2->onPlatform)) return 0;
+
+    /* brd1 wins */
+    if (brd1->p.y < brd2->p.y) { 
+        handleDeath(brd2);
+        brd1->score += brd2->b.value;
+        return 1;
+    } 
+
+    /* brd2 wins */
+    if (brd2->p.y < brd1->p.y) { 
+        handleDeath(brd1);
+        brd2->score += brd1->b.value;
+        return -1;
+    }
+
+    /* Tie */
+    if (brd2->p.y == brd1->p.y) return 0;
+
     return 0;
 }
 
 /*
  * Returns the platform instance ID with the least birds nearby
  */
-int findFreePlat(birds brds, platforms p){
+int findFreePlat(birds brds, platforms p) {
     int i, j, tmp, maxBdist = 0, maxPdist = 0, tmpPID = -1;
 
     /* Iterate all platforms */
     for (i = 0; i < p.l; i++) {
-        /* Iterate all birds */
-        for (j = 0; j < brds.l; j++) {
-            /* Calculate distance between platform and bird */
-            tmp = sqrt(pow(p.plt[i].p.x - brds.brd[j].p.x, 2) + pow(p.plt[i].p.y - brds.brd[j].p.y, 2));
-            /* Keep the biggest distance between one platform and all birds*/
-            if (tmp > maxBdist) maxBdist = tmp;
-        }
-        /* Keep the platform with the highest distance to any bird */
-        if (maxBdist > maxPdist) {
-            maxPdist = maxBdist;
-            tmpPID = p.plt[i].instanceID;
+        if (!p.plt[i].outOfBounds) {
+            /* Iterate all birds */
+            for (j = 0; j < brds.l; j++) {
+                /* Ignore dead and just spawned birds */
+                if (brds.brd[j].lives > 0 && brds.brd[j].deathTime == -1 && 
+                    !(brds.brd[j].p.x == -1 && brds.brd[j].p.y == -1)) {
+                    /* Calculate distance between platform and bird */
+                    tmp = sqrt(pow(p.plt[i].p.x - brds.brd[j].p.x, 2) + pow(p.plt[i].p.y - brds.brd[j].p.y, 2));
+                    /* Keep the biggest distance between one platform and all birds*/
+                    if (tmp > maxBdist) maxBdist = tmp;
+                }
+            }
+            /* Keep the platform with the highest distance to any bird */
+            if (maxBdist > maxPdist) {
+                maxPdist = maxBdist;
+                tmpPID = p.plt[i].instanceID;
+            }
         }
     }
-
-    if (tmpPID != -1) return tmpPID;
-    else return -1;
+    return tmpPID;
 }
 
 /*
@@ -206,9 +250,25 @@ void moveBird (bird *b, birds *brds, platforms p) {
     int tmpID, i, tmpVal, steps, done = 0;
     float angle;
     point increment;
+
+    /* Test if the bird wasn't able to free itself in the last rounds and prevent getting stuck */
+    if (b->lives > 0 && b->deathTime == -1 && (tmpID = platCollision(*b, p, 0)) != -1) {
+        if (b->gotStuck > 10) {
+            /* Move bird to top of platform */
+            b->p.y = p.plt[tmpID].p.y - b->b.o.s.height - 1;
+            b->gotStuck = 0;
+        } else b->gotStuck += 1;
+    } else b->gotStuck = 0;
     
-    /* Dead players shouldn't move */
-    if (!(b->deathTime != -1 && !b->b.isMob)){
+    /* Dead players shouldn't move. But mobs should (as eggs) */
+    if (b->lives > 0 && !(b->deathTime != -1 && !b->b.isMob)){
+
+        /* Reset mob if cooldown ran out */
+        if (b->deathTime != -1 && MLV_get_time() >= b->deathTime + MOBTIMEOUT * 1000) {
+            b->deathTime = -1;
+            b->hVel = b->b.hSpeed;
+            b->lives = 2;
+        }
 
         /* Apply gravity if bird is not on a platform */
         if(platCollision(*b, p, 2) == -1) {
@@ -258,6 +318,10 @@ void moveBird (bird *b, birds *brds, platforms p) {
                     brds->brd[tmpID].dir *= -1;
                     b->p.x += increment.x; /* compensate for the next move */
                     break;
+                case 2:
+                default:
+                    /* Do nothing */
+                    break;
                 }
                 /* Go back one step and end progression */
                 b->p.x -= increment.x;
@@ -266,23 +330,12 @@ void moveBird (bird *b, birds *brds, platforms p) {
 
             /* Test for collision with a platform */
             if ((tmpID = platCollision(*b, p, 0)) != -1) {
-                /* Test if the bird wasn't able to free itself last round */
-                if (b->gotStuck > 10) {
-                    /* Find platform */
-                    i = 0;
-                    while (p.plt[i].instanceID != tmpID) i++;
-                    /* Move bird to top of platform */
-                    b->p.y = p.plt[i].p.y - b->b.o.s.height - 1;
-                    b->gotStuck = 0;
-                }
-
                 /* Bounce off the other way */
                 b->hVel *= -1;
                 b->dir *= -1;
                 b->p.x -= increment.x;
-                b->gotStuck += 1;
                 done = 1;
-            } else b->gotStuck = 0;
+            }
             
             /* If bird hasn't collided horizontally yet */
             if (!done) {
@@ -310,6 +363,10 @@ void moveBird (bird *b, birds *brds, platforms p) {
                     case -1:
                         brds->brd[tmpID].vVel *= -1;
                         break;
+                    case 2:
+                    default:
+                        /* Do nothing */
+                        break;
                     }
                     /* Go back one step (if no dead) and end progression */
                     if (tmpVal != -1) b->p.y += increment.y;
@@ -334,21 +391,21 @@ void moveBird (bird *b, birds *brds, platforms p) {
         }
 
         /* Bumping top of screen */
-        if (b->p.y < 0) {
+        if (b->p.y < 0 && b->lives > 0 && b->deathTime == -1) {
             b->p.y = 0;
             b->vVel = -b->vVel;
         }
         /* Bumping bottom of screen */
-        if (b->p.y + b->b.o.s.height > SCREENHEIGHT) {
+        if (b->p.y + b->b.o.s.height > SCREENHEIGHT && b->lives > 0 && b->deathTime == -1) {
             b->p.y = SCREENHEIGHT - b->b.o.s.height;
             b->vVel = 0; /* -b->vVel is a LOT more fun */
         }
         /* Bumping left side of screen */
-        if (b->p.x < -b->b.o.s.width / 2) {
-            b->p.x = SCREENHEIGHT + b->b.o.s.width / 2;
+        if (b->p.x < -b->b.o.s.width / 2 && b->lives > 0 && b->deathTime == -1) {
+            b->p.x = SCREENWIDTH - b->b.o.s.width / 2;
         }
         /* Bumping right side of screen */
-        if (b->p.x > SCREENWIDTH + b->b.o.s.width / 2) {
+        if (b->p.x > SCREENWIDTH - b->b.o.s.width / 2 && b->lives > 0 && b->deathTime == -1) {
             b->p.x = -b->b.o.s.width / 2;
         }
 
@@ -359,8 +416,9 @@ void moveBird (bird *b, birds *brds, platforms p) {
         if (b->vVel < -MAXVEL) b->vVel = -MAXVEL;
     
     /* Respawn player after cooldown */
-    } else {
-        if (MLV_get_time() >= b->deathTime + b->b.respawnTime * 1000) {
+    } else if (!b->b.isMob) {
+        /* Prevent respawn if no lives left, otherwise check for time since death */
+        if (b->lives > 0 && MLV_get_time() >= b->deathTime + PLYRTIMEOUT * 1000) {
             /* Find a free platform */
             tmpID = findFreePlat(*brds, p);
             /* Move bird to that platform */   

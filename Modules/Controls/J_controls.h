@@ -7,6 +7,7 @@
 
 #include "../Objects/J_objects.h"
 #include "../values.h"
+#include "../IA/J_ia.h"
 
 /*
  * Creates a new birdType instance using object ID
@@ -18,7 +19,7 @@ int spawnBird (int oID, birdTypes bt, birds *b, int x, int y, int dir, int playe
  * Creates a new platform instance using the passed ID
  * Returns the length of the platforms array
  */ 
-int createPlatform (int oID, objectTypes ot, platforms *p, int x, int y);
+int createPlatform (int oID, objectTypes ot, platforms *p, int x, int y, int outOfBounds);
 
 /*
  * Returns 1 if two rectangles defined by (p1, s1) and (p2, s2) collide
@@ -51,6 +52,11 @@ int birdCollision (bird b, birds brds);
  * -1 if brd2 is the winner
  */
 int joust(bird *brd1, bird *brd2);
+
+/*
+ * Returns the platform instance ID with the least birds nearby
+ */
+int findFreePlat(birds brds, platforms p);
 
 /*
  * Calculates the next x and y coordinates for any bird only using bird properties

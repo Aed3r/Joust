@@ -16,9 +16,14 @@
 
 /* Controls */
 
-#define PLYRTIMEOUT 5 /* seconds */
-#define MOBTIMEOUT 10 /* seconds */
+#define PLYRTIMEOUT 2 /* seconds */
+#define MOBTIMEOUT 5 /* seconds */
 #define MAXVEL 20
 #define STUCKCOUNT 5 /* amount of frames a bird gets stuck before getting out */
+
+/* Main */
+
+#define WAVECOOLDOWN 5 /* seconds */
+#define MOBSPERWAVE 5 /* MAX 10 */
 
 #endif

@@ -49,6 +49,7 @@ void dispPlats(platforms p){
 		MLV_resize_image(image, p.plt[i].o.s.width, p.plt[i].o.s.height);
 		MLV_draw_image(image, p.plt[i].p.x, p.plt[i].p.y);
 		MLV_free_image(image); 
+		/*MLV_draw_text(p.plt[i].p.x, p.plt[i].p.y, "%d", MLV_COLOR_WHITE, p.plt[i].instanceID);*/
 	}
 }
 
