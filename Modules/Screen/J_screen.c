@@ -162,23 +162,30 @@ int dispMenu(char *filepath){
 		dispClear();
 		MLV_draw_image(imageMenu, 0,0);
 		MLV_draw_text_box_with_font(
-			(SCREENWIDTH * 0.2), (SCREENHEIGHT * 0.55),
+			(SCREENWIDTH * 0.2), (SCREENHEIGHT * 0.52),
 			(SCREENWIDTH * 0.6), (SCREENHEIGHT * 0.1),
 			"Démarrer la partie", font, 9,
 			MLV_COLOR_RED, MLV_COLOR_WHITE, MLV_COLOR_BLACK,
 			MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER
 		);
 		MLV_draw_text_box_with_font(
-			(SCREENWIDTH * 0.2), (SCREENHEIGHT * 0.7),
+			(SCREENWIDTH * 0.2), (SCREENHEIGHT * 0.64),
 			(SCREENWIDTH * 0.6), (SCREENHEIGHT * 0.1),
 			text, font, 9,
 			MLV_COLOR_RED, MLV_COLOR_WHITE, MLV_COLOR_BLACK,
 			MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER
 		);
 		MLV_draw_text_box_with_font(
-			(SCREENWIDTH * 0.2), (SCREENHEIGHT * 0.85),
+			(SCREENWIDTH * 0.2), (SCREENHEIGHT * 0.76),
 			(SCREENWIDTH * 0.6), (SCREENHEIGHT * 0.1),
 			"Afficher les meilleurs scores", font, 9,
+			MLV_COLOR_RED, MLV_COLOR_WHITE, MLV_COLOR_BLACK,
+			MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER
+		);
+		MLV_draw_text_box_with_font(
+			(SCREENWIDTH * 0.2), (SCREENHEIGHT * 0.88),
+			(SCREENWIDTH * 0.6), (SCREENHEIGHT * 0.1),
+			"Quitter le jeu ", font, 9,
 			MLV_COLOR_RED, MLV_COLOR_WHITE, MLV_COLOR_BLACK,
 			MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER
 		);
@@ -191,20 +198,23 @@ int dispMenu(char *filepath){
 				NULL
 				);
 		} while(event != MLV_MOUSE_BUTTON);
-		if (x > (SCREENWIDTH * 0.2) && x < (SCREENWIDTH * 0.8) && y > (SCREENHEIGHT * 0.55)
-			&& y < (SCREENHEIGHT * 0.65)){
+		if (x > (SCREENWIDTH * 0.2) && x < (SCREENWIDTH * 0.8) && y > (SCREENHEIGHT * 0.52)
+			&& y < (SCREENHEIGHT * 0.62)){
 			return nbrj;
-		}else if (x > (SCREENWIDTH * 0.2) && x < (SCREENWIDTH * 0.8) && y > (SCREENHEIGHT * 0.7)
-			&& y < (SCREENHEIGHT * 0.80)){
+		}else if (x > (SCREENWIDTH * 0.2) && x < (SCREENWIDTH * 0.8) && y > (SCREENHEIGHT * 0.64)
+			&& y < (SCREENHEIGHT * 0.74)){
 			if(nbrj == 1 && compteur == 1){
 				nbrj = 2;
 			}else if(compteur == 1) nbrj = 1;
 			if(compteur == 1){
 				compteur = 2;
 			}else compteur = 1;
-		}else if (x > (SCREENWIDTH * 0.2) && x < (SCREENWIDTH * 0.8) && y > (SCREENHEIGHT * 0.85)
-			&& y < (SCREENHEIGHT * 0.95)){
+		}else if (x > (SCREENWIDTH * 0.2) && x < (SCREENWIDTH * 0.8) && y > (SCREENHEIGHT * 0.76)
+			&& y < (SCREENHEIGHT * 0.86)){
 			return 3;
+		}else if (x > (SCREENWIDTH * 0.2) && x < (SCREENWIDTH * 0.8) && y > (SCREENHEIGHT * 0.88)
+			&& y < (SCREENHEIGHT * 0.98)){
+			return 0;
 		}
 	}	
 	return nbrj;
