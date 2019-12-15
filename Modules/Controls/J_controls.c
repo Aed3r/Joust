@@ -18,7 +18,6 @@
  */ 
 int spawnBird (int oID, birdTypes bt, birds *b, int x, int y, int dir, int player) {
     int i = 0, n = bt.l, m = b->l, a;
-    srand(time(0));
     a = rand() % 2;
     /* Search the object corresponding to the passed id */
     while (i < n && bt.brdT[i].o.objectID != oID) i++;
@@ -36,11 +35,11 @@ int spawnBird (int oID, birdTypes bt, birds *b, int x, int y, int dir, int playe
             b->brd[m].hVel = -10;
             b->brd[m].dir = -1;
         }
-        b->brd[m].lives = 2;
+        b->brd[m].lives = 2; /* Only used technically. Please don't modify */
     }else{
         b->brd[m].hVel = 0;
         b->brd[m].dir = dir;
-        b->brd[m].lives = 20;
+        b->brd[m].lives = PLAYERLIVES;
     }
     b->brd[m].vVel = 0;
     b->brd[m].instanceID = m;
@@ -157,7 +156,14 @@ int birdCollision (bird b, birds brds) {
 
     for (i = 0; i < n; i++) {
         if(brds.brd[i].instanceID != b.instanceID) {
-            if (areColliding(b.p, b.b.o.s, brds.brd[i].p, brds.brd[i].b.o.s)) return brds.brd[i].instanceID;
+            if (brds.brd[i].deathTime != -1 && brds.brd[i].b.isMob) printf("(%f %f) [%d %d] vs (%f %f) [%d %d]", 
+            b.p.x, b.p.y, b.b.o.s.width, b.b.o.s.height, 
+            brds.brd[i].p.x, brds.brd[i].p.y, brds.brd[i].b.o.s.width, brds.brd[i].b.o.s.height);
+
+            if (areColliding(b.p, b.b.o.s, brds.brd[i].p, brds.brd[i].b.o.s)) {
+                printf(" -> colliding\n");
+                return brds.brd[i].instanceID;
+            } else if (brds.brd[i].deathTime != -1 && brds.brd[i].b.isMob) printf(" -> not colliding\n");
         }
     }
 
@@ -170,7 +176,7 @@ int birdCollision (bird b, birds brds) {
  * 0 if there's a tie or both birds are of the same type
  * -1 if brd2 is the winner
  * 2 if a bird collects an egg or a dead player is involved
- * DOES NOT HANDLE PHYSICS
+ * DOES NOT HANDLE ALL PHYSICS
  */
 int joust (bird *brd1, bird *brd2, objectTypes oT) {
     /* One of the birds is a dead player */
@@ -192,6 +198,7 @@ int joust (bird *brd1, bird *brd2, objectTypes oT) {
     }
 
     /* Check if both birds are players, mobs or there was a tie */
+    /* Does not check if the platform they're on is the same */
     if (brd1->b.isMob == brd2->b.isMob || (brd1->onPlatform && brd2->onPlatform)) return 0;
 
     /* brd1 wins */
@@ -218,30 +225,33 @@ int joust (bird *brd1, bird *brd2, objectTypes oT) {
  * Returns the platform instance ID with the least birds nearby
  */
 int findFreePlat(birds brds, platforms p) {
-    int i, j, tmp, maxBdist = 0, maxPdist = 0, tmpPID = -1;
+    int tmpPlats[PLATFORMS], i, j, n = 0, good;
+    point tmpP;
+    size tmpS;
 
     /* Iterate all platforms */
     for (i = 0; i < p.l; i++) {
+        /* Only consider visible platforms */
         if (!p.plt[i].outOfBounds) {
-            /* Iterate all birds */
-            for (j = 0; j < brds.l; j++) {
-                /* Ignore dead and just spawned birds */
-                if (brds.brd[j].lives > 0 && brds.brd[j].deathTime == -1 && 
-                    !(brds.brd[j].p.x == -1 && brds.brd[j].p.y == -1)) {
-                    /* Calculate distance between platform and bird */
-                    tmp = sqrt(pow(p.plt[i].p.x - brds.brd[j].p.x, 2) + pow(p.plt[i].p.y - brds.brd[j].p.y, 2));
-                    /* Keep the biggest distance between one platform and all birds*/
-                    if (tmp > maxBdist) maxBdist = tmp;
-                }
+            good = 1;
+            /* Check if any bird over the platform */
+            for (j = 0; j< brds.l; j++) {
+                /* Only consider living birds */
+                if (brds.brd[j].lives > 0 && brds.brd[j].deathTime == -1) {
+                    tmpP.x = p.plt[i].p.x;
+                    tmpP.y = p.plt[i].p.y - brds.brd[j].b.o.s.height * 3;
+                    tmpS.width = p.plt[i].o.s.width;
+                    tmpS.height = brds.brd[j].b.o.s.height * 3 + 10;
+                    if (areColliding(tmpP, tmpS, brds.brd[j].p, brds.brd[j].b.o.s)) good = 0;
+                } else good = 0;
             }
-            /* Keep the platform with the highest distance to any bird */
-            if (maxBdist > maxPdist) {
-                maxPdist = maxBdist;
-                tmpPID = p.plt[i].instanceID;
+            if (good) {
+                tmpPlats[n] = p.plt[i].instanceID;
+                n++;
             }
         }
     }
-    return tmpPID;
+    return tmpPlats[rand() % (n - 1)];
 }
 
 /*

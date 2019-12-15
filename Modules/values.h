@@ -16,6 +16,7 @@
 
 /* Controls */
 
+#define PLAYERLIVES 5
 #define PLYRTIMEOUT 2 /* seconds */
 #define MOBTIMEOUT 5 /* seconds */
 #define MAXVEL 20

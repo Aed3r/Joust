@@ -137,9 +137,17 @@ void dispText(char msg[MAXMSGCHARS]){
 }
 
 /*
+ * Clear the display by putting a black box on top of it
+ */
+void dispClear(){
+	MLV_draw_filled_rectangle(0,0,SCREENWIDTH,SCREENHEIGHT,MLV_COLOR_BLACK);
+}
+
+/*
  * Displays the current frame according to the games state
  */
 void dispFrame(platforms p, birds b, objectTypes oTs){
+	dispClear();
 	dispPlats(p);
 	dispBirds(b, oTs);
 }
@@ -219,11 +227,4 @@ int dispMenu(char *filepath){
 	}	
 	return nbrj;
 	MLV_free_font(font);
-}
-
-/*
- * Clear the display by putting a black box on top of it
- */
-void dispClear(){
-	MLV_draw_filled_rectangle(0,0,SCREENWIDTH,SCREENHEIGHT,MLV_COLOR_BLACK);
 }

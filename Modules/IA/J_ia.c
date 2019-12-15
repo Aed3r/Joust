@@ -10,7 +10,6 @@ int isBelow(birds b, int n){
 
 void moveAggIa(bird *b, birds brd){
     int a;
-    srand(time(0));
     a = rand() %5;
 	if (b->deathTime == -1) {
         /* Test for flap */
@@ -34,7 +33,6 @@ void moveAggIa(bird *b, birds brd){
 
 void movePassiveIa(bird *b){
     int a;
-    srand(time(0));
     a = rand() %2;
     if (b->deathTime == -1) {
         if(a == 1){ /*1 out of 2 chance to go there*/
