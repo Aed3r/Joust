@@ -48,7 +48,6 @@ typedef struct {
     int flapped; /* 1: player just pressed flap, 0 otherwise */
     int gotStuck; /* 1: player was stuck in platform last frame, 0 otherwise. Failsafe */
     int onPlatform; /* Indicates when bird, well, is on platform... */
-    MLV_Image* image; /*Already */
 } bird; /* Instance of a bird type */
 
 typedef struct {

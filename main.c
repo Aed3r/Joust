@@ -84,8 +84,8 @@ int main() {
             if (cdTime == -1) cdTime = MLV_get_time();
             else if (MLV_get_time() >= cdTime + WAVECOOLDOWN * 1000) {
                 /* Countdown over. Spawn new mobs over old ones */
-                if (!b.brd[1].b.isMob) b.l = 2;
-                else b.l = 1;
+                /*if (!b.brd[1].b.isMob) b.l = 2;
+                else b.l = 1;*/
                 for (i = 0; i < waveCounter % 10; i++) {
                     /* Spawn correct type of mob */
                     switch (waveCounter / 10) {

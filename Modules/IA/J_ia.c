@@ -32,3 +32,15 @@ void moveAggIa(bird *b, birds brd){
         }
     }
 }
+void movePassiveIA(bird *b, birds brd){
+    if (b->deathTime == -1) {
+        if(a == 1){ /*A out of 10 chance to go there*/
+            if (b->flapped < 1) {
+                b->vVel += b->b.flapStrength;
+                b->flapped ++;
+            }else if(b->flapped < 10){
+                b->flapped ++;
+            }else b->flapped = 0;
+        }
+    }
+}

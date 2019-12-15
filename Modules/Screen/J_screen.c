@@ -62,10 +62,12 @@ void dispBirds(birds bird, objectTypes oTs){
 	for(i=0;i<bird.l;i++){
 		/*On charge l'image qui correspond a notre oiseau*/	
 
-		if(!bird.brd[i].b.isMob) {
+		if(!bird.brd[i].b.isMob) {/*If the bird isn't a mob*/
 			/* Display bird */
 			dispStatus(bird.brd[i].player, bird.brd[i].score, bird.brd[i].lives);
-			image = loadImage(bird.brd[i].b.o.spriteName);
+			if((image = loadImage(bird.brd[i].b.o.spriteName)) == 0){
+				printf("PROBLEME AVEC L'image");
+			}
 			if (bird.brd[i].dir == 1) MLV_vertical_image_mirror(image);
 			MLV_resize_image(image, bird.brd[i].b.o.s.width, bird.brd[i].b.o.s.height);
 		} else {
