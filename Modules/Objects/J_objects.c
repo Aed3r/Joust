@@ -29,12 +29,16 @@ int importOBJs (objectTypes *o, char *filePath){
 int importBirdTypes (birdTypes *b, objectTypes *o, char *filePath){
 	FILE *f;
 	int i = 0, j = 0, tmpObjID;
+
 	if((f = fopen(filePath, "r")) == NULL){
 		printf("Erreur dans l'ouverture du fichier \"%s\"!\n", filePath);
 		return 0;
 	}else{
 		b->l = 0; /*&b->brdT[i].o.objectID*/
-		while(fscanf(f, "%d %f %f %f %d %d %d", &tmpObjID, &b->brdT[i].hSpeed, &b->brdT[i].vSpeed, &b->brdT[i].flapStrength, &b->brdT[i].isMob, &b->brdT[i].aggressiveness, &b->brdT[i].value) == 7){
+		while(fscanf(f, "%d %f %f %f %d %d %d", 
+				&tmpObjID, &b->brdT[i].hSpeed, &b->brdT[i].vSpeed, 
+				&b->brdT[i].flapStrength, &b->brdT[i].isMob, 
+				&b->brdT[i].aggressiveness, &b->brdT[i].value) == 7){
 			while (o->objT[j].objectID != tmpObjID) j++;
 			b->brdT[i].o = o->objT[j];
 			b->l++;

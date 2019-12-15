@@ -39,8 +39,8 @@ typedef struct {
     int instanceID; /* Positive, automatically set */
     point p;
     int dir; /* Facing left: -1; right: 1 */
-    int hVel; /* Horizontal velocity */
-    int vVel; /* Vertical velocity */
+    float hVel; /* Horizontal velocity */
+    float vVel; /* Vertical velocity */
     int player; /* Player 1's or 2's bird. -1 if it's a mob */
     int lives; /* Bird lives if they are a player */
     int score; /* Player score */

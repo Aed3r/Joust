@@ -28,7 +28,7 @@ int spawnBird (int oID, birdTypes bt, birds *b, int x, int y, int dir, int playe
 
     /* Set bird instance parameters */
     b->brd[m].b = bt.brdT[i];
-    if(b->brd[m].b.isMob == 1){
+    if(b->brd[m].b.isMob){
         if (a == 1){
             b->brd[m].hVel = 10;
             b->brd[m].dir = 1;
@@ -40,7 +40,7 @@ int spawnBird (int oID, birdTypes bt, birds *b, int x, int y, int dir, int playe
     }else{
         b->brd[m].hVel = 0;
         b->brd[m].dir = dir;
-        b->brd[m].lives = 3;
+        b->brd[m].lives = 20;
     }
     b->brd[m].vVel = 0;
     b->brd[m].instanceID = m;
@@ -102,7 +102,7 @@ int areColliding (point p1, size s1, point p2, size s2) {
 /*
  * Handle a birds parameters at their death 
  */
-void handleDeath (bird *b) {
+void handleDeath (bird *b, objectTypes oT) {
     b->lives -= 1;
     if (b->lives > 0)  {
         /* Get time of death */
@@ -112,7 +112,11 @@ void handleDeath (bird *b) {
             /* Hide player bird at screen edge */
             b->p.x = SCREENWIDTH + 10; 
             b->p.y = SCREENHEIGHT + 10;
-        } /* Mobs "transform" into eggs and stay at the same place */
+        } else {
+            /* Mobs "transform" into eggs and stay at the same place. Change size */
+            b->b.o.s.width = oT.objT[4].s.width;
+            b->b.o.s.height = oT.objT[4].s.height;
+        }
 
         /* Reset velocities */
         b->hVel = 0;
@@ -152,7 +156,6 @@ int birdCollision (bird b, birds brds) {
     int i, n = brds.l;
 
     for (i = 0; i < n; i++) {
-        
         if(brds.brd[i].instanceID != b.instanceID) {
             if (areColliding(b.p, b.b.o.s, brds.brd[i].p, brds.brd[i].b.o.s)) return brds.brd[i].instanceID;
         }
@@ -169,7 +172,7 @@ int birdCollision (bird b, birds brds) {
  * 2 if a bird collects an egg or a dead player is involved
  * DOES NOT HANDLE PHYSICS
  */
-int joust (bird *brd1, bird *brd2) {
+int joust (bird *brd1, bird *brd2, objectTypes oT) {
     /* One of the birds is a dead player */
     if ((!brd1->b.isMob && (brd1->lives == 0 || brd1->deathTime != -1)) ||
         (!brd2->b.isMob && (brd2->lives == 0 || brd2->deathTime != -1))) return 2;
@@ -177,14 +180,14 @@ int joust (bird *brd1, bird *brd2) {
     /* brd2 collects the egg of brd1 */
     if (brd1->deathTime != -1 && brd2->deathTime == -1 && brd1->b.isMob && !brd2->b.isMob) {
         brd2->score += brd1->b.value * 2;
-        handleDeath(brd1);
+        handleDeath(brd1, oT);
         return 2;
     }
 
     /* brd1 collects the egg of brd2 */
     if (brd2->deathTime != -1 && brd1->deathTime == -1 && brd2->b.isMob && !brd1->b.isMob) {
         brd1->score += brd2->b.value * 2;
-        handleDeath(brd2);
+        handleDeath(brd2, oT);
         return 2;
     }
 
@@ -193,14 +196,14 @@ int joust (bird *brd1, bird *brd2) {
 
     /* brd1 wins */
     if (brd1->p.y < brd2->p.y) { 
-        handleDeath(brd2);
+        handleDeath(brd2, oT);
         brd1->score += brd2->b.value;
         return 1;
     } 
 
     /* brd2 wins */
     if (brd2->p.y < brd1->p.y) { 
-        handleDeath(brd1);
+        handleDeath(brd1, oT);
         brd2->score += brd1->b.value;
         return -1;
     }
@@ -246,7 +249,7 @@ int findFreePlat(birds brds, platforms p) {
  * Handles collisions (initiates joust for chars colliding with mobs)
  * Detects screen edge and moves bird accordingly
  */
-void moveBird (bird *b, birds *brds, platforms p) {
+void moveBird (bird *b, birds *brds, platforms p, objectTypes oT) {
     int tmpID, i, tmpVal, steps, done = 0;
     float angle;
     point increment;
@@ -268,6 +271,8 @@ void moveBird (bird *b, birds *brds, platforms p) {
             b->deathTime = -1;
             b->hVel = b->b.hSpeed;
             b->lives = 2;
+            b->b.o.s.width = oT.objT[b->b.o.objectID].s.width;
+            b->b.o.s.height = oT.objT[b->b.o.objectID].s.height;
         }
 
         /* Apply gravity if bird is not on a platform */
@@ -295,7 +300,7 @@ void moveBird (bird *b, birds *brds, platforms p) {
             /* Test for collision with another bird */
             if ((tmpID = birdCollision(*b, *brds)) != -1) { 
                 /* Handle collision and get joust result */
-                tmpVal = joust(b, &brds->brd[tmpID]);
+                tmpVal = joust(b, &brds->brd[tmpID], oT);
 
                 /* Bounce surviving bird(s) off the/each other */
                 switch (tmpVal) {
@@ -345,7 +350,7 @@ void moveBird (bird *b, birds *brds, platforms p) {
                 /* Test for collision with another bird */
                 if ((tmpID = birdCollision(*b, *brds)) != -1) { 
                     /* Handle collision and get joust result */
-                    tmpVal = joust(b, &brds->brd[tmpID]);
+                    tmpVal = joust(b, &brds->brd[tmpID], oT);
 
                     /* Bounce surviving bird(s) off the/each other */
                     switch (tmpVal) {
@@ -499,12 +504,12 @@ void updateMobPos (bird *b, birds brd, platforms plt){
 /*
  * Updates the positions of all bird instances 
  */ 
-void updatePos (birds *brds, platforms plts) {
+void updatePos (birds *brds, platforms plts, objectTypes oT) {
     int i;
     
     for (i = 0; i < brds->l; i++) {
         if (brds->brd[i].b.isMob) updateMobPos(&brds->brd[i], *brds, plts);
         else updateCharPos(&brds->brd[i]);
-        moveBird(&brds->brd[i], brds, plts);
+        moveBird(&brds->brd[i], brds, plts, oT);
     }
 }
