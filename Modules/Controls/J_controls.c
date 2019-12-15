@@ -486,7 +486,8 @@ void updateCharPos (bird *b) {
  * Either flies straight with small variations or towards the player, according to the aggressivity percentage
  */
 void updateMobPos (bird *b, birds brd, platforms plt){
-    moveAggIa(b, brd);
+    if(b->b.aggressiveness == 1) moveAggIa(b, brd);
+    else movePassiveIa(b);
 
     /* Cap maximal velocities*/
     if (b->hVel > MAXVEL) b->hVel = MAXVEL;

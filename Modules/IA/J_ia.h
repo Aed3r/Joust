@@ -5,7 +5,7 @@
 int isBelow(birds b, int n);
 
 /*Gère l'ia des enemis peu agressifs*/
-void movePassiveIa(bird *b, birds brd);
+void movePassiveIa(bird *b);
 
 /*Idem mais pour des enemis agressifs*/
 void moveAggIa(bird *b, birds brd);

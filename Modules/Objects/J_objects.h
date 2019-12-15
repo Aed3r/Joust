@@ -30,7 +30,7 @@ typedef struct {
     float vSpeed; /* Vertical Speed */
     float flapStrength; /* Height reached with one flap press. TODO: useless now */
     int isMob; /* 0 = Player, 1 = Mob*/
-    int aggressiveness; /* AI: percentage indicating likeliness to attack player and avoid platforms */
+    int aggressiveness; /* AI: 0 is passive 1 is aggressive*/
     int value; /* What score increment the player gets by killing this bird */
 } birdType; /* Mobs or characters */
 
