@@ -30,7 +30,7 @@ int areColliding (point p1, size s1, point p2, size s2);
 /*
  * Handle a birds parameters at their death 
  */
-void handleDeath (bird *b);
+void handleDeath (bird *b, objectTypes oT);
 
 /*
  * Returns the instance ID of any platform colliding with the bird passed as param
@@ -51,7 +51,7 @@ int birdCollision (bird b, birds brds);
  * 0 if there's no winner
  * -1 if brd2 is the winner
  */
-int joust(bird *brd1, bird *brd2);
+int joust(bird *brd1, bird *brd2, objectTypes oT);
 
 /*
  * Returns the platform instance ID with the least birds nearby
@@ -63,7 +63,7 @@ int findFreePlat(birds brds, platforms p);
  * Detects collisions (initiates joust for chars colliding with mobs)
  * Detects screen edge and moves bird accordingly
  */
-void moveBird (bird *b, birds *brds, platforms p);
+void moveBird (bird *b, birds *brds, platforms p, objectTypes oT);
 
 /*
  * Updates the position of a player controlled bird
@@ -80,6 +80,6 @@ void updateMobPos (bird *b, birds brd, platforms plt);
 /*
  * Updates the positions of all bird instances 
  */ 
-void updatePos (birds *brds, platforms plts);
+void updatePos (birds *brds, platforms plts, objectTypes oT);
 
 #endif

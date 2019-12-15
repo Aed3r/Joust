@@ -33,10 +33,6 @@ MLV_Image* loadImage(char *fileName) {
     } return 0;
 }
 
-void drawUglyRect (point p, size s, MLV_Color c) {
-	MLV_draw_filled_rectangle(p.x, p.y, s.width, s.height, c);
-}
-
 /*
  * Displays all platforms
  */
@@ -49,7 +45,7 @@ void dispPlats(platforms p){
 		MLV_resize_image(image, p.plt[i].o.s.width, p.plt[i].o.s.height);
 		MLV_draw_image(image, p.plt[i].p.x, p.plt[i].p.y);
 		MLV_free_image(image); 
-		/*MLV_draw_text(p.plt[i].p.x, p.plt[i].p.y, "%d", MLV_COLOR_WHITE, p.plt[i].instanceID);*/
+		MLV_draw_text(p.plt[i].p.x, p.plt[i].p.y, "%d", MLV_COLOR_WHITE, p.plt[i].instanceID);
 	}
 }
 
@@ -102,7 +98,7 @@ void dispStatus(int nbjr, int score, int vie){
 	
 	if(nbjr == 1){
 		if (vie <= 0) vspfunc(player1, "Player 1 : DEAD \nScore : %d", score);
-		else vspfunc(player1, "Player 1 : %d life \nScore : %d", vie, score);
+		else vspfunc(player1, "Player 1 : %d lives \nScore : %d", vie, score);
 		MLV_draw_adapted_text_box_with_font(
 			10, 10,
 			player1, font,taille_interligne,
@@ -111,8 +107,8 @@ void dispStatus(int nbjr, int score, int vie){
 		);
 	} else if (nbjr == 2){
 		if (vie <= 0) vspfunc(player2, "Player 2 : DEAD \nScore : %d", score);
-		else vspfunc(player2, "Player 2 : %d life \nScore : %d", vie, score);
-		MLV_get_size_of_text("Player 2 : 3 life        ", &widthtxt, &heightxt);
+		else vspfunc(player2, "Player 2 : %d lives \nScore : %d", vie, score);
+		MLV_get_size_of_text("Player 2 : 3 lives        ", &widthtxt, &heightxt);
 		MLV_draw_adapted_text_box_with_font(
 			(SCREENWIDTH - widthtxt), 10,
 			player2, font, taille_interligne,

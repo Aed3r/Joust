@@ -41,6 +41,12 @@ int main() {
     importOBJs(&oT, "Data/Files/objects");
     importBirdTypes(&bT, &oT, "Data/Files/birds");
 
+    /* Make sure everything's loaded nicely */
+    if (oT.l < 7 || bT.l < 5) {
+        printf("ERROR: Something didn't load correctly!\n");
+        exit(EXIT_FAILURE);
+    }
+
     /* Platform creation */
     createPlatform(1, oT, &p, 300, 957, 0);
     createPlatform(1, oT, &p, 500, 957, 0);
@@ -93,15 +99,15 @@ int main() {
                     switch (waveCounter / 10) {
                     case 0:
                         /* Easy difficulty */
-                        spawnBird(3, bT, &b, -1, -1, 1, -1);
+                        spawnBird(6, bT, &b, -1, -1, 1, -1);
                         break;
                     case 1:
                         /* Medium difficulty */
-                        spawnBird(3, bT, &b, -1, -1, 1, -1);
+                        spawnBird(7, bT, &b, -1, -1, 1, -1);
                         break;
                     default:
                         /* >= 2: Hard difficulty */
-                        spawnBird(5, bT, &b, -1, -1, 1, -1);
+                        spawnBird(3, bT, &b, -1, -1, 1, -1);
                         break;
                     }
                     /* Center bird on empty platform */
@@ -116,11 +122,11 @@ int main() {
                         switch (waveCounter / 10) {
                         case 1:
                             /* Easy difficulty */
-                            spawnBird(3, bT, &b, -1, -1, 1, -1);
+                            spawnBird(6, bT, &b, -1, -1, 1, -1);
                             break;
                         default:
                             /* Medium difficulty */
-                            spawnBird(5, bT, &b, -1, -1, 1, -1);
+                            spawnBird(7, bT, &b, -1, -1, 1, -1);
                             break;
                         }
                         /* Center bird on empty platform */
@@ -133,7 +139,7 @@ int main() {
                 /* Increment wave counter */
                 waveCounter++;
                 /* Increase difficulty level */
-                if (waveCounter % 10 == MOBSPERWAVE) waveCounter += MOBSPERWAVE - 10;
+                if (waveCounter % 10 == MOBSPERWAVE) waveCounter += 10 - MOBSPERWAVE;
                 /* Reset cooldown counter */
                 cdTime = -1;
             } else {
@@ -144,8 +150,9 @@ int main() {
         }
 
         dispClear();
-        updatePos(&b, p);
+        updatePos(&b, p, oT);
         dispFrame(p, b, oT);
+        
         MLV_actualise_window();
         MLV_delay_according_to_frame_rate();
 

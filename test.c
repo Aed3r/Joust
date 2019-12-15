@@ -25,11 +25,11 @@ void printBRDTs(birdTypes *b) {
 
     printf("------- Loaded Birds (%d): -------\n", b->l);
     for (i = 0; i < b->l; i++) {
-        printf(" - objectID: %d ; Sprite: %s; Name: %s; Width: %d; Height: %d; runSpeed: %f; glideSpeed: %f; flapStrength: %f; respawnTime: %d; isMob: %d; aggressiveness: %d\n",
+        printf(" - objectID: %d ; Sprite: %s; Name: %s; Width: %d; Height: %d; runSpeed: %f; glideSpeed: %f; flapStrength: %f; isMob: %d; aggressiveness: %d; value: %d\n",
             b->brdT[i].o.objectID, b->brdT[i].o.spriteName, b->brdT[i].o.name, 
             b->brdT[i].o.s.width, b->brdT[i].o.s.height,
-            b->brdT[i].hSpeed, b->brdT[i].vSpeed, b->brdT[i].flapStrength, 
-            b->brdT[i].respawnTime, b->brdT[i].isMob, b->brdT[i].aggressiveness);
+            b->brdT[i].hSpeed, b->brdT[i].vSpeed, b->brdT[i].flapStrength,
+            b->brdT[i].isMob, b->brdT[i].aggressiveness, b->brdT[i].value);
     }
 }
 
@@ -39,8 +39,8 @@ void printP(platforms *p) {
 
     printf("------- Platform instances (%d) : -------\n", p->l);
     for (i = 0; i < p->l; i++) {
-        printf("  - instanceID: %d; objectID: %d; Name : %s; X: %f; Y: %f\n", 
-        p->plt[i].instanceID, p->plt[i].o.objectID, p->plt[i].o.name, p->plt[i].p.x, p->plt[i].p.y);
+        printf("  - instanceID: %d; objectID: %d; Name : %s; X: %f; Y: %f; outOfBounds: %d\n", 
+        p->plt[i].instanceID, p->plt[i].o.objectID, p->plt[i].o.name, p->plt[i].p.x, p->plt[i].p.y, p->plt[i].outOfBounds);
     }
 }
 
@@ -50,9 +50,15 @@ void printB(birds *b) {
 
     printf("------- Bird instances (%d) : -------\n", b->l);
     for (i = 0; i < b->l; i++) {
-        printf("  - instanceID: %d; objectID: %d; X: %f; Y: %f; dir: %d; vVel: %d; hVel: %d; player: %d\n", 
+        printf("  - instanceID: %d; objectID: %d; X: %f; Y: %f; dir: %d; ", 
         b->brd[i].instanceID, b->brd[i].b.o.objectID, b->brd[i].p.x, 
-        b->brd[i].p.y, b->brd[i].dir, b->brd[i].vVel, b->brd[i].hVel, b->brd[i].player);
+        b->brd[i].p.y, b->brd[i].dir);
+        printf("vVel: %d; hVel: %d; player: %d\n; lives: %d; score: %d; ", 
+        b->brd[i].vVel, b->brd[i].hVel, 
+        b->brd[i].player, b->brd[i].lives, b->brd[i].score);
+        printf("deathTime : %d; flapped: %d; gotStuck: %d; onPlatform: %d\n",
+        b->brd[i].deathTime, b->brd[i].flapped, b->brd[i].gotStuck, 
+        b->brd[i].onPlatform);
     }
 }
 
@@ -61,7 +67,7 @@ int main() {
     birdTypes bT;
     birds b;
     platforms p;
-    int done = 0, i;
+    int done = 0;
 
     b.l = 0;
     p.l = 0;
@@ -76,7 +82,7 @@ int main() {
     printBRDTs(&bT);
 
     /* CONTROLS CREATION TEST */
-    createPlatform(1, oT, &p, 500, 500);
+    createPlatform(1, oT, &p, 500, 500, 0);
     spawnBird(2, bT, &b, 500, 350, 1, 1);
     spawnBird(3, bT, &b, 700, 360, 1, 2);
     spawnBird(3, bT, &b, 490, 340, 1, -1);
