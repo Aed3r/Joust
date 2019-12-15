@@ -65,6 +65,10 @@ int main() {
     case 1:
         spawnBird(2, bT, &b, 343, 872, -1, 1);
         nbjr ++;
+        vspfunc(tmpText,"Début du jeu à %d joueur(s)", nbjr);
+        dispText(tmpText);
+        MLV_actualise_window();
+        MLV_wait_seconds(2);
         break;
     case 3:
         /* TODO: show scores */
@@ -74,6 +78,7 @@ int main() {
         exit(EXIT_FAILURE);
         break;
     }
+
 
     while(done != 1) {
         /* Count living mobs */
@@ -140,6 +145,8 @@ int main() {
                 /* Countdown not over. Diplay wave number */
                 vspfunc(tmpText, "WAVE %d", waveCounter / 10 * MOBSPERWAVE + waveCounter % 10 - 2);
                 dispText(tmpText);
+                MLV_actualise_window(); 
+                MLV_wait_seconds(1);
             }
         }
 
@@ -148,7 +155,17 @@ int main() {
         dispFrame(p, b, oT);
         MLV_actualise_window();
         MLV_delay_according_to_frame_rate();
-
+        if(nbjr == 1 && b.brd[0].lives == 0){
+            done = 1;
+            dispText("Everyone died\n GAME OVER");
+            MLV_actualise_window();
+            MLV_wait_seconds(5);
+        }else if(b.brd[0].lives == 0 && b.brd[1].lives == 0){
+            done = 1;
+            dispText("Everyone died, well played");
+            MLV_actualise_window();
+            MLV_wait_seconds(5);
+        }
         if(MLV_get_keyboard_state(MLV_KEYBOARD_ESCAPE) == MLV_PRESSED) done = 1;
     }
 

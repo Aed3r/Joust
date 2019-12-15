@@ -28,16 +28,16 @@ void moveAggIa(bird *b, birds brd){
             }else if(b->flapped < 10){
                 b->flapped ++;
             }else b->flapped = 0;
-
         }
     }
 }
+
 void movePassiveIa(bird *b){
     int a;
     srand(time(0));
     a = rand() %2;
     if (b->deathTime == -1) {
-        if(a == 1){ /*A out of 10 chance to go there*/
+        if(a == 1){ /*1 out of 2 chance to go there*/
             if (b->flapped < 1) {
                 b->vVel += b->b.flapStrength;
                 b->flapped ++;
