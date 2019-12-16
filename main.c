@@ -40,7 +40,7 @@ int main() {
 
     tmp = 5;
     test(&tmp);
-    printf("%d\n", tmp);
+    /*printf("%d\n", tmp);*/
 
     MLV_create_window("Joust", NULL, SCREENWIDTH, SCREENHEIGHT);
     MLV_change_frame_rate(30);
@@ -70,6 +70,8 @@ int main() {
     createPlatform(1, oT, &p, 700, 1000, 1);
     createPlatform(1, oT, &p, 900, 1000, 1);
 
+    /*TEST DES SCORES*/
+
     /* Main loop */
     while(close != 1){
         nbjr = 0;
@@ -92,7 +94,8 @@ int main() {
                 MLV_wait_seconds(1);
                 break;
             case 3:
-                /* TODO: show scores */
+                dispScore();
+                done = 1;
                 break;
             case 0:
                 done = 1;

@@ -110,6 +110,8 @@ int main() {
 
     b.l -= 1; /* "kill" the last bird */
 
+    /* SCORE SAVING TEST*/
+    saveScore(1200, "TEST");
     while(done != 1) {
         dispClear();
         /*for (i=0; i < b.l; i++) if (b.brd[i].b.isMob != 1) updateCharPos(&b.brd[i]);

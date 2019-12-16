@@ -47,6 +47,11 @@ void dispClear();
 /*
  * Display the top 10 Highest score with name
  */
-void dispScore();
+int dispScore();
+
+/*
+ * Ask for the name of the best player in the game in order to save its score
+ */
+void dispAskScore();
 
 #endif

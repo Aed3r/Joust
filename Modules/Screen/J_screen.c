@@ -228,3 +228,46 @@ int dispMenu(char *filepath){
 	return nbrj;
 	MLV_free_font(font);
 }
+
+int dispScore(){
+	FILE *f;
+	MLV_Font* font = MLV_load_font( "Data/Fonts/BebasNeue-Regular.ttf" , 30);
+	int MeilleursScores[10], tmpScore, i, j, nbrScore=0;
+	char MeilleursScoresNom[10][10], tmpName[10], msg[100];
+	for(i=0; i<10; i++) MeilleursScores[i] = 0;
+	for(i=0; i<10; i++) strcpy(MeilleursScoresNom[i], ""); 
+	if((f = fopen("Data/Files/score.txt", "r")) == NULL){
+		printf("Erreur dans l'ouverture du fichier score.txt !\n");
+		return 0;
+	}else{
+		while(fscanf(f, "%s %d", tmpName, &tmpScore) == 2){
+			if(nbrScore < 10) nbrScore ++;
+			for(i=0;i<10;i++){
+				if(tmpScore > MeilleursScores[9-i]){
+					for(j=1;j<=9-i;j++){
+						MeilleursScores[j-1] = MeilleursScores[j];
+						strncpy(MeilleursScoresNom[j-1], MeilleursScoresNom[j], 10);
+					}
+					MeilleursScores[9-i] = tmpScore;
+					strncpy(MeilleursScoresNom[9-i], tmpName, 10);
+					i = 10;
+				}
+			}
+		}
+		if(nbrScore == 0) dispText("Aucun score sauvegardé pour le moment\n Commencez vite une partie !");
+		else dispClear();
+		for(i=0;i<nbrScore;i++){
+			vspfunc(msg, "%s %d", MeilleursScoresNom[9-i], MeilleursScores[9-i]);
+			MLV_draw_text_box_with_font(
+			(SCREENWIDTH * 0.2), (SCREENHEIGHT * i * 0.1),
+			(SCREENWIDTH * 0.6), (SCREENHEIGHT * 0.1),
+			msg, font, 9,
+			MLV_COLOR_BLACK, MLV_COLOR_WHITE, MLV_COLOR_BLACK,
+			MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER
+		);
+		}
+	}
+	MLV_actualise_window();
+	MLV_wait_keyboard(NULL, NULL, NULL);
+	return 1;
+}

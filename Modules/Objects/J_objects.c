@@ -49,11 +49,16 @@ int importBirdTypes (birdTypes *b, objectTypes *o, char *filePath){
 	return 1;
 }
 
-void Save_score (int score1, int score2){
+/*Write a score associated with a name at the end of the score.txt file
+Return 0 if there was an error*/
+int saveScore (int score, char *name){
 	FILE *f;
-	int i = 0, j = 0;
-	if((f = fopen("../../Data/Files/score.txt", "w")) == NULL){
-		printf("Erreur dans l'ouverture du fichier \"%s\"!\n", filePath);
+	if((f = fopen("Data/Files/score.txt", "a")) == NULL){
+		printf("Erreur dans l'ouverture du fichier score.txt !\n");
 		return 0;
+	}else{
+		fprintf(f, "%s %d\n", name, score);
 	}
+	fclose(f);
+	return 1;
 }
