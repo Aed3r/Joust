@@ -14,38 +14,14 @@ static int vspfunc(char *str, char *format, ...){
 	return ret;
 }
 
-
-/*
- * Loads the image with the given fileName
- */
-MLV_Image* loadImage(char *fileName) {
-	MLV_Image *tmpImg;
-	FILE *file;
-	char path[100];
-
-	strcpy(path, "Data/Sprites/");
-	strcat(path, fileName);
-
-    if ((file = fopen(path, "r"))) {
-        fclose(file);
-        tmpImg = MLV_load_image(path);
-		return tmpImg;
-    } return 0;
-}
-
 /*
  * Displays all platforms
  */
 void dispPlats(platforms p){
 	int i = 0;
-	MLV_Image *image;
 	for(i=0;i<p.l;i++){
-		/*Charge l'image qui correspond a celle de notre Plateforme */
-		image = loadImage(p.plt[i].o.spriteName);
-		MLV_resize_image(image, p.plt[i].o.s.width, p.plt[i].o.s.height);
-		MLV_draw_image(image, p.plt[i].p.x, p.plt[i].p.y);
-		MLV_free_image(image); 
-		MLV_draw_text(p.plt[i].p.x, p.plt[i].p.y, "%d", MLV_COLOR_WHITE, p.plt[i].instanceID);
+		MLV_draw_image(p.plt[i].o.sprite, p.plt[i].p.x, p.plt[i].p.y);
+		/*MLV_draw_text(p.plt[i].p.x, p.plt[i].p.y, "%d", MLV_COLOR_WHITE, p.plt[i].instanceID);*/
 	}
 }
 
@@ -54,36 +30,25 @@ void dispPlats(platforms p){
  */
 void dispBirds(birds bird, objectTypes oTs){
 	int i = 0, j;
-	MLV_Image *image;
 	for(i=0;i<bird.l;i++){
 		/*On charge l'image qui correspond a notre oiseau*/	
 
-		if(!bird.brd[i].b.isMob) {/*If the bird isn't a mob*/
-			/* Display bird */
+		if(!bird.brd[i].b.isMob) {
+			/* Display a players status */
 			dispStatus(bird.brd[i].player, bird.brd[i].score, bird.brd[i].lives);
-			if((image = loadImage(bird.brd[i].b.o.spriteName)) == 0){
-				printf("PROBLEME AVEC L'image");
-			}
-			if (bird.brd[i].dir == 1) MLV_vertical_image_mirror(image);
-			MLV_resize_image(image, bird.brd[i].b.o.s.width, bird.brd[i].b.o.s.height);
-		} else {
-			if (bird.brd[i].deathTime != -1) {
-				/* Display egg instead of bird. Find egg object */
-				j = 0;
-				while (j < oTs.l && oTs.objT[j].objectID != 5) j++;
-
-				image = loadImage(oTs.objT[j].spriteName);
-				MLV_resize_image(image, oTs.objT[j].s.width, oTs.objT[j].s.height);
-			}
-			else {
-				/* Display mob */
-				image = loadImage(bird.brd[i].b.o.spriteName);
-				if (bird.brd[i].dir == 1) MLV_vertical_image_mirror(image);
-				MLV_resize_image(image, bird.brd[i].b.o.s.width, bird.brd[i].b.o.s.height);
-			}
 		}
-		MLV_draw_image(image, bird.brd[i].p.x, bird.brd[i].p.y);
-		MLV_free_image(image);
+
+		if (bird.brd[i].b.isMob && bird.brd[i].deathTime != -1) {
+			/* Display egg instead of bird. Find egg object */
+			j = 0;
+			while (j < oTs.l && oTs.objT[j].objectID != 5) j++;
+			MLV_draw_image(oTs.objT[j].sprite, bird.brd[i].p.x, bird.brd[i].p.y);
+		} else {
+			/* Display a bird */
+			if (bird.brd[i].dir == 1) MLV_vertical_image_mirror(bird.brd[i].b.o.sprite);
+			MLV_draw_image(bird.brd[i].b.o.sprite, bird.brd[i].p.x, bird.brd[i].p.y);
+			if (bird.brd[i].dir == 1) MLV_vertical_image_mirror(bird.brd[i].b.o.sprite);
+		}
 	}
 }
 

@@ -91,12 +91,12 @@ int areColliding (point p1, size s1, point p2, size s2) {
     /* Tests for a potential collision on the x axis */
     if ((p1.x > p2.x && p1.x < p2.x + s2.width) ||
         (p1.x + s1.width > p2.x && p1.x + s1.width < p2.x + s2.width) ||
-        (p1.x < p2.x && p1.x + s1.width > p2.x + s2.width)) xCollides = 1;
+        (p1.x <= p2.x && p1.x + s1.width >= p2.x + s2.width)) xCollides = 1;
 
     /* Tests for a potential collision on the y axis */
     if ((p1.y > p2.y && p1.y < p2.y + s2.height) ||
         (p1.y + s1.height > p2.y && p1.y + s1.height < p2.y + s2.height) ||
-        (p1.y < p2.y && p1.y + s1.height > p2.y + s2.height)) yCollides = 1;   
+        (p1.y <= p2.y && p1.y + s1.height >= p2.y + s2.height)) yCollides = 1;   
 
     return (xCollides && yCollides); 
 }
@@ -257,7 +257,7 @@ int findFreePlat(birds brds, platforms p) {
  */
 void moveBird (bird *b, birds *brds, platforms p, objectTypes oT) {
     int tmpID, i, tmpVal, steps, done = 0;
-    float angle;
+    float angle, tmp;
     point increment;
 
     /* Test if the bird wasn't able to free itself in the last rounds and prevent getting stuck */
@@ -319,15 +319,33 @@ void moveBird (bird *b, birds *brds, platforms p, objectTypes oT) {
                     if (b->hVel > 0) brds->brd[tmpID].p.x = b->p.x + b->b.o.s.width + 5;
                     else brds->brd[tmpID].p.x = b->p.x - brds->brd[tmpID].b.o.s.width - 5;
                     /* Bounce both birds off each other */
-                    brds->brd[tmpID].hVel *= -1;
-                    brds->brd[tmpID].dir *= b->dir;
-                    b->hVel *= -1;
-                    b->dir *= -1;
+                    if ((brds->brd[tmpID].hVel >= 0 && b->hVel >= 0) || 
+                        (brds->brd[tmpID].hVel < 0 && b->hVel < 0)) {
+                        /* Both birds are going in the same direction */
+                        if (abs(brds->brd[tmpID].hVel) > abs(b->hVel)) {
+                            /* Second bird is faster than first */
+                            tmp = b->hVel;
+                            b->hVel += brds->brd[tmpID].hVel;
+                            brds->brd[tmpID].hVel -= tmp;
+                        } else {
+                            /* First bird is faster than first */
+                            tmp = brds->brd[tmpID].hVel;
+                            brds->brd[tmpID].hVel += b->hVel;
+                            b->hVel -= tmp;
+                        }
+                    } else {
+                        /* Both birds go in different directions */
+                        brds->brd[tmpID].hVel *= -1;
+                        brds->brd[tmpID].dir *= -1;
+                        b->hVel *= -1;
+                        b->dir *= -1;
+                    }
                     break;
                 case -1:
                     brds->brd[tmpID].hVel *= -1;
                     brds->brd[tmpID].dir *= -1;
-                    b->p.x += increment.x; /* compensate for the next move */
+                    /* compensate for the next move (not sure what this was for) */
+                    /*b->p.x += increment.x; */
                     break;
                 case 2:
                 default:
@@ -368,8 +386,25 @@ void moveBird (bird *b, birds *brds, platforms p, objectTypes oT) {
                         if (b->vVel > 0) brds->brd[tmpID].p.y = b->p.y - brds->brd[tmpID].b.o.s.height - 5;
                         else brds->brd[tmpID].p.y = b->p.y + b->b.o.s.height + 5;
                         /* Bounce both birds off each other */
-                        b->vVel *= -1;
-                        brds->brd[tmpID].vVel *= -1;
+                        if ((brds->brd[tmpID].vVel >= 0 && b->vVel >= 0) || 
+                            (brds->brd[tmpID].vVel < 0 && b->vVel < 0)) {
+                            /* Both birds are going in the same direction */
+                            if (abs(brds->brd[tmpID].vVel) > abs(b->vVel)) {
+                                /* Second bird is faster than first */
+                                tmp = b->vVel;
+                                b->vVel += brds->brd[tmpID].vVel;
+                                brds->brd[tmpID].vVel -= tmp;
+                            } else {
+                                /* First bird is faster than first */
+                                tmp = brds->brd[tmpID].vVel;
+                                brds->brd[tmpID].vVel += b->vVel;
+                                b->vVel -= tmp;
+                            }
+                        } else {
+                            /* Both birds go in different directions (vertically) */
+                            brds->brd[tmpID].vVel *= -1;
+                            b->vVel *= -1;
+                        }
                         break;
                     case -1:
                         brds->brd[tmpID].vVel *= -1;
@@ -456,12 +491,16 @@ void updateCharPos (bird *b) {
         /* Test for left */
         if(MLV_get_keyboard_state(MLV_KEYBOARD_a) == MLV_PRESSED || MLV_get_keyboard_state(MLV_KEYBOARD_q) == MLV_PRESSED){ /* Left */
             if (b->flapped || b->vVel == 0 || b->vVel == 1) b->hVel -= b->b.hSpeed; /* Prevent direction changes midair without flapping */
-            b->dir = -1;
+            if (b->dir != -1) {
+                b->dir = -1;
+            }
         }
         /* Test for right */
         if(MLV_get_keyboard_state(MLV_KEYBOARD_d) == MLV_PRESSED){ /* Right */
             if (b->flapped || b->vVel == 0 || b->vVel == 1) b->hVel += b->b.hSpeed; /* Prevent direction changes midair without flapping */
-            b->dir = 1;
+            if (b->dir != 1) {
+                b->dir = 1;
+            }
         }
     /* Player 2's input */
     } else if (b->player == 2 && b->deathTime == -1) {
@@ -475,12 +514,16 @@ void updateCharPos (bird *b) {
         /* Test for left */
         if(MLV_get_keyboard_state(MLV_KEYBOARD_LEFT) == MLV_PRESSED){ /* Left */
             if (b->flapped || b->vVel == 0 || b->vVel == 1) b->hVel -= b->b.hSpeed; /* Prevent direction changes midair without flapping */
-            b->dir = -1;
+            if (b->dir != -1) {
+                b->dir = -1;
+            }
         }
         /* Test for right */
         if(MLV_get_keyboard_state(MLV_KEYBOARD_RIGHT) == MLV_PRESSED){ /* Right */
             if (b->flapped || b->vVel == 0 || b->vVel == 1) b->hVel += b->b.hSpeed; /* Prevent direction changes midair without flapping */
-            b->dir = 1;
+            if (b->dir != 1) {
+                b->dir = 1;
+            }
         }
     }
 

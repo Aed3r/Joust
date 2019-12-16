@@ -1,20 +1,44 @@
 #include "J_objects.h"
 
 /*
+ * Loads the image with the given fileName
+ */
+MLV_Image* loadImage(char *fileName) {
+	MLV_Image *tmpImg;
+	FILE *file;
+	char path[200];
+
+	strcpy(path, "Data/Sprites/");
+	strcat(path, fileName);
+
+	/* Test if file exists */
+    if ((file = fopen(path, "r"))) {
+        fclose(file);
+		/* Load image in file */
+        tmpImg = MLV_load_image(path);
+		return tmpImg;
+    }
+	printf("Error loading image %s!\n", path);
+	return 0;
+}
+
+/*
  * Initializes array objT with predefined object types 
  * Returns 1 on successful import, 0 otherwise
  */ 
 int importOBJs (objectTypes *o, char *filePath){
 	FILE *f;
-	int i = 0;
+	char tmpSpritePath[200];
+
 	if((f = fopen(filePath, "r")) == NULL){
 		printf("Erreur dans l'ouverture du fichier \"%s\"!\n", filePath);
 		return 0;
 	}else{
 		o->l = 0;
-		while(fscanf(f, "%d %s %s %d %d", &o->objT[i].objectID, o->objT[i].spriteName, o->objT[i].name, &o->objT[i].s.width, &o->objT[i].s.height) == 5) {
+		while(fscanf(f, "%d %s %s %d %d", &o->objT[o->l].objectID, tmpSpritePath, o->objT[o->l].name, &o->objT[o->l].s.width, &o->objT[o->l].s.height) == 5) {
+			if ((o->objT[o->l].sprite = loadImage(tmpSpritePath)) == 0) exit(EXIT_FAILURE);
+			MLV_resize_image(o->objT[o->l].sprite, o->objT[o->l].s.width, o->objT[o->l].s.height);
 			o->l++;
-			i++;
 		}
 	}
 

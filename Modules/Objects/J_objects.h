@@ -19,7 +19,7 @@ typedef struct {
 
 typedef struct {
     int objectID; /* Positive */
-    char spriteName[50];
+    MLV_Image *sprite;
     char name[20];
     size s;
 } objectType; /* Platfom or bird types */
@@ -78,6 +78,11 @@ typedef struct{
     platform plt[PLATFORMS];
     int l;
 }platforms;
+
+/*
+ * Loads the image with the given fileName
+ */
+MLV_Image* loadImage(char *fileName);
 
 /*
  * Initializes array objT with predefined object types 
