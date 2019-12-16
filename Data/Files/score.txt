@@ -5,3 +5,6 @@ ABC 400
 AAA 1100
 MGH 1000
 GOD 120000MAR 800
+test 150
+test 0
+ssssssssss 0

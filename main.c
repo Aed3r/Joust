@@ -55,7 +55,7 @@ int main() {
     createPlatform(1, oT, &p, 0, 700, 0);
     createPlatform(1, oT, &p, 800, 700, 0);
     createPlatform(1, oT, &p, 990, 700, 1);
-    createPlatform(1, oT, &p, 393, 500, 0);
+    createPlatform(1, oT, &p, 393, 400, 0);
     createPlatform(1, oT, &p, 0, 150, 0);
     createPlatform(1, oT, &p, 800, 150, 0);
     createPlatform(1, oT, &p, 990, 150, 1);
@@ -84,6 +84,7 @@ int main() {
                 spawnBird(2, bT, &b, 343, 872, -1, 1);
                 nbjr ++;
                 vspfunc(tmpText,"Début du jeu à %d joueur(s)", nbjr);
+                dispClear();
                 dispText(tmpText);
                 MLV_actualise_window();
                 MLV_wait_seconds(1);
@@ -152,18 +153,17 @@ int main() {
                     waveCounter++;
                     /* Increase difficulty level */
                     if (waveCounter % 10 == MOBSPERWAVE) waveCounter += 10 - MOBSPERWAVE;
-                    /* Reset cooldown counter */
+                    /* Reset cooldown counter and wave counter message */
                     cdTime = -1;
+                    strcpy(tmpText, "");
                 } else {
                     /* Countdown not over. Diplay wave number */
-                    vspfunc(tmpText, "WAVE %d", waveCounter / 10 * MOBSPERWAVE + waveCounter % 10 - (MOBSPERWAVE / 2 + 1));
-                    /*dispText(tmpText);*/
-                    MLV_actualise_window(); 
+                    vspfunc(tmpText, "VAGUE %d", waveCounter / 10 * MOBSPERWAVE + waveCounter % 10 - (MOBSPERWAVE / 2) + 1);
                 }
             }
 
             updatePos(&b, p, oT);
-            dispFrame(p, b, oT);
+            dispFrame(p, b, oT, tmpText);
             if(nbjr == 1 && b.brd[0].lives == 0){
                 done = 1;
                 dispAskScore(b);
@@ -174,7 +174,9 @@ int main() {
             MLV_actualise_window();
             MLV_delay_according_to_frame_rate();
             
-            if(MLV_get_keyboard_state(MLV_KEYBOARD_ESCAPE) == MLV_PRESSED) done = 1;
+            if(MLV_get_keyboard_state(MLV_KEYBOARD_ESCAPE) == MLV_PRESSED) {
+                done = 1;
+            }
         }
     }
     MLV_free_window();

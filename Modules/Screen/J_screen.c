@@ -62,8 +62,8 @@ void dispStatus(int nbjr, int score, int vie){
 	MLV_Font* font = MLV_load_font( "Data/Fonts/BebasNeue-Regular.ttf" , 20 );
 	
 	if(nbjr == 1){
-		if (vie <= 0) vspfunc(player1, "Player 1 : DEAD \nScore : %d", score);
-		else vspfunc(player1, "Player 1 : %d lives \nScore : %d", vie, score);
+		if (vie <= 0) vspfunc(player1, "Joueur 1 : MORT \nScore : %d", score);
+		else vspfunc(player1, "Joueur 1 : %d vies \nScore : %d", vie, score);
 		MLV_draw_adapted_text_box_with_font(
 			10, 10,
 			player1, font,taille_interligne,
@@ -71,9 +71,9 @@ void dispStatus(int nbjr, int score, int vie){
 			MLV_TEXT_LEFT
 		);
 	} else if (nbjr == 2){
-		if (vie <= 0) vspfunc(player2, "Player 2 : DEAD \nScore : %d", score);
-		else vspfunc(player2, "Player 2 : %d lives \nScore : %d", vie, score);
-		MLV_get_size_of_text("Player 2 : 3 lives        ", &widthtxt, &heightxt);
+		if (vie <= 0) vspfunc(player2, "Joueur 2 : DEAD \nScore : %d", score);
+		else vspfunc(player2, "Joueur 2 : %d vies \nScore : %d", vie, score);
+		MLV_get_size_of_text("Joueur 2 : 3 vies        ", &widthtxt, &heightxt);
 		MLV_draw_adapted_text_box_with_font(
 			(SCREENWIDTH - widthtxt), 10,
 			player2, font, taille_interligne,
@@ -90,12 +90,12 @@ void dispStatus(int nbjr, int score, int vie){
  * un message centré dans la boite (passé en paramètre)
  */
 void dispText(char msg[MAXMSGCHARS]){
-	MLV_Font* font = MLV_load_font( "Data/Fonts/BebasNeue-Regular.ttf" , 30);
+	MLV_Font* font = MLV_load_font( "Data/Fonts/BebasNeue-Regular.ttf" , 60);
 	MLV_draw_text_box_with_font( 
 		0,0,
 		SCREENWIDTH,SCREENHEIGHT,
 		msg, font, 9,
-		MLV_COLOR_RED, MLV_COLOR_WHITE, MLV_COLOR_BLACK,
+		MLV_ALPHA_TRANSPARENT, MLV_COLOR_WHITE, MLV_ALPHA_TRANSPARENT,
 		MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER
 		);
 	MLV_free_font(font);
@@ -111,10 +111,11 @@ void dispClear(){
 /*
  * Displays the current frame according to the games state
  */
-void dispFrame(platforms p, birds b, objectTypes oTs){
+void dispFrame(platforms p, birds b, objectTypes oTs, char msg[MAXMSGCHARS]){
 	dispClear();
 	dispPlats(p);
 	dispBirds(b, oTs);
+	if(strcmp("", msg) != 0) dispText(msg);
 }
 
 /*
@@ -124,7 +125,7 @@ void dispFrame(platforms p, birds b, objectTypes oTs){
 int dispMenu(char *filepath){
 	MLV_Font* font = MLV_load_font( "Data/Fonts/BebasNeue-Regular.ttf" , 30);
 	MLV_Image *imageMenu;
-	MLV_Event event;
+	MLV_Event event = MLV_get_event(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 	int x = 0, y = 0, ok = 0, nbrj = 1, compteur = 1; 
 	char text[25];
 	/* Fond du menu */

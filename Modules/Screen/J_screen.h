@@ -31,7 +31,7 @@ void dispText(char msg[MAXMSGCHARS]);
 /*
  * Displays the current frame according to the games state
  */
-void dispFrame(platforms p, birds b, objectTypes oTs);
+void dispFrame(platforms p, birds b, objectTypes oTs, char msg[MAXMSGCHARS]);
 
 /*
  * Displays the menu with the image given as parameter
