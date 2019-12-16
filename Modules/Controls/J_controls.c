@@ -87,13 +87,16 @@ int createPlatform (int oID, objectTypes ot, platforms *p, int x, int y, int out
  */
 int areColliding (point p1, size s1, point p2, size s2) {
     int xCollides = 0, yCollides = 0;
+
     /* Tests for a potential collision on the x axis */
     if ((p1.x > p2.x && p1.x < p2.x + s2.width) ||
-        (p1.x + s1.width > p2.x && p1.x + s1.width < p2.x + s2.width)) xCollides = 1;
+        (p1.x + s1.width > p2.x && p1.x + s1.width < p2.x + s2.width) ||
+        (p1.x < p2.x && p1.x + s1.width > p2.x + s2.width)) xCollides = 1;
 
     /* Tests for a potential collision on the y axis */
     if ((p1.y > p2.y && p1.y < p2.y + s2.height) ||
-        (p1.y + s1.height > p2.y && p1.y + s1.height < p2.y + s2.height)) yCollides = 1;   
+        (p1.y + s1.height > p2.y && p1.y + s1.height < p2.y + s2.height) ||
+        (p1.y < p2.y && p1.y + s1.height > p2.y + s2.height)) yCollides = 1;   
 
     return (xCollides && yCollides); 
 }
@@ -156,14 +159,7 @@ int birdCollision (bird b, birds brds) {
 
     for (i = 0; i < n; i++) {
         if(brds.brd[i].instanceID != b.instanceID) {
-            if (brds.brd[i].deathTime != -1 && brds.brd[i].b.isMob) printf("(%f %f) [%d %d] vs (%f %f) [%d %d]", 
-            b.p.x, b.p.y, b.b.o.s.width, b.b.o.s.height, 
-            brds.brd[i].p.x, brds.brd[i].p.y, brds.brd[i].b.o.s.width, brds.brd[i].b.o.s.height);
-
-            if (areColliding(b.p, b.b.o.s, brds.brd[i].p, brds.brd[i].b.o.s)) {
-                printf(" -> colliding\n");
-                return brds.brd[i].instanceID;
-            } else if (brds.brd[i].deathTime != -1 && brds.brd[i].b.isMob) printf(" -> not colliding\n");
+            if (areColliding(b.p, b.b.o.s, brds.brd[i].p, brds.brd[i].b.o.s)) return brds.brd[i].instanceID;
         }
     }
 
