@@ -278,8 +278,10 @@ void moveBird (bird *b, birds *brds, platforms p, objectTypes oT) {
             b->deathTime = -1;
             b->hVel = b->b.hSpeed;
             b->lives = 2;
-            b->b.o.s.width = oT.objT[b->b.o.objectID].s.width;
-            b->b.o.s.height = oT.objT[b->b.o.objectID].s.height;
+            i = 0;
+            while (oT.objT[i].objectID != b->b.o.objectID) i++;
+            b->b.o.s.width = oT.objT[i].s.width;
+            b->b.o.s.height = oT.objT[i].s.height;
         }
 
         /* Apply gravity if bird is not on a platform */
