@@ -52,8 +52,6 @@ int spawnBird (int oID, birdTypes bt, birds *b, int x, int y, int dir, int playe
     b->brd[m].gotStuck = 0;
     b->brd[m].onPlatform = 0;
 
-    if (b->brd[m].dir == 1) MLV_vertical_image_mirror(b->brd[m].b.o.sprite);
-
     b->l++;
 
     return m + 1;
@@ -315,7 +313,6 @@ void moveBird (bird *b, birds *brds, platforms p, objectTypes oT) {
                 case 1:
                     b->hVel *= -1;
                     b->dir *= -1;
-                    MLV_vertical_image_mirror(b->b.o.sprite);
                     break;
                 case 0:
                     /* Move second bird according to first ones direction to prevent getting stuck */
@@ -340,16 +337,13 @@ void moveBird (bird *b, birds *brds, platforms p, objectTypes oT) {
                         /* Both birds go in different directions */
                         brds->brd[tmpID].hVel *= -1;
                         brds->brd[tmpID].dir *= -1;
-                        MLV_vertical_image_mirror(brds->brd[tmpID].b.o.sprite);
                         b->hVel *= -1;
                         b->dir *= -1;
-                        MLV_vertical_image_mirror(b->b.o.sprite);
                     }
                     break;
                 case -1:
                     brds->brd[tmpID].hVel *= -1;
                     brds->brd[tmpID].dir *= -1;
-                    MLV_vertical_image_mirror(brds->brd[tmpID].b.o.sprite);
                     /* compensate for the next move (not sure what this was for) */
                     /*b->p.x += increment.x; */
                     break;
@@ -368,7 +362,6 @@ void moveBird (bird *b, birds *brds, platforms p, objectTypes oT) {
                 /* Bounce off the other way */
                 b->hVel *= -1;
                 b->dir *= -1;
-                MLV_vertical_image_mirror(b->b.o.sprite);
                 b->p.x -= increment.x;
                 done = 1;
             }
@@ -500,7 +493,6 @@ void updateCharPos (bird *b) {
             if (b->flapped || b->vVel == 0 || b->vVel == 1) b->hVel -= b->b.hSpeed; /* Prevent direction changes midair without flapping */
             if (b->dir != -1) {
                 b->dir = -1;
-                MLV_vertical_image_mirror(b->b.o.sprite);
             }
         }
         /* Test for right */
@@ -508,7 +500,6 @@ void updateCharPos (bird *b) {
             if (b->flapped || b->vVel == 0 || b->vVel == 1) b->hVel += b->b.hSpeed; /* Prevent direction changes midair without flapping */
             if (b->dir != 1) {
                 b->dir = 1;
-                MLV_vertical_image_mirror(b->b.o.sprite);
             }
         }
     /* Player 2's input */
@@ -525,7 +516,6 @@ void updateCharPos (bird *b) {
             if (b->flapped || b->vVel == 0 || b->vVel == 1) b->hVel -= b->b.hSpeed; /* Prevent direction changes midair without flapping */
             if (b->dir != -1) {
                 b->dir = -1;
-                MLV_vertical_image_mirror(b->b.o.sprite);
             }
         }
         /* Test for right */
@@ -533,7 +523,6 @@ void updateCharPos (bird *b) {
             if (b->flapped || b->vVel == 0 || b->vVel == 1) b->hVel += b->b.hSpeed; /* Prevent direction changes midair without flapping */
             if (b->dir != 1) {
                 b->dir = 1;
-                MLV_vertical_image_mirror(b->b.o.sprite);
             }
         }
     }

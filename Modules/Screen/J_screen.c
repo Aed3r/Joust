@@ -45,7 +45,9 @@ void dispBirds(birds bird, objectTypes oTs){
 			MLV_draw_image(oTs.objT[j].sprite, bird.brd[i].p.x, bird.brd[i].p.y);
 		} else {
 			/* Display a bird */
+			if (bird.brd[i].dir == 1) MLV_vertical_image_mirror(bird.brd[i].b.o.sprite);
 			MLV_draw_image(bird.brd[i].b.o.sprite, bird.brd[i].p.x, bird.brd[i].p.y);
+			if (bird.brd[i].dir == 1) MLV_vertical_image_mirror(bird.brd[i].b.o.sprite);
 		}
 	}
 }

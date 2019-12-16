@@ -50,7 +50,7 @@ int main() {
     importBirdTypes(&bT, &oT, "Data/Files/birds");
 
     /* Make sure everything's loaded nicely */
-    if (oT.l < 7 || bT.l < 5 || MOBSPERWAVE == 0) {
+    if (oT.l < 6 || bT.l < 4 || MOBSPERWAVE == 0) {
         printf("ERROR: Something didn't load correctly!\n");
         exit(EXIT_FAILURE);
     }
@@ -75,8 +75,7 @@ int main() {
         nbjr = 0;
         b.l = 0;
         done = 0;
-        /*waveCounter = MOBSPERWAVE / 2;*/
-        waveCounter = 0;
+        waveCounter = MOBSPERWAVE / 2;
         cdTime = -1;
         switch (dispMenu("menu.png")) {
             case 2:
@@ -124,12 +123,8 @@ int main() {
                             /* Easy difficulty */
                             spawnBird(6, bT, &b, -1, -1, 1, -1);
                             break;
-                        case 1:
-                            /* Medium difficulty */
-                            spawnBird(7, bT, &b, -1, -1, 1, -1);
-                            break;
                         default:
-                            /* >= 2: Hard difficulty */
+                            /* >= 1: Hard difficulty */
                             spawnBird(3, bT, &b, -1, -1, 1, -1);
                             break;
                         }
@@ -142,16 +137,8 @@ int main() {
                     /* If not on first wave, pad with additional mobs */
                     if (waveCounter / 10 != 0) {
                         for (i = waveCounter % 10; i < MOBSPERWAVE; i++) {
-                            switch (waveCounter / 10) {
-                            case 1:
-                                /* Easy difficulty */
-                                spawnBird(6, bT, &b, -1, -1, 1, -1);
-                                break;
-                            default:
-                                /* Medium difficulty */
-                                spawnBird(7, bT, &b, -1, -1, 1, -1);
-                                break;
-                            }
+                            /* Easy bird */
+                            spawnBird(6, bT, &b, -1, -1, 1, -1);
                             /* Center bird on empty platform */
                             tmp = findFreePlat(b, p);
                             b.brd[b.l - 1].p.x = p.plt[tmp].p.x + p.plt[tmp].o.s.width / 2 - b.brd[b.l-1].b.o.s.width / 2;
