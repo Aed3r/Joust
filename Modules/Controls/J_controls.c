@@ -542,7 +542,7 @@ void updateCharPos (bird *b) {
  * Detects potential obstacles and players
  * Either flies straight with small variations or towards the player, according to the aggressivity percentage
  */
-void updateMobPos (bird *b, birds brd, platforms plt){
+void updateMobPos (bird *b, birds brd){
     if(b->b.aggressiveness == 1) moveAggIa(b, brd);
     else movePassiveIa(b);
 
@@ -560,7 +560,7 @@ void updatePos (birds *brds, platforms plts, objectTypes oT) {
     int i;
     
     for (i = 0; i < brds->l; i++) {
-        if (brds->brd[i].b.isMob) updateMobPos(&brds->brd[i], *brds, plts);
+        if (brds->brd[i].b.isMob) updateMobPos(&brds->brd[i], *brds);
         else updateCharPos(&brds->brd[i]);
         moveBird(&brds->brd[i], brds, plts, oT);
     }
