@@ -134,7 +134,7 @@ int dispMenu(char *filepath){
 	while(ok == 0){
 		vspfunc(text, "Nombre de joueurs : %d", nbrj);
 		dispClear();
-		MLV_draw_image(imageMenu, 0,0);
+		MLV_draw_image(imageMenu, SCREENWIDTH / 2 - MLV_get_image_width(imageMenu) / 2,0);
 		/*Displaying 4 "Buttons" to act as a menu*/
 		MLV_draw_text_box_with_font(
 			(SCREENWIDTH * 0.2), (SCREENHEIGHT * 0.52),

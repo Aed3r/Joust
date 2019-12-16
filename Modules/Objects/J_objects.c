@@ -95,3 +95,38 @@ void unloadSprites(objectTypes *oT) {
 	int i;
 	for (i = 0; i < oT->l; i++) MLV_free_image(oT->objT[i].sprite);
 }
+
+/*
+ * Saves the games current state to a file
+ */
+void saveGameState(birds b, int waveCounter, int nbjr) {
+	int i;
+	FILE *f;
+
+	f = fopen("Data/Files/savestate", "w");
+
+	fprintf(f, "%d\n", waveCounter);
+	fprintf(f, "%d\n", nbjr);
+	fprintf(f, "%d %f %f %d %f %f %d %d\n", b.brd[0].b.o.objectID, b.brd[0].p.x,
+			b.brd[0].p.y, b.brd[0].dir, b.brd[0].hVel, b.brd[0].vVel,
+			b.brd[0].lives, b.brd[0].score);
+	if (nbjr == 2) {
+		fprintf(f, "%d %f %f %d %f %f %d %d\n", b.brd[1].b.o.objectID, b.brd[1].p.x,
+				b.brd[1].p.y, b.brd[1].dir, b.brd[1].hVel, b.brd[1].vVel,
+				b.brd[1].lives, b.brd[1].score);
+	}
+}
+
+/*
+ * Load a saved gamestate
+ */ 
+int loadGameState(birds *b, int *waveCounter, int *nbjr) {
+	FILE *f;
+	/* Try to open the file */
+	if((f = fopen("Data/Files/savestate", "r")) == NULL){
+		printf("Erreur dans l'ouverture du fichier score.txt !\n");
+		return 0;
+	}else{
+		fscanf(f, "%d", )
+	}
+}

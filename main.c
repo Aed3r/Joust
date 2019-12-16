@@ -50,19 +50,39 @@ int main() {
     }
 
     /* Platform creation */
-    createPlatform(1, oT, &p, 300, 957, 0);
-    createPlatform(1, oT, &p, 500, 957, 0);
+    /* Bottom */
+    createPlatform(1, oT, &p, 550, 970, 0);
+    createPlatform(1, oT, &p, 750, 970, 0);
+    createPlatform(1, oT, &p, 350, 970, 0);
+    createPlatform(1, oT, &p, 950, 970, 0);
+    /* Left bottom */
     createPlatform(1, oT, &p, 0, 700, 0);
-    createPlatform(1, oT, &p, 800, 700, 0);
-    createPlatform(1, oT, &p, 990, 700, 1);
-    createPlatform(1, oT, &p, 393, 400, 0);
-    createPlatform(1, oT, &p, 0, 150, 0);
-    createPlatform(1, oT, &p, 800, 150, 0);
-    createPlatform(1, oT, &p, 990, 150, 1);
+    /* Right bottom */
+    createPlatform(1, oT, &p, 1300, 700, 0);
+    /* Center top */
+    createPlatform(1, oT, &p, 550, 300, 0);
+    createPlatform(1, oT, &p, 750, 300, 0);
+    /* Center bottom */
+    createPlatform(1, oT, &p, 550, 685, 0);
+    createPlatform(1, oT, &p, 750, 685, 0);
+    /* Left top */
+    createPlatform(1, oT, &p, 0, 200, 0);
+    /* Right Top */
+    createPlatform(1, oT, &p, 1300, 200, 0);
+    createPlatform(1, oT, &p, 1500, 200, 1);
+    /* Middle Left */
+    createPlatform(1, oT, &p, 200, 450, 0);
+    /* Middle Right */
+    createPlatform(1, oT, &p, 1100, 450, 0);
+    /* Bottom OOB */
     createPlatform(1, oT, &p, 0, 1000, 1);
     createPlatform(1, oT, &p, 200, 1000, 1);
-    createPlatform(1, oT, &p, 700, 1000, 1);
-    createPlatform(1, oT, &p, 900, 1000, 1);
+    createPlatform(1, oT, &p, 400, 1000, 1);
+    createPlatform(1, oT, &p, 600, 1000, 1);
+    createPlatform(1, oT, &p, 800, 1000, 1);
+    createPlatform(1, oT, &p, 1000, 1000, 1);
+    createPlatform(1, oT, &p, 1200, 1000, 1);
+    createPlatform(1, oT, &p, 1400, 1000, 1);
 
     /*TEST DES SCORES*/
 
