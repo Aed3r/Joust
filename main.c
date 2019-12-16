@@ -31,6 +31,7 @@ int main() {
 
     int done, close = 0, waveCounter, cdTime, tmpMobCount, i, tmp, nbjr;
     char tmpText[200];
+    MLV_Image *bg;
 
     b.l = 0;
     p.l = 0;
@@ -38,6 +39,7 @@ int main() {
 
     MLV_create_window("Joust", NULL, SCREENWIDTH, SCREENHEIGHT);
     MLV_change_frame_rate(30);
+    bg = loadImage("background.jpg");
 
     /* Import Objects */
     importOBJs(&oT, "Data/Files/objects");
@@ -104,7 +106,7 @@ int main() {
                 spawnBird(2, bT, &b, 343, 872, -1, 1);
                 nbjr ++;
                 vspfunc(tmpText,"Début du jeu à %d joueur(s)", nbjr);
-                dispClear();
+                dispClear(1, NULL);
                 dispText(tmpText);
                 MLV_actualise_window();
                 MLV_wait_seconds(1);
@@ -184,7 +186,7 @@ int main() {
             }
 
             updatePos(&b, p, oT);
-            dispFrame(p, b, oT, tmpText);
+            dispFrame(p, b, oT, tmpText, bg);
             if(nbjr == 1 && b.brd[0].lives == 0){
                 done = 1;
                 dispAskScore(b);
