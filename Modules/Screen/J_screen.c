@@ -137,30 +137,37 @@ int dispMenu(char *filepath){
 		MLV_draw_image(imageMenu, SCREENWIDTH / 2 - MLV_get_image_width(imageMenu) / 2,0);
 		/*Displaying 4 "Buttons" to act as a menu*/
 		MLV_draw_text_box_with_font(
-			(SCREENWIDTH * 0.2), (SCREENHEIGHT * 0.52),
-			(SCREENWIDTH * 0.6), (SCREENHEIGHT * 0.1),
+			(SCREENWIDTH * 0.2), (SCREENHEIGHT * 0.51),
+			(SCREENWIDTH * 0.6), (SCREENHEIGHT * 0.08),
 			"Démarrer la partie", font, 9,
 			MLV_COLOR_RED, MLV_COLOR_WHITE, MLV_COLOR_BLACK,
 			MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER
 		);
 		MLV_draw_text_box_with_font(
-			(SCREENWIDTH * 0.2), (SCREENHEIGHT * 0.64),
-			(SCREENWIDTH * 0.6), (SCREENHEIGHT * 0.1),
+			(SCREENWIDTH * 0.2), (SCREENHEIGHT * 0.61),
+			(SCREENWIDTH * 0.6), (SCREENHEIGHT * 0.08),
 			text, font, 9,
 			MLV_COLOR_RED, MLV_COLOR_WHITE, MLV_COLOR_BLACK,
 			MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER
 		);
 		MLV_draw_text_box_with_font(
-			(SCREENWIDTH * 0.2), (SCREENHEIGHT * 0.76),
-			(SCREENWIDTH * 0.6), (SCREENHEIGHT * 0.1),
-			"Afficher les meilleurs scores", font, 9,
+			(SCREENWIDTH * 0.2), (SCREENHEIGHT * 0.71),
+			(SCREENWIDTH * 0.6), (SCREENHEIGHT * 0.08),
+			"Sauvegarder une partie", font, 9,
 			MLV_COLOR_RED, MLV_COLOR_WHITE, MLV_COLOR_BLACK,
 			MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER
 		);
 		MLV_draw_text_box_with_font(
-			(SCREENWIDTH * 0.2), (SCREENHEIGHT * 0.88),
-			(SCREENWIDTH * 0.6), (SCREENHEIGHT * 0.1),
-			"Quitter le jeu ", font, 9,
+			(SCREENWIDTH * 0.2), (SCREENHEIGHT * 0.81),
+			(SCREENWIDTH * 0.6), (SCREENHEIGHT * 0.08),
+			"Charger une parie", font, 9,
+			MLV_COLOR_RED, MLV_COLOR_WHITE, MLV_COLOR_BLACK,
+			MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER
+		);
+		MLV_draw_text_box_with_font(
+			(SCREENWIDTH * 0.2), (SCREENHEIGHT * 0.91),
+			(SCREENWIDTH * 0.6), (SCREENHEIGHT * 0.08),
+			"Afficher les meilleurs scores", font, 9,
 			MLV_COLOR_RED, MLV_COLOR_WHITE, MLV_COLOR_BLACK,
 			MLV_TEXT_CENTER, MLV_HORIZONTAL_CENTER, MLV_VERTICAL_CENTER
 		);
@@ -174,29 +181,31 @@ int dispMenu(char *filepath){
 				);
 		} while(event != MLV_MOUSE_BUTTON); /*When you have a event that is MLV_MOUSE_BUTTON stop the while loop*/
 		/*Detect Where the user clicked on the screen and act accordingly*/
-		if (x > (SCREENWIDTH * 0.2) && x < (SCREENWIDTH * 0.8) && y > (SCREENHEIGHT * 0.52)
-			&& y < (SCREENHEIGHT * 0.62)){
+		if (x > (SCREENWIDTH * 0.2) && x < (SCREENWIDTH * 0.8) && y > (SCREENHEIGHT * 0.51)
+			&& y < (SCREENHEIGHT * 0.59)){
 			return nbrj;
-		}else if (x > (SCREENWIDTH * 0.2) && x < (SCREENWIDTH * 0.8) && y > (SCREENHEIGHT * 0.64)
-			&& y < (SCREENHEIGHT * 0.74)){
+		}else if (x > (SCREENWIDTH * 0.2) && x < (SCREENWIDTH * 0.8) && y > (SCREENHEIGHT * 0.61)
+			&& y < (SCREENHEIGHT * 0.69)){
 			if(nbrj == 1 && compteur == 1){
 				nbrj = 2;
 			}else if(compteur == 1) nbrj = 1;
 			if(compteur == 1){
 				compteur = 2;
 			}else compteur = 1;
-		}else if (x > (SCREENWIDTH * 0.2) && x < (SCREENWIDTH * 0.8) && y > (SCREENHEIGHT * 0.76)
-			&& y < (SCREENHEIGHT * 0.86)){
+		}else if (x > (SCREENWIDTH * 0.2) && x < (SCREENWIDTH * 0.8) && y > (SCREENHEIGHT * 0.71)
+			&& y < (SCREENHEIGHT * 0.79)){
+			return 4;
+		}else if (x > (SCREENWIDTH * 0.2) && x < (SCREENWIDTH * 0.8) && y > (SCREENHEIGHT * 0.81)
+			&& y < (SCREENHEIGHT * 0.89)){
+			return 5;
+		}else if (x > (SCREENWIDTH * 0.2) && x < (SCREENWIDTH * 0.8) && y > (SCREENHEIGHT * 0.91)
+			&& y < (SCREENHEIGHT * 0.99)){
 			return 3;
-		}else if (x > (SCREENWIDTH * 0.2) && x < (SCREENWIDTH * 0.8) && y > (SCREENHEIGHT * 0.88)
-			&& y < (SCREENHEIGHT * 0.98)){
-			return 0;
 		}
 	}	
 	return nbrj;
 	MLV_free_font(font);
 }
-
 int dispScore(){
 	FILE *f;
 	MLV_Font* font = MLV_load_font( "Data/Fonts/BebasNeue-Regular.ttf" , 30);
