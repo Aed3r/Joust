@@ -119,7 +119,7 @@ void dispFrame(platforms p, birds b, objectTypes oTs){
 
 /*
  * Displays a menu with the image given as parameter
- * returns the number of player or 3 if the HIGHSCORE has been clicked
+ * returns the number of player, 3 if the display highscore button has been clicked or 0 if the user wan't to quit
  */
 int dispMenu(char *filepath){
 	MLV_Font* font = MLV_load_font( "Data/Fonts/BebasNeue-Regular.ttf" , 30);
@@ -134,6 +134,7 @@ int dispMenu(char *filepath){
 		vspfunc(text, "Nombre de joueurs : %d", nbrj);
 		dispClear();
 		MLV_draw_image(imageMenu, 0,0);
+		/*Displaying 4 "Buttons" to act as a menu*/
 		MLV_draw_text_box_with_font(
 			(SCREENWIDTH * 0.2), (SCREENHEIGHT * 0.52),
 			(SCREENWIDTH * 0.6), (SCREENHEIGHT * 0.1),
@@ -170,7 +171,8 @@ int dispMenu(char *filepath){
 				&x, &y, NULL,
 				NULL
 				);
-		} while(event != MLV_MOUSE_BUTTON);
+		} while(event != MLV_MOUSE_BUTTON); /*When you have a event that is MLV_MOUSE_BUTTON stop the while loop*/
+		/*Detect Where the user clicked on the screen and act accordingly*/
 		if (x > (SCREENWIDTH * 0.2) && x < (SCREENWIDTH * 0.8) && y > (SCREENHEIGHT * 0.52)
 			&& y < (SCREENHEIGHT * 0.62)){
 			return nbrj;
@@ -199,14 +201,15 @@ int dispScore(){
 	MLV_Font* font = MLV_load_font( "Data/Fonts/BebasNeue-Regular.ttf" , 30);
 	int MeilleursScores[10], tmpScore, i, j, nbrScore=0;
 	char MeilleursScoresNom[10][10], tmpName[10], msg[100];
-	for(i=0; i<10; i++) MeilleursScores[i] = 0;
+	/*Initialising the two list to prevent random number inside*/
+	for(i=0; i<10; i++) MeilleursScores[i] = 0; 
 	for(i=0; i<10; i++) strcpy(MeilleursScoresNom[i], ""); 
 	if((f = fopen("Data/Files/score.txt", "r")) == NULL){
 		printf("Erreur dans l'ouverture du fichier score.txt !\n");
 		return 0;
 	}else{
-		while(fscanf(f, "%s %d", tmpName, &tmpScore) == 2){
-			if(nbrScore < 10) nbrScore ++;
+		while(fscanf(f, "%s %d", tmpName, &tmpScore) == 2){ /*While it can read a lign in the .txt*/
+			if(nbrScore < 10) nbrScore ++; /*Used to know if there is less than 10 score saved*/
 			for(i=0;i<10;i++){
 				if(tmpScore > MeilleursScores[9-i]){
 					for(j=1;j<=9-i;j++){
@@ -235,4 +238,19 @@ int dispScore(){
 	MLV_actualise_window();
 	MLV_wait_keyboard(NULL, NULL, NULL);
 	return 1;
+}
+
+void dispAskScore(birds b){
+	MLV_Font* font = MLV_load_font( "Data/Fonts/BebasNeue-Regular.ttf" , 30);
+	char *name;
+	/*Utilise une boite de saisie afin de récuperer le nom du joueur*/
+	MLV_wait_input_box_with_font(
+			(SCREENWIDTH * 0.2), (SCREENHEIGHT * 0.45),
+			(SCREENWIDTH * 0.6), (SCREENHEIGHT * 0.1),
+			MLV_COLOR_BLUE, MLV_COLOR_WHITE, MLV_COLOR_BLACK,
+			"Please enter your name (10 char max):",
+			&name, font
+		);
+	printf("Score = %d\n", b.brd[0].score);
+	saveScore(b.brd[0].score, name);
 }

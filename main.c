@@ -165,20 +165,16 @@ int main() {
 
             updatePos(&b, p, oT);
             dispFrame(p, b, oT);
-        
-            MLV_actualise_window();
-            MLV_delay_according_to_frame_rate();
             if(nbjr == 1 && b.brd[0].lives == 0){
                 done = 1;
-                dispText("Everyone died\n GAME OVER");
-                MLV_actualise_window();
-                MLV_wait_seconds(5);
+                dispAskScore(b);
             }else if(b.brd[0].lives == 0 && b.brd[1].lives == 0){
                 done = 1;
-                dispText("Everyone died\n GAME OVER");
-                MLV_actualise_window();
-                MLV_wait_seconds(5);
+                dispAskScore(b);
             }
+            MLV_actualise_window();
+            MLV_delay_according_to_frame_rate();
+            
                 if(MLV_get_keyboard_state(MLV_KEYBOARD_ESCAPE) == MLV_PRESSED) done = 1;
         }
     }
