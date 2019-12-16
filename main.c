@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <MLV/MLV_all.h>
+#include <time.h>
 
 #include "Modules/Objects/J_objects.h"
 #include "Modules/Screen/J_screen.h"
@@ -22,17 +23,24 @@ static int vspfunc(char *str, char *format, ...){
 	return ret;
 }
 
+void test (int *t) { *t = 2; }
+
 int main() {
     objectTypes oT;
     birdTypes bT;
     birds b;
     platforms p;
 
-    int done = 0, close = 0, waveCounter = 3, cdTime = -1, tmpMobCount, i, tmp, nbjr = 0;
+    int done, close = 0, waveCounter, cdTime, tmpMobCount, i, tmp, nbjr;
     char tmpText[200];
 
     b.l = 0;
     p.l = 0;
+    srand(time(0));
+
+    tmp = 5;
+    test(&tmp);
+    printf("%d\n", tmp);
 
     MLV_create_window("Joust", NULL, SCREENWIDTH, SCREENHEIGHT);
     MLV_change_frame_rate(30);
@@ -62,12 +70,13 @@ int main() {
     createPlatform(1, oT, &p, 700, 1000, 1);
     createPlatform(1, oT, &p, 900, 1000, 1);
 
-    /* SCREEN TEST */
+    /* Main loop */
     while(close != 1){
         nbjr = 0;
         b.l = 0;
         done = 0;
-        waveCounter = 3;
+        /*waveCounter = MOBSPERWAVE / 2;*/
+        waveCounter = 1;
         cdTime = -1;
         switch (dispMenu("menu.png")) {
             case 2:
@@ -124,7 +133,7 @@ int main() {
                             spawnBird(3, bT, &b, -1, -1, 1, -1);
                             break;
                         }
-                    /* Center bird on empty platform */
+                        /* Center bird on empty platform */
                         tmp = findFreePlat(b, p);
                         b.brd[b.l - 1].p.x = p.plt[tmp].p.x + p.plt[tmp].o.s.width / 2 - b.brd[b.l-1].b.o.s.width / 2;
                         b.brd[b.l - 1].p.y = p.plt[tmp].p.y - b.brd[b.l-1].b.o.s.height;
@@ -158,13 +167,12 @@ int main() {
                     cdTime = -1;
                 } else {
                     /* Countdown not over. Diplay wave number */
-                    vspfunc(tmpText, "WAVE %d", waveCounter / 10 * MOBSPERWAVE + waveCounter % 10 - 2);
+                    vspfunc(tmpText, "WAVE %d", waveCounter / 10 * MOBSPERWAVE + waveCounter % 10 - (MOBSPERWAVE / 2 + 1));
                     /*dispText(tmpText);*/
                     MLV_actualise_window(); 
                 }
             }
 
-            dispClear();
             updatePos(&b, p, oT);
             dispFrame(p, b, oT);
         
@@ -185,5 +193,5 @@ int main() {
         }
     }
     MLV_free_window();
-    exit(0);
+    exit(EXIT_SUCCESS);
 }
