@@ -116,11 +116,11 @@ int main() {
                 dispScore();
                 done = 1;
                 break;
-            case 0:
-                /* Quit */
-                done = 1;
-                close = 1;
-                unloadSprites(&oT);
+            case 4:
+                /*Save game*/
+                break;
+            case 5:
+                /*Load game*/
                 break;
             default:
                 exit(EXIT_FAILURE);
