@@ -117,17 +117,18 @@ int main() {
                 done = 1;
                 break;
             case 4:
-                /*Save game*/
+                saveGameState(b, waveCounter, nbjr);
+                done = 1;
                 break;
             case 5:
-                /*Load game*/
+                spawnBird(2, bT, &b, 343, 872, -1, 1);
+                spawnBird(4, bT, &b, 562, 872, 1, 2);
+                if (loadGameState(&b, &waveCounter, &nbjr) == 0) done = 1;
                 break;
             default:
                 exit(EXIT_FAILURE);
                 break;
         }
-
-        printf("%d\n", loadGameState(&b, &waveCounter, &nbjr));
 
         while(done != 1) {
             /* Count living mobs */
@@ -198,7 +199,6 @@ int main() {
             MLV_delay_according_to_frame_rate();
             
             if(MLV_get_keyboard_state(MLV_KEYBOARD_ESCAPE) == MLV_PRESSED) {
-                saveGameState(b, waveCounter, nbjr);
                 done = 1;
             }
         }
