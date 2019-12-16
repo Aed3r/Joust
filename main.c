@@ -50,7 +50,7 @@ int main() {
     importBirdTypes(&bT, &oT, "Data/Files/birds");
 
     /* Make sure everything's loaded nicely */
-    if (oT.l < 7 || bT.l < 5) {
+    if (oT.l < 7 || bT.l < 5 || MOBSPERWAVE == 0) {
         printf("ERROR: Something didn't load correctly!\n");
         exit(EXIT_FAILURE);
     }
@@ -76,7 +76,7 @@ int main() {
         b.l = 0;
         done = 0;
         /*waveCounter = MOBSPERWAVE / 2;*/
-        waveCounter = 1;
+        waveCounter = 0;
         cdTime = -1;
         switch (dispMenu("menu.png")) {
             case 2:
@@ -110,7 +110,7 @@ int main() {
             for(i = 0; i < b.l; i++) if (b.brd[i].b.isMob && b.brd[i].lives > 0) tmpMobCount++;
 
             /* All enemies are dead */
-            if (tmpMobCount == 0) {
+            if (tmpMobCount == 0 && waveCounter != 0) {
                 /* Start coutdown and display wave number */
                 if (cdTime == -1) cdTime = MLV_get_time();
                 else if (MLV_get_time() >= cdTime + WAVECOOLDOWN * 1000) {
