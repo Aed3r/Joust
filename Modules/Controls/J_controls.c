@@ -239,7 +239,7 @@ int findFreePlat(birds brds, platforms p) {
                     tmpS.width = p.plt[i].o.s.width;
                     tmpS.height = brds.brd[j].b.o.s.height * 3 + 10;
                     if (areColliding(tmpP, tmpS, brds.brd[j].p, brds.brd[j].b.o.s)) good = 0;
-                } else good = 0;
+                }
             }
             if (good) {
                 tmpPlats[n] = p.plt[i].instanceID;
@@ -247,7 +247,8 @@ int findFreePlat(birds brds, platforms p) {
             }
         }
     }
-    return tmpPlats[rand() % (n - 1)];
+    if (n == 0) return 0;
+    else return tmpPlats[rand() % n];
 }
 
 /*
@@ -277,8 +278,10 @@ void moveBird (bird *b, birds *brds, platforms p, objectTypes oT) {
             b->deathTime = -1;
             b->hVel = b->b.hSpeed;
             b->lives = 2;
-            b->b.o.s.width = oT.objT[b->b.o.objectID].s.width;
-            b->b.o.s.height = oT.objT[b->b.o.objectID].s.height;
+            i = 0;
+            while (oT.objT[i].objectID != b->b.o.objectID) i++;
+            b->b.o.s.width = oT.objT[i].s.width;
+            b->b.o.s.height = oT.objT[i].s.height;
         }
 
         /* Apply gravity if bird is not on a platform */

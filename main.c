@@ -23,8 +23,6 @@ static int vspfunc(char *str, char *format, ...){
 	return ret;
 }
 
-void test (int *t) { *t = 2; }
-
 int main() {
     objectTypes oT;
     birdTypes bT;
@@ -37,10 +35,6 @@ int main() {
     b.l = 0;
     p.l = 0;
     srand(time(0));
-
-    tmp = 5;
-    test(&tmp);
-    /*printf("%d\n", tmp);*/
 
     MLV_create_window("Joust", NULL, SCREENWIDTH, SCREENHEIGHT);
     MLV_change_frame_rate(30);
@@ -81,10 +75,12 @@ int main() {
         cdTime = -1;
         switch (dispMenu("menu.png")) {
             case 2:
+                /* Two players */
                 spawnBird(4, bT, &b, 562, 872, 1, 2);
                 nbjr ++;
                 __attribute__((fallthrough));
             case 1:
+                /* One player */
                 spawnBird(2, bT, &b, 343, 872, -1, 1);
                 nbjr ++;
                 vspfunc(tmpText,"Début du jeu à %d joueur(s)", nbjr);
@@ -93,12 +89,15 @@ int main() {
                 MLV_wait_seconds(1);
                 break;
             case 3:
+                /* Show scores */
                 dispScore();
                 done = 1;
                 break;
             case 0:
+                /* Quit */
                 done = 1;
                 close = 1;
+                unloadSprites(&oT);
                 break;
             default:
                 exit(EXIT_FAILURE);
@@ -175,7 +174,7 @@ int main() {
             MLV_actualise_window();
             MLV_delay_according_to_frame_rate();
             
-                if(MLV_get_keyboard_state(MLV_KEYBOARD_ESCAPE) == MLV_PRESSED) done = 1;
+            if(MLV_get_keyboard_state(MLV_KEYBOARD_ESCAPE) == MLV_PRESSED) done = 1;
         }
     }
     MLV_free_window();

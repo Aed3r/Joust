@@ -98,4 +98,9 @@ int importBirdTypes (birdTypes *b, objectTypes *o, char *filePath);
 
 int saveScore (int score, char *name);
 
+/*
+ * Unload all sprites 
+ */
+void unloadSprites(objectTypes *oT);
+
 #endif

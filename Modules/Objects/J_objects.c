@@ -87,3 +87,11 @@ int saveScore (int score, char *name){
 	fclose(f);
 	return 1;
 }
+
+/*
+ * Unload all sprites 
+ */
+void unloadSprites(objectTypes *oT) {
+	int i;
+	for (i = 0; i < oT->l; i++) MLV_free_image(oT->objT[i].sprite);
+}
