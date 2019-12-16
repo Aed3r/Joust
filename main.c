@@ -125,6 +125,7 @@ int main() {
                 break;
         }
 
+        printf("%d\n", loadGameState(&b, &waveCounter, &nbjr));
 
         while(done != 1) {
             /* Count living mobs */
@@ -195,6 +196,7 @@ int main() {
             MLV_delay_according_to_frame_rate();
             
             if(MLV_get_keyboard_state(MLV_KEYBOARD_ESCAPE) == MLV_PRESSED) {
+                saveGameState(b, waveCounter, nbjr);
                 done = 1;
             }
         }

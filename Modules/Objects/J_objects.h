@@ -103,4 +103,14 @@ int saveScore (int score, char *name);
  */
 void unloadSprites(objectTypes *oT);
 
+/*
+ * Saves the games current state to a file
+ */
+void saveGameState(birds b, int waveCounter, int nbjr);
+
+/*
+ * Load a saved gamestate
+ */ 
+int loadGameState(birds *b, int *waveCounter, int *nbjr);
+
 #endif
