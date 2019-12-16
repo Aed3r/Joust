@@ -21,6 +21,7 @@
 #define MOBTIMEOUT 5 /* seconds */
 #define MAXVEL 20
 #define STUCKCOUNT 5 /* amount of frames a bird gets stuck before getting out */
+#define GRAVITY 1
 
 /* Main */
 

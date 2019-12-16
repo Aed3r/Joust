@@ -286,7 +286,7 @@ void moveBird (bird *b, birds *brds, platforms p, objectTypes oT) {
 
         /* Apply gravity if bird is not on a platform */
         if(platCollision(*b, p, 2) == -1) {
-            b->vVel -= b->b.vSpeed;
+            b->vVel -= GRAVITY;
             b->onPlatform = 0;
         }
 
