@@ -23,8 +23,6 @@ static int vspfunc(char *str, char *format, ...){
 	return ret;
 }
 
-void test (int *t) { *t = 2; }
-
 int main() {
     objectTypes oT;
     birdTypes bT;
@@ -37,10 +35,6 @@ int main() {
     b.l = 0;
     p.l = 0;
     srand(time(0));
-
-    tmp = 5;
-    test(&tmp);
-    /*printf("%d\n", tmp);*/
 
     MLV_create_window("Joust", NULL, SCREENWIDTH, SCREENHEIGHT);
     MLV_change_frame_rate(30);

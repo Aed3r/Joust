@@ -239,7 +239,7 @@ int findFreePlat(birds brds, platforms p) {
                     tmpS.width = p.plt[i].o.s.width;
                     tmpS.height = brds.brd[j].b.o.s.height * 3 + 10;
                     if (areColliding(tmpP, tmpS, brds.brd[j].p, brds.brd[j].b.o.s)) good = 0;
-                } else good = 0;
+                }
             }
             if (good) {
                 tmpPlats[n] = p.plt[i].instanceID;
@@ -247,7 +247,8 @@ int findFreePlat(birds brds, platforms p) {
             }
         }
     }
-    return tmpPlats[rand() % (n - 1)];
+    if (n == 0) return 0;
+    else return tmpPlats[rand() % n];
 }
 
 /*
