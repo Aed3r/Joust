@@ -77,6 +77,7 @@ int importBirdTypes (birdTypes *b, objectTypes *o, char *filePath){
 Return 0 if there was an error*/
 int saveScore (int score, char *name){
 	FILE *f;
+	/*Try to open the file then add the new score and name at the end of the file*/
 	if((f = fopen("Data/Files/score.txt", "a")) == NULL){
 		printf("Erreur dans l'ouverture du fichier score.txt !\n");
 		return 0;

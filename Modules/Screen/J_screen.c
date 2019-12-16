@@ -224,6 +224,7 @@ int dispScore(){
 		}
 		if(nbrScore == 0) dispText("Aucun score sauvegardé pour le moment\n Commencez vite une partie !");
 		else dispClear();
+		/*Display the top 10 scores (or all of them if there are less than 10)*/
 		for(i=0;i<nbrScore;i++){
 			vspfunc(msg, "%s %d", MeilleursScoresNom[9-i], MeilleursScores[9-i]);
 			MLV_draw_text_box_with_font(
@@ -251,6 +252,5 @@ void dispAskScore(birds b){
 			"Please enter your name (10 char max):",
 			&name, font
 		);
-	printf("Score = %d\n", b.brd[0].score);
 	saveScore(b.brd[0].score, name);
 }

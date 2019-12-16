@@ -28,7 +28,10 @@ void moveAggIa(bird *b, birds brd){
                 b->flapped ++;
             }else b->flapped = 0;
         }
+        if(b->hVel > 0 && b->hVel < MAXVEL/2) b->hVel += b->b.hSpeed;
+        else if(b->hVel > -MAXVEL/2) b->hVel -= b->b.hSpeed;
     }
+
 }
 
 void movePassiveIa(bird *b){
@@ -43,5 +46,7 @@ void movePassiveIa(bird *b){
                 b->flapped ++;
             }else b->flapped = 0;
         }
+        if(b->hVel > 0 && b->hVel < MAXVEL/2) b->hVel += b->b.hSpeed;
+        else if(b->hVel > -MAXVEL/2) b->hVel -= b->b.hSpeed;
     }
 }
