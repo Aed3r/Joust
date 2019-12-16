@@ -48,3 +48,12 @@ int importBirdTypes (birdTypes *b, objectTypes *o, char *filePath){
 	fclose(f);
 	return 1;
 }
+
+void Save_score (int score1, int score2){
+	FILE *f;
+	int i = 0, j = 0;
+	if((f = fopen("../../Data/Files/score.txt", "w")) == NULL){
+		printf("Erreur dans l'ouverture du fichier \"%s\"!\n", filePath);
+		return 0;
+	}
+}

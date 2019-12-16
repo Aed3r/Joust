@@ -91,4 +91,6 @@ int importOBJs (objectTypes *o, char *filePath);
  */ 
 int importBirdTypes (birdTypes *b, objectTypes *o, char *filePath);
 
+void Save_score (int score1, int score2);
+
 #endif
